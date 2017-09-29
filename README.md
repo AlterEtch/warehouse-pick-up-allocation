@@ -10,6 +10,6 @@ Python 2.7
 ### Running the Project
 The project can be compiled directly through terminal:
 ```
-python game.py
+python main.py
 ```
-or using any python IDE running the game.py
+or using any python IDE running the main.py
