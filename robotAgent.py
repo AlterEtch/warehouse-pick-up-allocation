@@ -13,7 +13,6 @@ class RobotAgent():
 
     def move(self, direction):
         possibleActions = self.getPossibleActions()
-        print possibleActions
         if direction in possibleActions:
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]

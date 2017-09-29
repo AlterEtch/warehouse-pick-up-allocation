@@ -6,6 +6,7 @@ class Task():
         self.cost = cost
         self.id = self.canvas.create_oval(self.pos[0]*gridSize + 0.5*(gridSize-self.size), self.pos[1]*(gridSize) + 0.5*(gridSize-self.size), (self.pos[0]+1)*gridSize - 0.5*(gridSize-self.size), (self.pos[1]+1)*gridSize - 0.5*(gridSize-self.size), fill="white")
         self.progress = 0
+        self.timer = 0
         self.assigned = False
 
     def setAssignStatus(self, status):

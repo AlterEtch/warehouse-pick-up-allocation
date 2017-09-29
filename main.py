@@ -43,6 +43,7 @@ while True:
     for robot in world.robots:
         robot.followPath()
     world.checkTasksStatus()
+    print world.robots[0].task
     graphics.root_window.after(250)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

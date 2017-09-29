@@ -60,6 +60,12 @@ class WorldState():
                 return task
         return 0
 
+    def findRobotWithTask(self, task):
+        for robot in self.robots:
+            if robot.task == task:
+                return robot
+        return 0
+
     def isBlocked(self, pos):
         x = pos[0]
         y = pos[1]
@@ -69,11 +75,19 @@ class WorldState():
 
     def checkTasksStatus(self):
         for task in self.tasks:
-            for robot in self.robots:
+            if task.progress < task.cost:
                 if not self.hasRobotAt(task.pos):
                     task.resetProgress()
                 elif self.findRobotAt(task.pos).task != task:
                     task.resetProgress()
-                if robot.task == task:
-                    if task.pos == robot.pos and len(robot.path) == 0:
-                        task.addProgress()
+                for robot in self.robots:
+                    if robot.task == task:
+                        if task.pos == robot.pos and len(robot.path) == 0:
+                            task.addProgress()
+            else:
+                task.timer += 1
+                if task.timer >= 10:
+                    if self.findRobotWithTask(task) != 0:
+                        self.findRobotWithTask(task).task = []
+                    self.canvas.delete(task.id)
+                    self.tasks.remove(task)
