@@ -30,10 +30,7 @@ class MainGraphics():
             self._canvas.create_line([0,y],[self.width,y], fill="red")
 
     def fillCell(self, x, y, color, shape):
-        if shape == "rect":
-            self._canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
-        else:
-            self._canvas.create_oval(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
+        self._canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
 
     def drawWalls(self):
         for x in range(0, self.width/self.gridSize):
