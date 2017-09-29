@@ -47,7 +47,7 @@ graphics._root_window.bind( "<Right>", rightKey )
 graphics._root_window.bind( "<Up>", upKey )
 graphics._root_window.bind( "<Down>", downKey )
 
-# Main Loop
+# Main loop for window
 while True:
     graphics._root_window.update_idletasks()
     graphics._root_window.update()
