@@ -5,22 +5,21 @@ from actions import Actions
 import sys
 
 def leftKey(event):
-    world.robots[0].move([-1,0],Actions.possibleActions(world.robots[0].pos, world))
+    world.robots[0].move([-1,0])
 
 def rightKey(event):
-    world.robots[0].move([1,0],Actions.possibleActions(world.robots[0].pos, world))
+    world.robots[0].move([1,0])
 
 def upKey(event):
-    world.robots[0].move([0,-1],Actions.possibleActions(world.robots[0].pos, world))
+    world.robots[0].move([0,-1])
 
 def downKey(event):
-    world.robots[0].move([0,1],Actions.possibleActions(world.robots[0].pos, world))
-
+    world.robots[0].move([0,1])
 
 world = WorldState(gridSize=20)
 graphics = MainGraphics(layout=world.layout, gridSize=world.gridSize)
 
-world.addRobot(RobotAgent(canvas=graphics._canvas, size=world.gridSize, pos=[5,6]))
+world.addRobot(RobotAgent(world=world, canvas=graphics._canvas, size=world.gridSize, pos=[5,6]))
 
 graphics._root_window.bind( "<Left>", leftKey )
 graphics._root_window.bind( "<Right>", rightKey )
