@@ -18,14 +18,14 @@ def upKey(event):
 def downKey(event):
     world.robots[0].move([0,1])
 
-world = WorldState(width=800, height=640, gridSize=20)
+world = WorldState(width=880, height=680, gridSize=20)
 graphics = MainGraphics(world=world)
 world.setCanvas(graphics.canvas)
 
-world.addRobot(pos=[5,6])
-world.addRobot(pos=[8,12])
+world.addRobot(pos=[1,1])
+world.addRobot(pos=[2,1])
 
-world.addTask(pos=[11,11])
+world.addTask(pos=[10,10])
 
 # Key binding for testing
 graphics.root_window.bind( "<Left>", leftKey )
@@ -43,7 +43,6 @@ while True:
     for robot in world.robots:
         robot.followPath()
     world.checkTasksStatus()
-    print world.robots[0].task
     graphics.root_window.after(250)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

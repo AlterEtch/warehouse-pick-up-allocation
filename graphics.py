@@ -17,7 +17,7 @@ class MainGraphics():
         self.root_window.title(self.title)
         self.root_window.resizable(0, 0)
 
-        self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width, height=self.height)
+        self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width + 200, height=self.height)
 
         self.drawWalls()
         self.drawGrids()
