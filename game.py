@@ -48,7 +48,5 @@ graphics._root_window.bind( "<Up>", upKey )
 graphics._root_window.bind( "<Down>", downKey )
 
 while True:
-    graphics._root_window.after(100)
-    #print Actions.possibleActions(world.robots[0].pos, world)
     graphics._root_window.update_idletasks()
     graphics._root_window.update()
