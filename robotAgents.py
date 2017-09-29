@@ -25,8 +25,9 @@ class RobotAgent():
     def getPossibleActions(self):
         return Actions.possibleActions(self.pos, self.world)
 
-    def setTask(self, pos):
-        self.task = pos
+    def setTask(self, task):
+        self.task = task
+        task.setStatus("assigned")
 
     def setPath(self, path):
         self.path = path
