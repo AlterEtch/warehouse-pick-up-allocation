@@ -102,3 +102,4 @@ class WorldState():
                         self.findRobotWithTask(task).task = []
                     self.canvas.delete(task.id)
                     self.tasks.remove(task)
+    

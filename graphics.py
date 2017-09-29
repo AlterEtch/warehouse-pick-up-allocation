@@ -11,6 +11,7 @@ class MainGraphics():
         self.layout = world.layout
 
         self.createWindow()
+        self.initStatusBar()
 
     def createWindow(self):
         self.root_window = Tkinter.Tk()
@@ -38,3 +39,7 @@ class MainGraphics():
             for y in range(0, self.height/self.gridSize):
                 if self.layout[x][y]:
                     self.fillCell(x,y, "red", "rect")
+
+    def initStatusBar(self):
+        self.canvas.create_text(self.width + 10, 50, anchor=Tkinter.W, fill="white", text="Current Time: ")
+        self.canvas.create_text(self.width + 10, 70, anchor=Tkinter.W, fill="white", text="Remaining Tasks: ")
