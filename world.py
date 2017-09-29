@@ -1,6 +1,7 @@
 from graphics import MainGraphics
 from robotAgent import RobotAgent
 from task import Task
+from util import *
 
 class WorldState():
     def __init__(self, width=800, height=640, gridSize=40):
@@ -37,8 +38,27 @@ class WorldState():
 
     def hasRobotAt(self, pos):
         for robot in self.robots:
-            if robot.pos[0] == pos[0] and robot.pos[1] == pos[1]:
+            if robot.pos == pos:
                 return True
+        return False
+
+    def hasTaskAt(self, pos):
+        for task in self.tasks:
+            if task.pos == pos:
+                return True
+        return False
+
+    def findRobotAt(self, pos):
+        for robot in self.robots:
+            if robot.pos == pos:
+                return robot
+        return 0
+
+    def findTaskAt(self, pos):
+        for task in self.tasks:
+            if task.pos == pos:
+                return task
+        return 0
 
     def isBlocked(self, pos):
         x = pos[0]
@@ -52,6 +72,8 @@ class WorldState():
             for robot in self.robots:
                 if not self.hasRobotAt(task.pos):
                     task.resetProgress()
+                elif self.findRobotAt(task.pos).task != task:
+                    task.resetProgress()
                 if robot.task == task:
-                    if robot.pos == task.pos and len(robot.path) == 0:
+                    if task.pos == robot.pos and len(robot.path) == 0:
                         task.addProgress()
