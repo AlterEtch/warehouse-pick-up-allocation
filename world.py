@@ -1,9 +1,13 @@
 from graphics import MainGraphics
+from robotAgent import RobotAgent
+from task import Task
 
 class WorldState():
-    def __init__(self, gridSize=40):
+    def __init__(self, width=800, height=640, gridSize=40):
         self.gridSize = gridSize
-        self.layout = self.initWallLayout(width=800, height=640, gridSize=self.gridSize)
+        self.width = width
+        self.height = height
+        self.layout = self.initWallLayout(width=self.width, height=self.height, gridSize=self.gridSize)
         self.robots = []
         self.tasks = []
 
@@ -17,21 +21,37 @@ class WorldState():
         wallLayout[3][6] = 1
         return wallLayout
 
+    def setCanvas(self, canvas):
+        self.canvas = canvas
+
     def setWallLayout(self, layout):
         self.layout = layout
 
-    def addRobot(self, robot):
+    def addRobot(self, pos):
+        robot = RobotAgent(self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
 
-    def addTask(self, task):
+    def addTask(self, pos):
+        task = Task(canvas=self.canvas, gridSize=self.gridSize, pos=pos)
         self.tasks.append(task)
+
+    def hasRobotAt(self, pos):
+        for robot in self.robots:
+            if robot.pos[0] == pos[0] and robot.pos[1] == pos[1]:
+                return True
 
     def isBlocked(self, pos):
         x = pos[0]
         y = pos[1]
-        if self.layout[x][y] == 1:
+        if self.layout[x][y] == 1 or self.hasRobotAt(pos):
             return True
-        for robot in self.robots:
-            if robot.pos[0] == x and robot.pos[1] == y:
-                return True
         return False
+
+    def checkTasksStatus(self):
+        for task in self.tasks:
+            for robot in self.robots:
+                if not self.hasRobotAt(task.pos):
+                    task.resetProgress()
+                if robot.task == task:
+                    if robot.pos == task.pos and len(robot.path) == 0:
+                        task.addProgress()
