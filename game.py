@@ -47,7 +47,10 @@ graphics._root_window.bind( "<Right>", rightKey )
 graphics._root_window.bind( "<Up>", upKey )
 graphics._root_window.bind( "<Down>", downKey )
 
+world.robots[0].setPath([Actions.E,Actions.E,Actions.E,Actions.N,Actions.N,Actions.E,Actions.S])
+
 # Main loop for window
 while True:
+    world.robots[0].followPath()
     graphics._root_window.update_idletasks()
     graphics._root_window.update()
