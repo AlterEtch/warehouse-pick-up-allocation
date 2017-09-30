@@ -33,8 +33,8 @@ graphics.root_window.bind( "<Right>", rightKey )
 graphics.root_window.bind( "<Up>", upKey )
 graphics.root_window.bind( "<Down>", downKey )
 
-#world.robots[0].setPath([Actions.E,Actions.E,Actions.E,Actions.N,Actions.N,Actions.E,Actions.S])
-#world.robots[1].setPath([Actions.S,Actions.N,Actions.W,Actions.S,Actions.N,Actions.E,Actions.S])
+world.robots[0].setPath([Actions.S,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S])
+world.robots[1].setPath([Actions.E,Actions.E,Actions.W,Actions.S,Actions.N,Actions.E,Actions.S])
 
 world.robots[0].setTask(world.tasks[0])
 

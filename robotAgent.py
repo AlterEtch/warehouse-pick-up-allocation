@@ -17,8 +17,8 @@ class RobotAgent():
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
             # Animate the movement of robot
-            for x in range(0,self.size):
-                self.canvas.move(self.id, direction[0], direction[1])
+            for x in range(0,self.size/5):
+                self.canvas.move(self.id, direction[0]*5, direction[1]*5)
                 self.canvas.update()
         print self.pos
 
