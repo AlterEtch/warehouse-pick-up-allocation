@@ -3,13 +3,14 @@ from robotAgent import RobotAgent
 from task import Task
 
 class WorldState():
-    def __init__(self, width=800, height=660, gridSize=20):
+    def __init__(self, width, height, gridSize):
         self.gridSize = gridSize
         self.width = width
         self.height = height
         self.layout = self.initWallLayout(width=self.width, height=self.height, gridSize=self.gridSize)
         self.robots = []
         self.tasks = []
+        self.timer = 0
 
     def initWallLayout(self, width, height, gridSize):
         wallLayout = [[0 for row in range(0,height/gridSize)] for col in range(0,width/gridSize)]
@@ -84,7 +85,12 @@ class WorldState():
             return True
         return False
 
+    def timerClick(self):
+        self.timer += 1
+        self.canvas.itemconfig(self.timerLabel, text=str(self.timer))
+
     def checkTasksStatus(self):
+        self.canvas.itemconfig(self.taskCountLabel, text=str(len(self.tasks)))
         for task in self.tasks:
             if task.progress < task.cost:
                 if not self.hasRobotAt(task.pos):
@@ -102,4 +108,7 @@ class WorldState():
                         self.findRobotWithTask(task).task = []
                     self.canvas.delete(task.id)
                     self.tasks.remove(task)
-    
+
+    def update(self):
+        self.timerClick()
+        self.checkTasksStatus()

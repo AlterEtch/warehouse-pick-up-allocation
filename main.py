@@ -40,9 +40,9 @@ world.robots[0].setTask(world.tasks[0])
 
 # Main loop for window
 while True:
+    world.update()
     for robot in world.robots:
         robot.followPath()
-    world.checkTasksStatus()
-    graphics.root_window.after(250)
+    graphics.root_window.after(500)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
