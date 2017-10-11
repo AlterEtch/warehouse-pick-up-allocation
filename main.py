@@ -32,8 +32,15 @@ world.setGraphics(graphics)
 # world.addTask(pos=[14,16])
 # world.addTask(pos=[22,21])
 
-world.addRandomRobot(30)
-world.addRandomTask(30)
+if len(sys.argv) == 2:
+    world.addRandomRobot(int(sys.argv[1]))
+    world.addRandomTask(int(sys.argv[1]))
+elif len(sys.argv) == 3:
+    world.addRandomRobot(int(sys.argv[1]))
+    world.addRandomTask(int(sys.argv[2]))
+else:
+    world.addRandomRobot(6)
+    world.addRandomTask(6)
 
 for i in range(len(world.robots)):
     if i < len(world.tasks):
