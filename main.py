@@ -31,34 +31,40 @@ world.setGraphics(graphics)
 # world.addTask(pos=[3,7])
 # world.addTask(pos=[14,16])
 # world.addTask(pos=[22,21])
+def setup():
+    if len(sys.argv) == 2:
+        world.addRandomRobot(int(sys.argv[1]))
+        world.addRandomTask(int(sys.argv[1]))
+    elif len(sys.argv) == 3:
+        world.addRandomRobot(int(sys.argv[1]))
+        world.addRandomTask(int(sys.argv[2]))
+    else:
+        world.addRandomRobot(6)
+        world.addRandomTask(6)
 
-if len(sys.argv) == 2:
-    world.addRandomRobot(int(sys.argv[1]))
-    world.addRandomTask(int(sys.argv[1]))
-elif len(sys.argv) == 3:
-    world.addRandomRobot(int(sys.argv[1]))
-    world.addRandomTask(int(sys.argv[2]))
-else:
-    world.addRandomRobot(6)
-    world.addRandomTask(6)
+    for i in range(len(world.robots)):
+        if i < len(world.tasks):
+            world.robots[i].setTask(world.tasks[i])
 
-for i in range(len(world.robots)):
-    if i < len(world.tasks):
-        world.robots[i].setTask(world.tasks[i])
+    # Key binding for testing
+    graphics.root_window.bind( "<Left>", leftKey )
+    graphics.root_window.bind( "<Right>", rightKey )
+    graphics.root_window.bind( "<Up>", upKey )
+    graphics.root_window.bind( "<Down>", downKey )
 
-# Key binding for testing
-graphics.root_window.bind( "<Left>", leftKey )
-graphics.root_window.bind( "<Right>", rightKey )
-graphics.root_window.bind( "<Up>", upKey )
-graphics.root_window.bind( "<Down>", downKey )
+    for robot in world.robots:
+        if robot.task != []:
+            try:
+                robot.updatePathFiner()
+                path, dirPath = robot.pathfinder.performAStarSearch()
+            except TypeError:
+                print 'restarting'
+                setup()
+            else:
+                robot.setPath(dirPath)
+                graphics.drawPath(path)
 
-for robot in world.robots:
-    if robot.task != []:
-        robot.updatePathFiner()
-        path, dirPath = robot.pathfinder.performAStarSearch()
-        robot.setPath(dirPath)
-        graphics.drawPath(path)
-
+setup()
 # Main loop for window
 while True:
     world.update()
