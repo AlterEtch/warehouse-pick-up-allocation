@@ -32,11 +32,12 @@ world.setGraphics(graphics)
 # world.addTask(pos=[14,16])
 # world.addTask(pos=[22,21])
 
-world.addRandomRobot(10)
-world.addRandomTask(10)
+world.addRandomRobot(19)
+world.addRandomTask(15)
 
 for i in range(len(world.robots)):
-    world.robots[i].setTask(world.tasks[i])
+    if i < len(world.tasks):
+        world.robots[i].setTask(world.tasks[i])
 
 # Key binding for testing
 graphics.root_window.bind( "<Left>", leftKey )
@@ -63,6 +64,6 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    graphics.root_window.after(500)
+    graphics.root_window.after(250)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
