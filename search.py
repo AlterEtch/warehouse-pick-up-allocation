@@ -54,6 +54,7 @@ class PathFind():
                 return self.reconstructPath(self.current)
 
             successors = self.getSuccessors()
+
             for node in successors:
                 if self.checkNodeInSet(node, closedSet):
                     continue

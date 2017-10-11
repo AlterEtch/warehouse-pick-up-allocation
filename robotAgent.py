@@ -18,16 +18,21 @@ class RobotAgent():
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
             # Animate the movement of robot
-            for x in range(0,self.size/10):
-                self.canvas.move(self.id, direction[0]*10, direction[1]*10)
+            for x in range(0,self.size/(self.size/2)):
+                self.canvas.move(self.id, direction[0]*self.size/2, direction[1]*self.size/2)
                 self.canvas.update()
         else:
-            if len(self.path):
+            if len(self.path) and self.task != []:
                 print 'recalculating path'
                 self.updatePathFiner()
-                path, dirPath = self.pathfinder.performAStarSearch()
-                self.path = dirPath
-                self.world.graphics.drawPath(path)
+                try:
+                    path, dirPath = self.pathfinder.performAStarSearch()
+                except TypeError:
+                    self.path.insert(0,[0,0])
+                else:
+                    #path, dirPath = self.pathfinder.performAStarSearch()
+                    self.path = dirPath
+                    self.world.graphics.drawPath(path)
 
     def getPossibleActions(self):
         return Actions.possibleActions(self.pos, self.world)

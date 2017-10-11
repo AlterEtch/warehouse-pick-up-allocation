@@ -32,8 +32,8 @@ world.setGraphics(graphics)
 # world.addTask(pos=[14,16])
 # world.addTask(pos=[22,21])
 
-world.addRandomRobot(19)
-world.addRandomTask(15)
+world.addRandomRobot(30)
+world.addRandomTask(30)
 
 for i in range(len(world.robots)):
     if i < len(world.tasks):
@@ -44,13 +44,6 @@ graphics.root_window.bind( "<Left>", leftKey )
 graphics.root_window.bind( "<Right>", rightKey )
 graphics.root_window.bind( "<Up>", upKey )
 graphics.root_window.bind( "<Down>", downKey )
-
-#world.robots[0].setPath([Actions.S,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S])
-#world.robots[1].setPath([Actions.E,Actions.E,Actions.W,Actions.S,Actions.N,Actions.E,Actions.S])
-
-# world.robots[0].setTask(world.tasks[0])
-# world.robots[1].setTask(world.tasks[1])
-# world.robots[2].setTask(world.tasks[2])
 
 for robot in world.robots:
     if robot.task != []:
@@ -64,6 +57,6 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    graphics.root_window.after(250)
+    graphics.root_window.after(50)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
