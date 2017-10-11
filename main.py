@@ -42,11 +42,13 @@ world.robots[0].setTask(world.tasks[0])
 
 print '2'
 
-pf = PathFind(world.robots[0])
-path = pf.performAStarSearch()
-
-for p in path:
-    print p.pos
+pf = AStarSearch(world.robots[0])
+pathNode = pf.performSearch()
+path = []
+for p in pathNode:
+    path.append(p.pos)
+print path
+graphics.drawPath(path)
 
 # Main loop for window
 while True:

@@ -19,7 +19,7 @@ class Node():
     def getTotalCost(self):
         return self.f
 
-class PathFind():
+class AStarSearch():
     def __init__(self, robot):
         self.robot = robot
         self.start = Node(self.robot.pos)
@@ -27,7 +27,7 @@ class PathFind():
         self.goal = Node(self.robot.task.pos)
 
 
-    def performAStarSearch(self):
+    def performSearch(self):
         # The set of nodes already evaluated
         closedSet = []
 
@@ -46,7 +46,8 @@ class PathFind():
             #print 'current position:', self.current
             #print 'closedSet:', closedSet
 
-            openSet = []
+            openSet.remove(self.current)
+
             closedSet.append(self.current)
 
             if self.current.pos == self.goal.pos:
@@ -64,6 +65,9 @@ class PathFind():
 
                 node.setTravelCost(self.current.getTravelCost() + self.calculateEuclideanDistance(self.current.pos, node.pos))
                 node.setTotalCost(node.getTravelCost() + self.getHeuristicCost(node))
+
+    def reconstructPath(self, nodeSet):
+        return nodeSet
 
     def checkNodeInSet(self, node, set):
         for setNode in set:

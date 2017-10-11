@@ -25,6 +25,12 @@ class MainGraphics():
         self.canvas.pack()
         self.canvas.update()
 
+    def drawPath(self, path):
+        path.pop(0)
+        path.pop(len(path)-1)
+        for pos in path:
+            self.fillCell(pos[0], pos[1], "blue", "rect")
+
     def drawGrids(self):
         for x in range(0, self.width, self.gridSize):
             self.canvas.create_line([x,0],[x,self.height], fill="red")
@@ -32,7 +38,8 @@ class MainGraphics():
             self.canvas.create_line([0,y],[self.width,y], fill="red")
 
     def fillCell(self, x, y, color, shape):
-        self.canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
+        if shape == "rect":
+            self.canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
 
     def drawWalls(self):
         for x in range(0, self.width/self.gridSize):
