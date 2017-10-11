@@ -41,7 +41,7 @@ class WorldState():
         self.layout = layout
 
     def addRobot(self, pos):
-        robot = RobotAgent(self, canvas=self.canvas, size=self.gridSize, pos=pos)
+        robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
 
     def addTask(self, pos):
