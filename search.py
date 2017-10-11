@@ -26,7 +26,7 @@ class Node():
     def getPreviousNode(self):
         return self.prev
 
-class AStarSearch():
+class PathFind():
     def __init__(self, robot):
         self.robot = robot
         self.start = Node(self.robot.pos)
@@ -34,7 +34,7 @@ class AStarSearch():
         self.goal = Node(self.robot.task.pos)
 
 
-    def performSearch(self):
+    def performAStarSearch(self):
         # The set of nodes already evaluated
         closedSet = []
 
@@ -42,19 +42,12 @@ class AStarSearch():
         # Initially, only the start node is known.
         openSet = [self.start]
 
-        print self.goal.pos
-
         self.start.setTravelCost(0)
         self.start.setTotalCost(self.getHeuristicCost(self.start))
 
         while len(openSet) > 0:
-        #for i in range(5):
             self.current = self.getMinCostNode(openSet)
-            #print 'current position:', self.current
-            #print 'closedSet:', closedSet
-
             openSet.remove(self.current)
-
             closedSet.append(self.current)
 
             if self.current.pos == self.goal.pos:
@@ -62,9 +55,7 @@ class AStarSearch():
 
             successors = self.getSuccessors()
             for node in successors:
-                #print 'node:', node
                 if self.checkNodeInSet(node, closedSet):
-                    #print 'closed'
                     continue
 
                 if not self.checkNodeInSet(node, openSet):
@@ -84,7 +75,6 @@ class AStarSearch():
         while current.getPreviousNode().pos != current.pos:
             current = current.getPreviousNode()
             path.insert(0, current.pos)
-            print path
 
         for i in range(len(path)-1):
             dirPath.append([path[i+1][0] - path[i][0],path[i+1][1] - path[i][1]])

@@ -1,6 +1,7 @@
 from graphics import MainGraphics
 from robotAgent import RobotAgent
 from task import Task
+from util import *
 
 class WorldState():
     def __init__(self, width, height, gridSize):
@@ -34,8 +35,9 @@ class WorldState():
 
         return wallLayout
 
-    def setCanvas(self, canvas):
-        self.canvas = canvas
+    def setGraphics(self, graphics):
+        self.graphics = graphics
+        self.canvas = self.graphics.canvas
 
     def setWallLayout(self, layout):
         self.layout = layout
@@ -47,6 +49,14 @@ class WorldState():
     def addTask(self, pos):
         task = Task(canvas=self.canvas, gridSize=self.gridSize, pos=pos)
         self.tasks.append(task)
+
+    def addRandomRobot(self, num):
+        for x in range(num):
+            self.addRobot(generateRandomPosition(self))
+
+    def addRandomTask(self, num):
+        for x in range(num):
+            self.addTask(generateRandomPosition(self))
 
     def hasRobotAt(self, pos):
         for robot in self.robots:

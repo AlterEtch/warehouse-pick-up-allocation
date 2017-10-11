@@ -21,13 +21,22 @@ def downKey(event):
 
 world = WorldState(width=880, height=680, gridSize=20)
 graphics = MainGraphics(world=world)
-world.setCanvas(graphics.canvas)
+world.setGraphics(graphics)
+#world.setCanvas(graphics.canvas)
 
-world.addRobot(pos=[1,1])
-#world.addRobot(pos=[2,1])
+# world.addRobot(pos=[1,1])
+# world.addRobot(pos=[15,1])
+# world.addRobot(pos=[26,24])
+#
+# world.addTask(pos=[3,7])
+# world.addTask(pos=[14,16])
+# world.addTask(pos=[22,21])
 
-world.addTask(pos=[3,7])
-world.addTask(pos=[14,16])
+world.addRandomRobot(10)
+world.addRandomTask(10)
+
+for i in range(len(world.robots)):
+    world.robots[i].setTask(world.tasks[i])
 
 # Key binding for testing
 graphics.root_window.bind( "<Left>", leftKey )
@@ -35,19 +44,19 @@ graphics.root_window.bind( "<Right>", rightKey )
 graphics.root_window.bind( "<Up>", upKey )
 graphics.root_window.bind( "<Down>", downKey )
 
-world.robots[0].setPath([Actions.S,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S])
+#world.robots[0].setPath([Actions.S,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S])
 #world.robots[1].setPath([Actions.E,Actions.E,Actions.W,Actions.S,Actions.N,Actions.E,Actions.S])
 
-world.robots[0].setTask(world.tasks[0])
+# world.robots[0].setTask(world.tasks[0])
+# world.robots[1].setTask(world.tasks[1])
+# world.robots[2].setTask(world.tasks[2])
 
-print '2'
-
-pf = AStarSearch(world.robots[0])
-path, dirPath = pf.performSearch()
-
-world.robots[0].setPath(dirPath)
-
-graphics.drawPath(path)
+for robot in world.robots:
+    if robot.task != []:
+        robot.updatePathFiner()
+        path, dirPath = robot.pathfinder.performAStarSearch()
+        robot.setPath(dirPath)
+        graphics.drawPath(path)
 
 # Main loop for window
 while True:

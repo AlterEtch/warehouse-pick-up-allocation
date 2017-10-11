@@ -1,5 +1,6 @@
 from time import sleep
 from actions import Actions
+from search import *
 
 class RobotAgent():
     def __init__(self, world, canvas, size, pos):
@@ -17,10 +18,16 @@ class RobotAgent():
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
             # Animate the movement of robot
-            for x in range(0,self.size/5):
-                self.canvas.move(self.id, direction[0]*5, direction[1]*5)
+            for x in range(0,self.size/10):
+                self.canvas.move(self.id, direction[0]*10, direction[1]*10)
                 self.canvas.update()
-        print self.pos
+        else:
+            if len(self.path):
+                print 'recalculating path'
+                self.updatePathFiner()
+                path, dirPath = self.pathfinder.performAStarSearch()
+                self.path = dirPath
+                self.world.graphics.drawPath(path)
 
     def getPossibleActions(self):
         return Actions.possibleActions(self.pos, self.world)
@@ -36,3 +43,6 @@ class RobotAgent():
         if len(self.path) != 0:
             self.move(self.path[0])
             self.path.pop(0)
+
+    def updatePathFiner(self):
+        self.pathfinder = PathFind(self)
