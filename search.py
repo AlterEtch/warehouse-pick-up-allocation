@@ -6,6 +6,7 @@ class Node():
         self.pos = pos
         self.g = 100000
         self.f = 100000
+        self.prev = self
 
     def setTravelCost(self, cost):
         self.g = cost
@@ -13,11 +14,17 @@ class Node():
     def setTotalCost(self, cost):
         self.f = cost
 
+    def setPreviousNode(self, node):
+        self.prev = node
+
     def getTravelCost(self):
         return self.g
 
     def getTotalCost(self):
         return self.f
+
+    def getPreviousNode(self):
+        return self.prev
 
 class AStarSearch():
     def __init__(self, robot):
@@ -51,7 +58,7 @@ class AStarSearch():
             closedSet.append(self.current)
 
             if self.current.pos == self.goal.pos:
-                return closedSet
+                return self.reconstructPath(self.current)
 
             successors = self.getSuccessors()
             for node in successors:
@@ -63,11 +70,25 @@ class AStarSearch():
                 if not self.checkNodeInSet(node, openSet):
                     openSet.append(node)
 
-                node.setTravelCost(self.current.getTravelCost() + self.calculateEuclideanDistance(self.current.pos, node.pos))
+                tentativeTravelCost = self.current.getTravelCost() + self.calculateEuclideanDistance(self.current.pos, node.pos)
+                if tentativeTravelCost >= node.getTravelCost():
+                    continue
+
+                node.setPreviousNode(self.current)
+                node.setTravelCost(tentativeTravelCost)
                 node.setTotalCost(node.getTravelCost() + self.getHeuristicCost(node))
 
-    def reconstructPath(self, nodeSet):
-        return nodeSet
+    def reconstructPath(self, current):
+        path = [current.pos]
+        dirPath = [self.robot.pos]
+        while current.getPreviousNode().pos != current.pos:
+            current = current.getPreviousNode()
+            path.insert(0, current.pos)
+            print path
+
+        for i in range(len(path)-1):
+            dirPath.append([path[i+1][0] - path[i][0],path[i+1][1] - path[i][1]])
+        return path, dirPath
 
     def checkNodeInSet(self, node, set):
         for setNode in set:

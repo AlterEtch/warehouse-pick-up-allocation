@@ -43,18 +43,17 @@ world.robots[0].setTask(world.tasks[0])
 print '2'
 
 pf = AStarSearch(world.robots[0])
-pathNode = pf.performSearch()
-path = []
-for p in pathNode:
-    path.append(p.pos)
-print path
+path, dirPath = pf.performSearch()
+
+world.robots[0].setPath(dirPath)
+
 graphics.drawPath(path)
 
 # Main loop for window
 while True:
     world.update()
-    #for robot in world.robots:
-    #    robot.followPath()
+    for robot in world.robots:
+        robot.followPath()
     graphics.root_window.after(500)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

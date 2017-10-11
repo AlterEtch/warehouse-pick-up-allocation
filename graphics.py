@@ -26,9 +26,7 @@ class MainGraphics():
         self.canvas.update()
 
     def drawPath(self, path):
-        path.pop(0)
-        path.pop(len(path)-1)
-        for pos in path:
+        for pos in path[1:len(path)-2]:
             self.fillCell(pos[0], pos[1], "blue", "rect")
 
     def drawGrids(self):
