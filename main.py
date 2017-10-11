@@ -22,15 +22,7 @@ def downKey(event):
 world = WorldState(width=880, height=680, gridSize=20)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
-#world.setCanvas(graphics.canvas)
 
-# world.addRobot(pos=[1,1])
-# world.addRobot(pos=[15,1])
-# world.addRobot(pos=[26,24])
-#
-# world.addTask(pos=[3,7])
-# world.addTask(pos=[14,16])
-# world.addTask(pos=[22,21])
 def setup():
     if len(sys.argv) == 2:
         world.addRandomRobot(int(sys.argv[1]))
