@@ -18,7 +18,7 @@ class Actions:
         if not world.isBlocked([x,y-1]):
             possible.append(Actions.N)
 
-        if world.oneWay:
+        if world.directional:
             for i in range(1, world.width/world.gridSize-1):
                 if world.layout[i][y-1] and Actions.W in possible:
                     possible.remove(Actions.W)

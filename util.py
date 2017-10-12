@@ -7,6 +7,12 @@ def generateRandomPosition(world):
         return generateRandomPosition(world)
     return pos
 
+def generateRandomStation(world):
+    pos = world.stations[randint(0, len(world.stations)-1)].pos
+    if world.isBlocked(pos):
+        return generateRandomStation(world)
+    return pos
+
 def calculateManhattanDistance(pos1, pos2):
     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 

@@ -21,7 +21,7 @@ args = parser.parse_args()
 getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout, stations = getLayout()
 
-world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, oneWay=args.d)
+world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
