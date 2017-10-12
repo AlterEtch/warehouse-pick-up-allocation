@@ -5,6 +5,7 @@ from actions import Actions
 from task import Task
 from search import *
 import sys
+import argparse
 
 # Keyboard events for testing
 def leftKey(event):
@@ -19,20 +20,20 @@ def upKey(event):
 def downKey(event):
     world.robots[0].move([0,1])
 
-world = WorldState(width=880, height=680, gridSize=20)
+parser = argparse.ArgumentParser(description="Test")
+parser.add_argument('-r', type=int)
+parser.add_argument('-t', type=int)
+parser.add_argument('-o', type=int)
+parser.add_argument('-s', type=int)
+args = parser.parse_args()
+
+world = WorldState(width=1040, height=800, gridSize=20, oneWay=args.o or False)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
 def setup():
-    if len(sys.argv) == 2:
-        world.addRandomRobot(int(sys.argv[1]))
-        world.addRandomTask(int(sys.argv[1]))
-    elif len(sys.argv) == 3:
-        world.addRandomRobot(int(sys.argv[1]))
-        world.addRandomTask(int(sys.argv[2]))
-    else:
-        world.addRandomRobot(6)
-        world.addRandomTask(6)
+    world.addRandomRobot(args.r or 5)
+    world.addRandomTask(args.t or args.r or 5)
 
     for i in range(len(world.robots)):
         if i < len(world.tasks):
@@ -46,8 +47,8 @@ def setup():
 
     for robot in world.robots:
         if robot.task != []:
+            robot.updatePathFiner()
             try:
-                robot.updatePathFiner()
                 path, dirPath = robot.pathfinder.performAStarSearch()
             except TypeError:
                 print 'restarting'
@@ -62,6 +63,6 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    graphics.root_window.after(50)
+    #graphics.root_window.after(50)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

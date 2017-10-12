@@ -6,16 +6,32 @@ class Actions:
     STOP = [0,0]
 
     @staticmethod
-    def possibleActions(pos, states):
-        x = pos[0]
-        y = pos[1]
+    def possibleActions(pos, world):
+        x,y = pos
         possible = [Actions.STOP]
-        if not states.isBlocked([x+1,y]):
+        if not world.isBlocked([x+1,y]):
             possible.append(Actions.E)
-        if not states.isBlocked([x-1,y]):
+        if not world.isBlocked([x-1,y]):
             possible.append(Actions.W)
-        if not states.isBlocked([x,y+1]):
+        if not world.isBlocked([x,y+1]):
             possible.append(Actions.S)
-        if not states.isBlocked([x,y-1]):
+        if not world.isBlocked([x,y-1]):
             possible.append(Actions.N)
+
+        if world.oneWay:
+            for i in range(1, world.width/world.gridSize-1):
+                if world.layout[i][y-1] and Actions.W in possible:
+                    possible.remove(Actions.W)
+                    break
+                elif world.layout[i][y+1] and Actions.E in possible:
+                    possible.remove(Actions.E)
+                    break
+            for j in range(1, world.height/world.gridSize-1):
+                if world.layout[x-1][j] and Actions.N in possible:
+                    possible.remove(Actions.N)
+                    break
+                elif world.layout[x+1][j] and Actions.S in possible:
+                    possible.remove(Actions.S)
+                    break
+
         return possible

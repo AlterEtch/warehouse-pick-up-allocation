@@ -4,36 +4,39 @@ from task import Task
 from util import *
 
 class WorldState():
-    def __init__(self, width, height, gridSize):
+    def __init__(self, width, height, gridSize, oneWay = False):
         self.gridSize = gridSize
         self.width = width
         self.height = height
-        self.layout = self.initWallLayout(width=self.width, height=self.height, gridSize=self.gridSize)
+        self.initWallLayout()
         self.robots = []
         self.tasks = []
         self.timer = 0
+        self.oneWay = oneWay
+        self.graphics = []
 
-    def initWallLayout(self, width, height, gridSize):
-        wallLayout = [[0 for row in range(0,height/gridSize)] for col in range(0,width/gridSize)]
-        for x in range(0, width/gridSize):
-            for y in range(0, height/gridSize):
-                if x == 0 or y == 0 or x == width/gridSize-1 or y == height/gridSize-1:
+    def initWallLayout(self):
+        wallLayout = [[0 for row in range(0,self.height/self.gridSize)] for col in range(0,self.width/self.gridSize)]
+        for x in range(0, self.width/self.gridSize):
+            for y in range(0, self.height/self.gridSize):
+                if x == 0 or y == 0 or x == self.width/self.gridSize-1 or y == self.height/self.gridSize-1:
                     wallLayout[x][y] = 1
 
-        for i in range(0, width/(2*gridSize)-1):
-            for j in range(1, height/gridSize):
+        for i in range(0, self.width/(2*self.gridSize)-1):
+            for j in range(1, self.height/self.gridSize):
                 if i % 2:
                     wallLayout[2*i+1][j] = 1
                     wallLayout[2*i+2][j] = 1
 
-        for m in range(1, width/gridSize-2):
-            for n in range(1, height/gridSize-1, 6):
+        for m in range(1, self.width/self.gridSize-2):
+            for n in range(1, self.height/self.gridSize-1, 7):
                 wallLayout[m][n] = 0
                 wallLayout[m+1][n] = 0
                 wallLayout[m][n+1] = 0
+                wallLayout[m][n+2] = 0
                 wallLayout[m+1][n+1] = 0
 
-        return wallLayout
+        self.layout = wallLayout
 
     def setGraphics(self, graphics):
         self.graphics = graphics
@@ -41,6 +44,12 @@ class WorldState():
 
     def setWallLayout(self, layout):
         self.layout = layout
+        if self.graphics != []:
+            self.graphics.delete("all")
+            self.graphics.drawWalls()
+            self.graphics.drawGrids()
+            self.graphics.canvas.pack()
+            self.graphics.canvas.update()
 
     def addRobot(self, pos):
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
@@ -89,8 +98,7 @@ class WorldState():
         return 0
 
     def isBlocked(self, pos):
-        x = pos[0]
-        y = pos[1]
+        x,y = pos
         if self.layout[x][y] == 1 or self.hasRobotAt(pos):
             return True
         return False
