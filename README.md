@@ -13,9 +13,9 @@ python main.py
 ```
 
 ####Command Line Arguments
-| Arguments | Default | Description                           |
-| ----------|:--------|:--------------------------------------|
-| -r        | 5       | Number of initial robots in the world |
-| -t        | None    | Number of initial tasks in the world  |
-| -d        | False   | Directional layout if True            |
-| -l        | 1       | Layout selection                      |
+| Arguments | Type     | Default | Description                           |
+| ----------|:---------|:--------|:--------------------------------------|
+| -r        | Int      | 5       | Number of initial robots in the world |
+| -t        | Int      | -r      | Number of initial tasks in the world  |
+| -d        | Bool     | False   | Directional layout if True            |
+| -l        | Int/Char | 1       | Layout selection                      |
