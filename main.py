@@ -22,7 +22,8 @@ def downKey(event):
     world.robots[0].move([0,1])
 
 LAYOUT_MAP = {'1' : getLayout1,
-              '2' : getLayout2}
+              '2' : getLayout2,
+              '3' : getLayout3}
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-r', type=int, default=5, help="number of robots")
@@ -31,9 +32,10 @@ parser.add_argument('-d', type=bool, default=False, help="directional layout")
 parser.add_argument('-l', default='1', help="layout selection")
 args = parser.parse_args()
 getLayout = LAYOUT_MAP[args.l]
+width, height, gridSize, layout = getLayout()
 
-world = WorldState(width=1040, height=800, gridSize=20, oneWay=args.d)
-world.setWallLayout(getLayout(world))
+world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, oneWay=args.d)
+#world.setWallLayout(getLayout(world))
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
