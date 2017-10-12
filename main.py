@@ -4,6 +4,7 @@ from world import WorldState
 from actions import Actions
 from task import Task
 from search import *
+from layout import *
 import sys
 import argparse
 
@@ -20,20 +21,25 @@ def upKey(event):
 def downKey(event):
     world.robots[0].move([0,1])
 
-parser = argparse.ArgumentParser(description="Test")
-parser.add_argument('-r', type=int)
-parser.add_argument('-t', type=int)
-parser.add_argument('-o', type=int)
-parser.add_argument('-s', type=int)
-args = parser.parse_args()
+LAYOUT_MAP = {'1' : getLayout1,
+              '2' : getLayout2}
 
-world = WorldState(width=1040, height=800, gridSize=20, oneWay=args.o or False)
+parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument('-r', type=int, default=5, help="number of robots")
+parser.add_argument('-t', type=int, help="number of tasks")
+parser.add_argument('-d', type=bool, default=False, help="directional layout")
+parser.add_argument('-l', default='1', help="layout selection")
+args = parser.parse_args()
+getLayout = LAYOUT_MAP[args.l]
+
+world = WorldState(width=1040, height=800, gridSize=20, oneWay=args.d)
+world.setWallLayout(getLayout(world))
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
 def setup():
-    world.addRandomRobot(args.r or 5)
-    world.addRandomTask(args.t or args.r or 5)
+    world.addRandomRobot(args.r)
+    world.addRandomTask(args.t or args.r)
 
     for i in range(len(world.robots)):
         if i < len(world.tasks):

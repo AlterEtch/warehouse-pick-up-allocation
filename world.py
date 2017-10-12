@@ -8,7 +8,7 @@ class WorldState():
         self.gridSize = gridSize
         self.width = width
         self.height = height
-        self.initWallLayout()
+        #self.initWallLayout()
         self.robots = []
         self.tasks = []
         self.timer = 0
