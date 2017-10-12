@@ -16,12 +16,12 @@ parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFo
 parser.add_argument('-r', type=int, default=5, help="number of robots")
 parser.add_argument('-t', type=int, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
-parser.add_argument('-l', default='1', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
+parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
 args = parser.parse_args()
 getLayout = LAYOUT_MAP[args.l]
-width, height, gridSize, layout = getLayout()
+width, height, gridSize, layout, stations = getLayout()
 
-world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, oneWay=args.d)
+world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, oneWay=args.d)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 

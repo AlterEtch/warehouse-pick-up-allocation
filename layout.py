@@ -1,3 +1,5 @@
+from station import *
+
 def getLayout1():
     width, height, gridSize = 1040, 800, 20
     wallLayout = [[0 for row in range(0,height/gridSize)] for col in range(0,width/gridSize)]
@@ -19,7 +21,9 @@ def getLayout1():
             wallLayout[m][n+1] = 0
             wallLayout[m+1][n+1] = 0
 
-    return width, height, gridSize, wallLayout
+    stations = (Station([1,1]), Station([10,1]))
+
+    return width, height, gridSize, wallLayout, stations
 
 def getLayout2():
     width, height, gridSize = 1060, 800, 20
@@ -45,7 +49,8 @@ def getLayout2():
             wallLayout[m][n+2] = 0
             wallLayout[m+1][n+1] = 0
 
-    return width, height, gridSize, wallLayout
+    stations = (Station([1,1]), Station([10,1]))
+    return width, height, gridSize, wallLayout, stations
 
 def getLayout3():
     width, height, gridSize = 1040, 800, 20
@@ -68,4 +73,6 @@ def getLayout3():
             wallLayout[m][n+1] = 0
             wallLayout[m+1][n+1] = 0
 
-    return width, height, gridSize, wallLayout
+    stations = (Station([1,1]), Station([10,1]))
+    
+    return width, height, gridSize, wallLayout, stations

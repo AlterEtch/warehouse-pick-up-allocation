@@ -27,11 +27,11 @@ class Actions:
                     possible.remove(Actions.E)
                     break
             for j in range(1, world.height/world.gridSize-1):
-                if world.layout[x-1][j] and Actions.N in possible:
-                    possible.remove(Actions.N)
-                    break
-                elif world.layout[x+1][j] and Actions.S in possible:
+                if world.layout[x-1][j] and Actions.S in possible:
                     possible.remove(Actions.S)
+                    break
+                elif world.layout[x+1][j] and Actions.N in possible:
+                    possible.remove(Actions.N)
                     break
 
         return possible

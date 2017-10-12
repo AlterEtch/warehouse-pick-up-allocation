@@ -4,11 +4,12 @@ from task import Task
 from util import *
 
 class WorldState():
-    def __init__(self, width, height, gridSize, layout, oneWay = False):
+    def __init__(self, width, height, gridSize, layout, stations, oneWay = False):
         self.gridSize = gridSize
         self.width = width
         self.height = height
         self.layout = layout
+        self.stations = stations
         self.robots = []
         self.tasks = []
         self.timer = 0

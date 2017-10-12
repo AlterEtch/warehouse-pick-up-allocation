@@ -1,3 +1,4 @@
+from math import *
 from random import randint
 
 def generateRandomPosition(world):
@@ -5,3 +6,9 @@ def generateRandomPosition(world):
     if world.isBlocked(pos):
         return generateRandomPosition(world)
     return pos
+
+def calculateManhattanDistance(pos1, pos2):
+    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+def calculateEuclideanDistance(pos1, pos2):
+    return sqrt((pos1[0]-pos2[0])**2 + (pos1[1]-pos2[1])**2)

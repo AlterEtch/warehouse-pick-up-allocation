@@ -22,7 +22,7 @@ class RobotAgent():
                 self.canvas.move(self.id, direction[0]*self.size/2, direction[1]*self.size/2)
                 self.canvas.update()
         else:
-            if len(self.path) and self.task != []:
+            if len(self.path):
                 print 'recalculating path'
                 self.updatePathFiner()
                 try:

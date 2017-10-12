@@ -1,4 +1,4 @@
-from math import *
+from util import *
 from actions import Actions
 
 class Node():
@@ -33,7 +33,6 @@ class PathFind():
         self.current = Node(self.robot.pos)
         self.goal = Node(self.robot.task.pos)
 
-
     def performAStarSearch(self):
         # The set of nodes already evaluated
         closedSet = []
@@ -62,7 +61,7 @@ class PathFind():
                 if not self.checkNodeInSet(node, openSet):
                     openSet.append(node)
 
-                tentativeTravelCost = self.current.getTravelCost() + self.calculateEuclideanDistance(self.current.pos, node.pos)
+                tentativeTravelCost = self.current.getTravelCost() + calculateEuclideanDistance(self.current.pos, node.pos)
                 if tentativeTravelCost >= node.getTravelCost():
                     continue
 
@@ -106,10 +105,4 @@ class PathFind():
         return minNode
 
     def getHeuristicCost(self, node):
-        return self.calculateManhattanDistance(node.pos, self.goal.pos)
-
-    def calculateManhattanDistance(self, pos1, pos2):
-        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
-
-    def calculateEuclideanDistance(self, pos1, pos2):
-        return sqrt((pos1[0]-pos2[0])**2 + (pos1[1]-pos2[1])**2)
+        return calculateManhattanDistance(node.pos, self.goal.pos)
