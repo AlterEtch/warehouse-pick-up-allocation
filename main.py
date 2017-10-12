@@ -51,6 +51,7 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
+        print robot.station.pos
     #graphics.root_window.after(50)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

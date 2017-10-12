@@ -30,6 +30,7 @@ class WorldState():
             self.graphics.canvas.update()
 
     def addRobot(self, pos):
+        station = pos
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
 
@@ -103,8 +104,14 @@ class WorldState():
             else:
                 task.timer += 1
                 if task.timer >= 10:
-                    if self.findRobotWithTask(task) != 0:
-                        self.findRobotWithTask(task).task = []
+                    r = self.findRobotWithTask(task)
+                    if r != 0:
+                        print r.station.pos
+                        r.task = r.station
+                        r.updatePathFiner()
+                        path, dirPath = r.pathfinder.performAStarSearch()
+                        r.setPath(dirPath)
+                        self.graphics.drawPath(path)
                     self.canvas.delete(task.id)
                     self.tasks.remove(task)
 

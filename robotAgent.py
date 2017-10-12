@@ -1,6 +1,8 @@
 from time import sleep
 from actions import Actions
+from task import *
 from search import *
+import copy
 
 class RobotAgent():
     def __init__(self, world, canvas, size, pos):
@@ -11,6 +13,7 @@ class RobotAgent():
         self.id = self.canvas.create_oval(self.pos[0]*self.size, self.pos[1]*self.size, (self.pos[0]+1)*self.size, (self.pos[1]+1)*self.size, fill="green")
         self.task = []
         self.path = []
+        self.station = Task(canvas=self.canvas, gridSize=self.world.gridSize, pos=copy.deepcopy(self.pos), isStation=True)
 
     def move(self, direction):
         possibleActions = self.getPossibleActions()
@@ -30,7 +33,6 @@ class RobotAgent():
                 except TypeError:
                     self.path.insert(0,[0,0])
                 else:
-                    #path, dirPath = self.pathfinder.performAStarSearch()
                     self.path = dirPath
                     self.world.graphics.drawPath(path)
 

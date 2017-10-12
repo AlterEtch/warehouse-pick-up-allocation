@@ -21,8 +21,10 @@ def getLayout1():
             wallLayout[m][n+1] = 0
             wallLayout[m+1][n+1] = 0
 
-    stations = (Station([1,1]), Station([10,1]), Station([20,1]), Station([30,1]),
-                Station([51,1]), Station([51,10]))
+    stations = (Station([1,1]), Station([10,1]), Station([20,1]), Station([30,1]), Station([40,1]),
+                Station([50,1]), Station([50,10]), Station([50,20]), Station([50,30]), Station([50,38]),
+                Station([1,10]), Station([1,20]), Station([1,30]), Station([1,38]),
+                Station([1,38]), Station([10,38]), Station([20,38]), Station([30,38]), Station([40,38]))
 
     return width, height, gridSize, wallLayout, stations
 
@@ -51,7 +53,9 @@ def getLayout2():
             wallLayout[m+1][n+1] = 0
 
     stations = (Station([1,1]), Station([10,1]), Station([20,1]), Station([30,1]), Station([40,1]),
-                Station([51,1]), Station([51,10]))
+                Station([51,1]), Station([51,10]), Station([51,20]), Station([51,30]), Station([51,38]),
+                Station([1,10]), Station([1,20]), Station([1,30]), Station([1,38]),
+                Station([1,38]), Station([10,38]), Station([20,38]), Station([30,38]), Station([40,38]))
 
     return width, height, gridSize, wallLayout, stations
 
