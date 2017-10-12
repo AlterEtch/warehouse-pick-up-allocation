@@ -8,19 +8,6 @@ from layout import *
 import sys
 import argparse
 
-# Keyboard events for testing
-def leftKey(event):
-    world.robots[0].move([-1,0])
-
-def rightKey(event):
-    world.robots[0].move([1,0])
-
-def upKey(event):
-    world.robots[0].move([0,-1])
-
-def downKey(event):
-    world.robots[0].move([0,1])
-
 LAYOUT_MAP = {'1' : getLayout1,
               '2' : getLayout2,
               '3' : getLayout3}
@@ -35,7 +22,6 @@ getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout = getLayout()
 
 world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, oneWay=args.d)
-#world.setWallLayout(getLayout(world))
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
@@ -46,12 +32,6 @@ def setup():
     for i in range(len(world.robots)):
         if i < len(world.tasks):
             world.robots[i].setTask(world.tasks[i])
-
-    # Key binding for testing
-    graphics.root_window.bind( "<Left>", leftKey )
-    graphics.root_window.bind( "<Right>", rightKey )
-    graphics.root_window.bind( "<Up>", upKey )
-    graphics.root_window.bind( "<Down>", downKey )
 
     for robot in world.robots:
         if robot.task != []:
