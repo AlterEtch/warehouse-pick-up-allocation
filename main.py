@@ -3,10 +3,12 @@ from robotAgent import RobotAgent
 from world import WorldState
 from actions import Actions
 from task import Task
+from search import *
+from layout import *
 from routing import *
-
 import graph
 import sys
+import argparse
 
 
 # Keyboard events for testing
@@ -28,23 +30,13 @@ def downKey(event):
 
 world = WorldState(width=880, height=680, gridSize=20)
 graphics = MainGraphics(world=world)
-world.setCanvas(graphics.canvas)
+world.setGraphics(graphics)
 
 # Key binding for testing
 graphics.root_window.bind("<Left>", leftKey)
 graphics.root_window.bind("<Right>", rightKey)
 graphics.root_window.bind("<Up>", upKey)
 graphics.root_window.bind("<Down>", downKey)
-
-'''
-world.addRobot(pos=[1,1],label='0')
-world.addRobot(pos=[2,1],label='1')
-world.addTask(pos=[10,10])
-world.robots[0].setPath([Actions.S,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.E,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S,Actions.S])
-world.robots[1].setPath([Actions.E,Actions.E,Actions.W,Actions.S,Actions.N,Actions.E,Actions.S])
-
-world.robots[0].setTask(world.tasks[0])
-'''
 
 world.addRobot(pos=[1, 1], label='0')
 world.addRobot(pos=[2, 1], label='1')

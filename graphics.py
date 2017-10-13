@@ -22,8 +22,17 @@ class MainGraphics():
 
         self.drawWalls()
         self.drawGrids()
+        self.drawStations()
         self.canvas.pack()
         self.canvas.update()
+
+    def drawPath(self, path):
+        for i in range(0,len(path)-1):
+            x1 = path[i][0] * self.gridSize + 0.5 * self.gridSize
+            y1 = path[i][1] * self.gridSize + 0.5 * self.gridSize
+            x2 = path[i+1][0] * self.gridSize + 0.5 * self.gridSize
+            y2 = path[i+1][1] * self.gridSize + 0.5 * self.gridSize
+            self.canvas.create_line([x1,y1],[x2,y2], fill="yellow")
 
     def drawGrids(self):
         for x in range(0, self.width, self.gridSize):
@@ -31,14 +40,20 @@ class MainGraphics():
         for y in range(0, self.height, self.gridSize):
             self.canvas.create_line([0,y],[self.width,y], fill="red")
 
-    def fillCell(self, x, y, color, shape):
-        self.canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
+    def drawStations(self):
+        for s in self.world.stations:
+            self.fillCell(s.pos, "blue", "rect")
+
+    def fillCell(self, pos, color, shape, percent=100):
+        x,y = pos
+        if shape == "rect":
+            self.canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
 
     def drawWalls(self):
         for x in range(0, self.width/self.gridSize):
             for y in range(0, self.height/self.gridSize):
                 if self.layout[x][y]:
-                    self.fillCell(x,y, "red", "rect")
+                    self.fillCell([x,y], "red", "rect")
 
     def initStatusBar(self):
         self.canvas.create_text(self.width + 10, 50, anchor=Tkinter.W, fill="white", text="Current Time: ")

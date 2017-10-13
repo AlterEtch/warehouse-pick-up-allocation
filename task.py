@@ -1,10 +1,12 @@
 class Task():
-    def __init__(self, canvas, gridSize, pos, cost=10):
+    def __init__(self, canvas, gridSize, pos, cost=10, isStation=False):
         self.pos = pos
         self.canvas = canvas
         self.size = gridSize * 0.5
         self.cost = cost
-        self.id = self.canvas.create_oval(self.pos[0]*gridSize + 0.5*(gridSize-self.size), self.pos[1]*(gridSize) + 0.5*(gridSize-self.size), (self.pos[0]+1)*gridSize - 0.5*(gridSize-self.size), (self.pos[1]+1)*gridSize - 0.5*(gridSize-self.size), fill="white")
+        self.isStation = isStation
+        if not self.isStation:
+            self.id = self.canvas.create_oval(self.pos[0]*gridSize + 0.5*(gridSize-self.size), self.pos[1]*(gridSize) + 0.5*(gridSize-self.size), (self.pos[0]+1)*gridSize - 0.5*(gridSize-self.size), (self.pos[1]+1)*gridSize - 0.5*(gridSize-self.size), fill="white")
         self.progress = 0
         self.timer = 0
         self.assigned = False
