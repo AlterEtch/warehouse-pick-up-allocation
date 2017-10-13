@@ -5,14 +5,12 @@ from search import *
 import copy
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos,label):
+    def __init__(self, world, canvas, size, pos):
         self.pos = pos
         self.world = world
         self.canvas = canvas
         self.size = size
-        self.lable = label
         self.id = self.canvas.create_oval(self.pos[0]*self.size, self.pos[1]*self.size, (self.pos[0]+1)*self.size, (self.pos[1]+1)*self.size, fill="green")
-        self.id2 = self.canvas.create_text((self.pos[0]+0.5)*self.size, (self.pos[1]+0.5)*self.size, fill="black", text=label)
         self.task = []
         self.path = []
         self.station = Task(canvas=self.canvas, gridSize=self.world.gridSize, pos=copy.deepcopy(self.pos), isStation=True)
