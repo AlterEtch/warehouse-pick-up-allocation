@@ -17,6 +17,8 @@ class RobotAgent():
 
     def move(self, direction):
         possibleActions = self.getPossibleActions()
+        if possibleActions == [Actions.STOP] and len(self.path):
+            possibleActions = self.getPossibleActions(override=True)
         if direction in possibleActions:
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
@@ -29,15 +31,15 @@ class RobotAgent():
                 print 'recalculating path'
                 self.updatePathFiner()
                 try:
-                    path, dirPath = self.pathfinder.performAStarSearch()
+                    path, dirPath = self.pathfinder.performAStarSearch(override=True)
                 except TypeError:
                     self.path.insert(0,[0,0])
                 else:
                     self.path = dirPath
                     self.world.graphics.drawPath(path)
 
-    def getPossibleActions(self):
-        return Actions.possibleActions(self.pos, self.world)
+    def getPossibleActions(self, override=False):
+        return Actions.possibleActions(self.pos, self.world, override)
 
     def setTask(self, task):
         self.task = task
@@ -53,3 +55,19 @@ class RobotAgent():
 
     def updatePathFiner(self):
         self.pathfinder = PathFind(self)
+
+    def returnToStation(self):
+        self.task = self.station
+        self.updatePathFiner()
+        try:
+            path, dirPath = self.pathfinder.performAStarSearch()
+            self.setPath(dirPath)
+            self.world.graphics.drawPath(path)
+        except TypeError:
+            print 'error1'
+            # try:
+            #     path, dirPath = self.pathfinder.performAStarSearch(override)
+            #     self.setPath(dirPath)
+            #     self.world.graphics.drawPath(path)
+            # except TypeError:
+            #     print 'error2'

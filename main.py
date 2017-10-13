@@ -41,17 +41,22 @@ def setup():
             except TypeError:
                 print 'restarting'
                 setup()
+                # path, dirPath = robot.pathfinder.performAStarSearch(override=True)
+                # robot.setPath(dirPath)
+                # graphics.drawPath(path)
             else:
                 robot.setPath(dirPath)
                 graphics.drawPath(path)
 
 setup()
+
+for s in world.stations:
+    print world.isBlocked(s.pos)
 # Main loop for window
 while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-        print robot.station.pos
     #graphics.root_window.after(50)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

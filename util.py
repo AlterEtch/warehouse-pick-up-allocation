@@ -8,7 +8,11 @@ def generateRandomPosition(world):
     return pos
 
 def generateRandomStation(world):
-    pos = world.stations[randint(0, len(world.stations)-1)].pos
+    stationSet = []
+    for s in world.stations:
+        if not world.isBlocked(s.pos):
+            stationSet.append(s)
+    pos = stationSet[randint(0, len(stationSet)-1)].pos
     if world.isBlocked(pos):
         return generateRandomStation(world)
     return pos

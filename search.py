@@ -33,7 +33,7 @@ class PathFind():
         self.current = Node(self.robot.pos)
         self.goal = Node(self.robot.task.pos)
 
-    def performAStarSearch(self):
+    def performAStarSearch(self, override=False):
         # The set of nodes already evaluated
         closedSet = []
 
@@ -52,7 +52,7 @@ class PathFind():
             if self.current.pos == self.goal.pos:
                 return self.reconstructPath(self.current)
 
-            successors = self.getSuccessors()
+            successors = self.getSuccessors(override)
 
             for node in successors:
                 if self.checkNodeInSet(node, closedSet):
@@ -86,9 +86,11 @@ class PathFind():
                 return True
         return False
 
-    def getSuccessors(self):
+    def getSuccessors(self, override=False):
         possible = []
         possible = Actions.possibleActions(self.current.pos, self.robot.world)
+        if possible == [Actions.STOP]:
+            possible = Actions.possibleActions(self.current.pos, self.robot.world, override)
         successor = []
         for direction in possible:
             x = self.current.pos[0] + direction[0]

@@ -106,12 +106,7 @@ class WorldState():
                 if task.timer >= 10:
                     r = self.findRobotWithTask(task)
                     if r != 0:
-                        print r.station.pos
-                        r.task = r.station
-                        r.updatePathFiner()
-                        path, dirPath = r.pathfinder.performAStarSearch()
-                        r.setPath(dirPath)
-                        self.graphics.drawPath(path)
+                        r.returnToStation()
                     self.canvas.delete(task.id)
                     self.tasks.remove(task)
 
