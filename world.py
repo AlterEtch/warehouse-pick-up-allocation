@@ -40,8 +40,8 @@ class WorldState():
     def setWallLayout(self, layout):
         self.layout = layout
 
-    def addRobot(self, pos):
-        robot = RobotAgent(self, canvas=self.canvas, size=self.gridSize, pos=pos)
+    def addRobot(self, pos, label):
+        robot = RobotAgent(self, canvas=self.canvas, size=self.gridSize, pos=pos,label=label)
         self.robots.append(robot)
 
     def addTask(self, pos):
@@ -85,6 +85,12 @@ class WorldState():
             return True
         return False
 
+    def neighbors(self,pos):
+        (x,y)=pos
+        result=[(x+1,y),(x-1,y),(x,y-1),(x,y+1)]
+        result = filter(lambda r: not self.isBlocked(r),result)
+        return result
+
     def timerClick(self):
         self.timer += 1
         self.canvas.itemconfig(self.timerLabel, text=str(self.timer))
@@ -112,3 +118,6 @@ class WorldState():
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
+
+    def cost(self,fromPos1,toPos2):
+        return 1
