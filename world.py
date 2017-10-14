@@ -85,6 +85,18 @@ class WorldState():
             return True
         return False
 
+    def isBlockedAtRow(self, row):
+        for x in range(2, self.width/self.gridSize - 2):
+            if self.isBlocked([x,row]):
+                return True
+        return False
+
+    def isBlockedAtColumn(self, col):
+        for y in range(2, self.height/self.gridSize - 2):
+            if self.isBlocked([col,y]):
+                return True
+        return False
+
     def timerClick(self):
         self.timer += 1
         self.canvas.itemconfig(self.timerLabel, text=str(self.timer))
