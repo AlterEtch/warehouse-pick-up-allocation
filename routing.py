@@ -1,3 +1,7 @@
+"""
+this file include A* algorithm and Clarke and Wright savings algorithm
+"""
+
 import heapq
 import graph
 
@@ -5,6 +9,9 @@ from actions import Actions
 
 
 class PriorityQueue:
+    """
+    Priority queue used for A* algorithm
+    """
     def __init__(self):
         self.element = []
 
@@ -19,12 +26,26 @@ class PriorityQueue:
 
 
 def heuristic(pos1, pos2):
+    """
+
+    :param pos1:
+    :param pos2:
+    :return: heuristic distance between pos1 and pos2
+    """
     (x1, y1) = pos1
     (x2, y2) = pos2
     return abs(x1 - x2) + abs(y1 - y2)
 
 
 def a_star_planning(world, start, goal):
+    """
+    calculate distance cost of each point and show from which parent point the current point comes from
+
+    :param world:
+    :param start:
+    :param goal:
+    :return: (dict) (came_from, cost_so_far)
+    """
     start = tuple(start)
     goal = tuple(goal)
     frontier = PriorityQueue()
@@ -41,7 +62,7 @@ def a_star_planning(world, start, goal):
             break
 
         for next_pos in world.neighbors(current):
-            new_cost = cost_so_far[current] + world.cost(current, next_pos)
+            new_cost = cost_so_far[current] + 1
             if next_pos not in cost_so_far or new_cost < cost_so_far[next_pos]:
                 cost_so_far[next_pos] = new_cost
                 priority = new_cost + heuristic(goal, next_pos)
@@ -51,6 +72,14 @@ def a_star_planning(world, start, goal):
 
 
 def path_generate(world, start, goal):
+    """
+    generate a list indicate direction including:E,W,N,S
+
+    :param world:
+    :param start:
+    :param goal:
+    :return: (list) path
+    """
     start = tuple(start)
     goal = tuple(goal)
     came_from = a_star_planning(world, start, goal)[0]
@@ -72,6 +101,14 @@ def path_generate(world, start, goal):
 
 
 def saving_dist_table(world, start):
+    """
+    calculate distance cost saving between each two task positions
+    and sort the saving decreasingly
+
+    :param world:
+    :param start:
+    :return: (list)saving_table
+    """
     task_pos_list = []
     for item in world.tasks:
         task_pos_list.append(item.pos)
@@ -91,6 +128,14 @@ def saving_dist_table(world, start):
 
 
 def sort_task(saving_table, task_num, capacity=4, quality=1): #capacity should be larger than 1
+    """
+
+    :param saving_table:
+    :param task_num:
+    :param capacity:
+    :param quality:
+    :return:
+    """
     count = 0
     task_list = range(1, task_num + 1)
     tmp_task_list = []

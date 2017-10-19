@@ -2,6 +2,7 @@ from graphics import MainGraphics
 from robotAgent import RobotAgent
 from task import Task
 from util import *
+from routing import *
 
 class WorldState():
     def __init__(self, width, height, gridSize, layout, stations, directional = False):
@@ -120,5 +121,14 @@ class WorldState():
         self.timerClick()
         self.checkTasksStatus()
 
-    def cost(self,fromPos1,toPos2):
-        return 1
+    def aloc_rob(self):
+        """"""
+        table = saving_dist_table(self, [1, 1])
+        print table
+        task_amount=len(self.tasks)
+        rob_amount=len(self.robots)
+        aloc_task = sort_task(table, task_amount)
+        print aloc_task
+        for i in range(len(aloc_task)):
+            task=aloc_task[i]
+            self.robots[i%rob_amount].allocation(task)
