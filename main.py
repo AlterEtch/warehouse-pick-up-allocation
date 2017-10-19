@@ -38,12 +38,29 @@ table = saving_dist_table(world, [1, 1])
 SortTask = sort_task(table, len(TaskPosList))
 print SortTask
 
+Task1=SortTask[0]
+Path=[]
+TaskPosList.insert(0,[1,1])
+TaskPosList.append([1,1])
+for i in range(len(Task1)-1):
+    Path+=path_generate(world,TaskPosList[Task1[i]],TaskPosList[Task1[i+1]])
+world.robots[0].setPath(Path)
+'''
+Task2=SortTask[1]
+Path=[]
+TaskPosList.insert(0,[2,1])
+TaskPosList.append([2,1])
+for i in range(len(Task2)-1):
+    Path+=path_generate(world,TaskPosList[Task2[i]],TaskPosList[Task2[i+1]])
+world.robots[1].setPath(Path)
+'''
+
 
 # Main loop for window
 while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    graphics.root_window.after(500)
+    graphics.root_window.after(50)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
