@@ -138,29 +138,20 @@ def sort_task(saving_table, task_num, capacity=4, quality=1): #capacity should b
     """
     count = 0
     task_list = range(1, task_num + 1)
-    tmp_task_list = []
     g = graph.Graph(len(task_list))
     for item in saving_table:
+        (task1,task2)=item[0]
         if len(task_list) == 0:
             break
         else:
-            if count + quality <= capacity:
-                if g.set_edge(item[0]):
+            if g.load(task1)+g.load(task2) <= capacity:
+                if g.set_edge(task1,task2):
                     try:
-                        task_list.remove((item[0])[0])
-                        tmp_task_list.append((item[0])[0])
-                        count += quality
+                        task_list.remove(task1)
                     except ValueError:
                         pass
                     try:
-                        task_list.remove((item[0])[1])
-                        tmp_task_list.append((item[0])[1])
-                        count += quality
+                        task_list.remove(task2)
                     except ValueError:
                         pass
-            else:
-                count = 0
-                for i in tmp_task_list:
-                    g.one_path_complete(i)
-                tmp_task_list = []
     return g.gen_link()

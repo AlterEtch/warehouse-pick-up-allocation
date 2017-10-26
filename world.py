@@ -122,7 +122,14 @@ class WorldState():
         self.checkTasksStatus()
 
     def aloc_rob(self):
-        """"""
+        """
+        In this function,
+        calculate the distance saving by saving_dist_table(),
+        divide tasks into several segment by sort_task()
+        send robots to do tasks by robots.allocation()
+
+        :return: None
+        """
         table = saving_dist_table(self, [1, 1])
         print table
         task_amount=len(self.tasks)

@@ -68,7 +68,16 @@ class RobotAgent():
             #     print 'error2'
 
     def allocation(self, index, destination=None):
-        """"""
+        """
+        Generate path sequence by gen_rob_path(),
+        then move robot to location by setPath().
+        If destination is not set,
+        robot returns to starting point.
+
+        :param index: a sequence whose elements representing tasks in the world
+        :param destination: the point that the robot will go to after finish tasks
+        :return: None
+        """
         if destination is None:
             destination = self.pos
         for i in range(len(index)):
@@ -78,7 +87,14 @@ class RobotAgent():
         self.setPath(path)
 
     def gen_rob_path(self, destination):
-        """"""
+        """
+        According to the order of the task,
+        generate a path moving to each task in turn.
+
+
+        :param destination: the point that the robot will go to after finish tasks
+        :return: list (with element of E,W,N,S)
+        """
         tmp_task = []
         task_amount = len(self.task)
         for i in range(task_amount):
