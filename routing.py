@@ -12,6 +12,7 @@ class PriorityQueue:
     """
     Priority queue used for A* algorithm
     """
+
     def __init__(self):
         self.element = []
 
@@ -39,8 +40,7 @@ def heuristic(pos1, pos2):
 
 def a_star_planning(world, start, goal):
     """
-    calculate distance cost of each point and show from which parent point the current point comes from
-
+    Calculate distance cost of each point and show from which parent point the current point comes from
     :param world:
     :param start:
     :param goal:
@@ -68,13 +68,12 @@ def a_star_planning(world, start, goal):
                 priority = new_cost + heuristic(goal, next_pos)
                 frontier.put(next_pos, priority)
                 came_from[next_pos] = current
-    return came_from, cost_so_far
+    return came_from, cost_so_far[current]
 
 
 def path_generate(world, start, goal):
     """
-    generate a list indicate direction including:E,W,N,S
-
+    Generate a list indicate direction including:E,W,N,S
     :param world:
     :param start:
     :param goal:
@@ -102,9 +101,8 @@ def path_generate(world, start, goal):
 
 def saving_dist_table(world, start):
     """
-    calculate distance cost saving between each two task positions
+    Calculate distance cost saving between each two task positions
     and sort the saving decreasingly
-
     :param world:
     :param start:
     :return: (list)saving_table
@@ -113,39 +111,37 @@ def saving_dist_table(world, start):
     for item in world.tasks:
         task_pos_list.append(item.pos)
     task_pos_list.insert(0, start)
-    table = {}
+    distance_table = {}
     for i in range(len(task_pos_list)):
         for j in range(i + 1, len(task_pos_list)):
-            tmp_table = a_star_planning(world, task_pos_list[i], task_pos_list[j])[1]
-            table[(i, j)] = tmp_table[tuple(task_pos_list[j])]
+            cost = a_star_planning(world, task_pos_list[i], task_pos_list[j])[1]
+            distance_table[(i, j)] = cost
     saving_table = {}
-    for (task1, task2) in table:
+    for (task1, task2) in distance_table:
         if task1 != 0:
-            saving_table[(task1, task2)] = table[(0, task1)] + table[(0, task2)] - table[(task1, task2)]
+            saving_table[(task1, task2)] = distance_table[(0, task1)] + distance_table[(0, task2)] - distance_table[(task1, task2)]
     saving_table = sorted(saving_table.items(), key=lambda x: x[1], reverse=True)
     # convert to list with decreasing order as[((task1,task2),cost),...]
     return saving_table
 
 
-def sort_task(saving_table, task_num, capacity=4, quality=1): #capacity should be larger than 1
+def sort_task(saving_table, task_num, capacity=4):
     """
 
     :param saving_table:
     :param task_num:
     :param capacity:
-    :param quality:
-    :return:
+    :return:(list)[[task11,task12,...],[task21,task22,...],...]
     """
-    count = 0
     task_list = range(1, task_num + 1)
     g = graph.Graph(len(task_list))
     for item in saving_table:
-        (task1,task2)=item[0]
+        (task1, task2) = item[0]
         if len(task_list) == 0:
             break
         else:
-            if g.load(task1)+g.load(task2) <= capacity:
-                if g.set_edge(task1,task2):
+            if g.load(task1) + g.load(task2) <= capacity:
+                if g.set_edge(task1, task2):
                     try:
                         task_list.remove(task1)
                     except ValueError:

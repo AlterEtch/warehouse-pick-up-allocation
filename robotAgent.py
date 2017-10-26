@@ -31,7 +31,16 @@ class RobotAgent():
                 self.canvas.move(self.id, direction[0] * self.size / 2, direction[1] * self.size / 2)
                 self.canvas.update()
         else:
-            self.path.insert(0, [0, 0])
+            if len(self.path):
+                print 'recalculating path'
+                self.updatePathFiner()
+                try:
+                    path, dirPath = self.pathfinder.performAStarSearch(override=True)
+                except TypeError:
+                    self.path.insert(0,[0,0])
+                else:
+                    self.path = dirPath
+                    self.world.graphics.drawPath(path)
 
     def getPossibleActions(self, override=False):
         return Actions.possibleActions(self.pos, self.world, override)
@@ -70,10 +79,9 @@ class RobotAgent():
     def allocation(self, index, destination=None):
         """
         Generate path sequence by gen_rob_path(),
-        then move robot to location by setPath().
+        Move robot to location by setPath().
         If destination is not set,
         robot returns to starting point.
-
         :param index: a sequence whose elements representing tasks in the world
         :param destination: the point that the robot will go to after finish tasks
         :return: None
@@ -88,10 +96,7 @@ class RobotAgent():
 
     def gen_rob_path(self, destination):
         """
-        According to the order of the task,
-        generate a path moving to each task in turn.
-
-
+        Generate a path moving to each task in turn, according to the order of the task,
         :param destination: the point that the robot will go to after finish tasks
         :return: list (with element of E,W,N,S)
         """
@@ -100,6 +105,7 @@ class RobotAgent():
         for i in range(task_amount):
             position = self.task[i].pos
             tmp_task.append(position)
+        self.task=[]
         tmp_task.append(destination)
         tmp_task.insert(0, self.pos)
         path = []

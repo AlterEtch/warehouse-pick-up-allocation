@@ -4,8 +4,9 @@ from task import Task
 from util import *
 from routing import *
 
+
 class WorldState():
-    def __init__(self, width, height, gridSize, layout, stations, directional = False):
+    def __init__(self, width, height, gridSize, layout, stations, directional=False):
         self.gridSize = gridSize
         self.width = width
         self.height = height
@@ -81,15 +82,15 @@ class WorldState():
         return 0
 
     def isBlocked(self, pos):
-        x,y = pos
-        if self.layout[x][y] == 1 or self.hasRobotAt(pos):
+        x, y = pos
+        if self.layout[x][y] == 1:
             return True
         return False
 
-    def neighbors(self,pos):
-        (x,y)=pos
-        result=[(x+1,y),(x-1,y),(x,y-1),(x,y+1)]
-        result = filter(lambda r: not self.isBlocked(r),result)
+    def neighbors(self, pos):
+        (x, y) = pos
+        result = [(x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1)]
+        result = filter(lambda r: not self.isBlocked(r), result)
         return result
 
     def timerClick(self):
@@ -123,19 +124,19 @@ class WorldState():
 
     def aloc_rob(self):
         """
-        In this function,
-        calculate the distance saving by saving_dist_table(),
-        divide tasks into several segment by sort_task()
-        send robots to do tasks by robots.allocation()
-
+        Calculate the distance saving by saving_dist_table()
+        Divide tasks into several segments by sort_task()
+        Send robots to do tasks by robots.allocation()
         :return: None
         """
         table = saving_dist_table(self, [1, 1])
         print table
-        task_amount=len(self.tasks)
-        rob_amount=len(self.robots)
+        task_amount = len(self.tasks)
+        rob_amount = len(self.robots)
         aloc_task = sort_task(table, task_amount)
         print aloc_task
         for i in range(len(aloc_task)):
-            task=aloc_task[i]
-            self.robots[i%rob_amount].allocation(task)
+            task = aloc_task[i]
+            rob = min(self.robots, key=lambda x: len(x.path))
+            num = self.robots.index(rob)
+            self.robots[num].allocation(task)
