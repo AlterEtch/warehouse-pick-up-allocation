@@ -132,7 +132,6 @@ class WorldState():
         table = saving_dist_table(self, [1, 1])
         print table
         task_amount = len(self.tasks)
-        rob_amount = len(self.robots)
         aloc_task = sort_task(table, task_amount)
         print aloc_task
         for i in range(len(aloc_task)):

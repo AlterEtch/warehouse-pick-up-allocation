@@ -58,7 +58,7 @@ world.addRobot(pos=[3, 1])
 #for pos in TaskPosList:
 #    world.addTask(pos=pos)
 
-world.addRandomTask(15)
+world.addRandomTask(20)
 
 world.aloc_rob()
 # test end

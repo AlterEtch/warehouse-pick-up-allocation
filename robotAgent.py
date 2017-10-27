@@ -78,37 +78,21 @@ class RobotAgent():
 
     def allocation(self, index, destination=None):
         """
-        Generate path sequence by gen_rob_path(),
+        Generate path sequence
         Move robot to location by setPath().
-        If destination is not set,
-        robot returns to starting point.
         :param index: a sequence whose elements representing tasks in the world
-        :param destination: the point that the robot will go to after finish tasks
+        :param destination:  If destination is not set, robot returns to starting point after finishing
         :return: None
         """
         if destination is None:
             destination = self.pos
+        path=[]
+        pre_loc=self.pos
         for i in range(len(index)):
             task=self.world.tasks[index[i] - 1]
             self.setTask(task)
-        path = self.gen_rob_path(destination)
+            path+=routing.path_generate(self.world,pre_loc,task.pos)
+            pre_loc=task.pos
+        path+=routing.path_generate(self.world,pre_loc,destination)
         self.setPath(path)
 
-    def gen_rob_path(self, destination):
-        """
-        Generate a path moving to each task in turn, according to the order of the task,
-        :param destination: the point that the robot will go to after finish tasks
-        :return: list (with element of E,W,N,S)
-        """
-        tmp_task = []
-        task_amount = len(self.task)
-        for i in range(task_amount):
-            position = self.task[i].pos
-            tmp_task.append(position)
-        self.task=[]
-        tmp_task.append(destination)
-        tmp_task.insert(0, self.pos)
-        path = []
-        for i in range(task_amount + 1):
-            path += routing.path_generate(self.world, tmp_task[i], tmp_task[i + 1])
-        return path
