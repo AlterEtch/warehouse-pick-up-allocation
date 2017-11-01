@@ -20,8 +20,13 @@ parser.add_argument('-t', type=int, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
 parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
 args = parser.parse_args()
+
 getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout, stations = getLayout()
+
+if args.r > len(stations):
+    print 'Number of robots exceeds maxmimum limit'
+    sys.exit()
 
 world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d)
 graphics = MainGraphics(world=world)
