@@ -7,7 +7,7 @@ import routing
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos):
+    def __init__(self, world, canvas, size, pos,capacity=4):
         self.pos = pos
         self.world = world
         self.canvas = canvas
@@ -18,6 +18,8 @@ class RobotAgent():
         self.path = []
         self.station = Task(canvas=self.canvas, gridSize=self.world.gridSize, pos=copy.deepcopy(self.pos),
                             isStation=True)
+        self.capacity=capacity
+        self.capacityCount=0
 
     def move(self, direction):
         possibleActions = self.getPossibleActions()
@@ -75,24 +77,4 @@ class RobotAgent():
             #     self.world.graphics.drawPath(path)
             # except TypeError:
             #     print 'error2'
-
-    def allocation(self, index, destination=None):
-        """
-        Generate path sequence
-        Move robot to location by setPath().
-        :param index: a sequence whose elements representing tasks in the world
-        :param destination:  If destination is not set, robot returns to starting point after finishing
-        :return: None
-        """
-        if destination is None:
-            destination = self.pos
-        path=[]
-        pre_loc=self.pos
-        for i in range(len(index)):
-            task=self.world.tasks[index[i] - 1]
-            self.setTask(task)
-            path+=routing.path_generate(self.world,pre_loc,task.pos)
-            pre_loc=task.pos
-        path+=routing.path_generate(self.world,pre_loc,destination)
-        self.setPath(path)
 

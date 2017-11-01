@@ -2,8 +2,8 @@ from math import *
 from random import randint
 
 def generateRandomPosition(world):
-    pos = [randint(1, world.width/world.gridSize-2),randint(1, world.height/world.gridSize-2)]
-    if world.isBlocked(pos) or world.hasStationAt(pos):
+    pos = [randint(2, world.width/world.gridSize-3),randint(3, world.height/world.gridSize-4)]
+    if world.isBlocked(pos) or world.hasStationAt(pos) or len(world.neighbors(pos))==4:
         return generateRandomPosition(world)
     return pos
 

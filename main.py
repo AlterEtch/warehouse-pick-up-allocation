@@ -56,8 +56,8 @@ graphics.root_window.bind("<Up>", upKey)
 graphics.root_window.bind("<Down>", downKey)
 
 world.addRobot(pos=[1, 1])
-world.addRobot(pos=[2, 1])
-world.addRobot(pos=[3, 1])
+world.addRobot(pos=[1, 1])
+world.addRobot(pos=[1, 1])
 
 #TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
 #for pos in TaskPosList:
@@ -69,7 +69,7 @@ world.aloc_rob()
 # test end
 
 
-# Main loop for window
+#Main loop for window
 while True:
     world.update()
     for robot in world.robots:

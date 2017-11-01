@@ -4,6 +4,8 @@ from task import Task
 from util import *
 from routing import *
 
+import routing
+
 
 class WorldState():
     def __init__(self, width, height, gridSize, layout, stations, directional=False):
@@ -77,7 +79,7 @@ class WorldState():
 
     def findRobotWithTask(self, task):
         for robot in self.robots:
-            if robot.task == task:
+            if task in robot.task:
                 return robot
         return 0
 
@@ -115,39 +117,61 @@ class WorldState():
             if task.progress < task.cost:
                 if not self.hasRobotAt(task.pos):
                     task.resetProgress()
-                elif self.findRobotAt(task.pos).task != task:
+                elif task not in self.findRobotAt(task.pos).task:
                     task.resetProgress()
                 for robot in self.robots:
-                    if robot.task == task:
+
+                    if task in robot.task:
                         if task.pos == robot.pos and len(robot.path) == 0:
                             task.addProgress()
             else:
                 task.timer += 1
                 if task.timer >= 10:
                     r = self.findRobotWithTask(task)
-                    if r != 0:
-                        r.returnToStation()
+                    if r !=0:
+                        r.task.remove(task)
+                        r.capacityCount+=1
                     self.canvas.delete(task.id)
                     self.tasks.remove(task)
-
-    def update(self):
-        self.timerClick()
-        self.checkTasksStatus()
 
     def aloc_rob(self):
         """
         Calculate the distance saving by saving_dist_table()
         Divide tasks into several segments by sort_task()
-        Send robots to do tasks by robots.allocation()
         :return: None
         """
         table = saving_dist_table(self, [1, 1])
-        print table
+        #print table
         task_amount = len(self.tasks)
         aloc_task = sort_task(table, task_amount)
         print aloc_task
         for i in range(len(aloc_task)):
             task = aloc_task[i]
-            rob = min(self.robots, key=lambda x: len(x.path))
-            num = self.robots.index(rob)
-            self.robots[num].allocation(task)
+            num = i%len(self.robots)
+            for j in range(len(task)):
+                tmp_task = self.tasks[task[j] - 1]
+                self.robots[num].setTask(tmp_task)
+
+    def update_robot_path(self):
+        """
+        setpath from current position to the next task position
+        :return: None
+        """
+        for robot_ in self.robots:
+            if not robot_.path:
+                if robot_.task:
+                    if robot_.capacityCount<robot_.capacity:
+                        path=routing.path_generate(self, robot_.pos, robot_.task[0].pos)
+                    else:
+                        path = routing.path_generate(self, robot_.pos, [1, 1])
+                        robot_.capacityCount=0
+                if not robot_.task:
+                    path = routing.path_generate(self, robot_.pos, [1, 1])
+                robot_.setPath(path)
+
+    def update(self):
+        self.timerClick()
+        self.checkTasksStatus()
+        self.update_robot_path()
+
+
