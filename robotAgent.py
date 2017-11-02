@@ -1,9 +1,6 @@
-from time import sleep
-from actions import Actions
 from task import *
 from search import *
 import copy
-import routing
 
 
 class RobotAgent():

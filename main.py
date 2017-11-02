@@ -1,14 +1,10 @@
 from graphics import MainGraphics
-from robotAgent import RobotAgent
 from world import WorldState
-from actions import Actions
-from task import Task
 from search import *
 from layout import *
-from routing import *
-import graph
 import sys
 import argparse
+import time
 
 LAYOUT_MAP = {'1': getLayout1,
               '2': getLayout2,
@@ -32,48 +28,26 @@ world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout,
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
-
-# test begin @Zheng
-def leftKey(event):
-    world.robots[0].move([-1, 0])
-
-
-def rightKey(event):
-    world.robots[0].move([1, 0])
-
-
-def upKey(event):
-    world.robots[0].move([0, -1])
-
-
-def downKey(event):
-    world.robots[0].move([0, 1])
-
-
-graphics.root_window.bind("<Left>", leftKey)
-graphics.root_window.bind("<Right>", rightKey)
-graphics.root_window.bind("<Up>", upKey)
-graphics.root_window.bind("<Down>", downKey)
+text = time.strftime("%Y-%m-%d %H:%M:%S\n***START***\n", time.gmtime())
+write_log(text, 'w')
 
 world.addRobot(pos=[1, 1])
 world.addRobot(pos=[1, 1])
 world.addRobot(pos=[1, 1])
 
-#TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
-#for pos in TaskPosList:
+# TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
+# for pos in TaskPosList:
 #    world.addTask(pos=pos)
 
 world.addRandomTask(20)
 
-world.aloc_rob()
-# test end
-
-
-#Main loop for window
+# Main loop for window
 while True:
+    if world.timer % 20 == 0:
+        world.addRandomTask(1)
     world.update()
     for robot in world.robots:
         robot.followPath()
-    graphics.root_window.after(25)
+    graphics.root_window.after(5)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

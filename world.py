@@ -1,4 +1,3 @@
-from graphics import MainGraphics
 from robotAgent import RobotAgent
 from task import Task
 from util import *
@@ -15,10 +14,11 @@ class WorldState():
         self.layout = layout
         self.stations = stations
         self.robots = []
-        self.tasks = []
+        self.taskCache = []
         self.timer = 0
         self.directional = directional
         self.graphics = []
+        self.taskAloc = []
 
     def setGraphics(self, graphics):
         self.graphics = graphics
@@ -26,7 +26,7 @@ class WorldState():
 
     def setWallLayout(self, layout):
         self.layout = layout
-        if self.graphics != []:
+        if self.graphics:
             self.graphics.delete("all")
             self.graphics.drawWalls()
             self.graphics.drawGrids()
@@ -34,13 +34,14 @@ class WorldState():
             self.graphics.canvas.update()
 
     def addRobot(self, pos):
-        station = pos
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
 
     def addTask(self, pos):
         task = Task(canvas=self.canvas, gridSize=self.gridSize, pos=pos)
-        self.tasks.append(task)
+        write_log("\nat time:" + str(self.timer) + "\n" +
+                  str(task)+ "at " + str(task.pos) + " is added\n")
+        self.taskCache.append(task)
 
     def addRandomRobot(self, num):
         for x in range(num):
@@ -66,7 +67,7 @@ class WorldState():
         return 0
 
     def findTaskAt(self, pos):
-        for task in self.tasks:
+        for task in self.taskCache:
             if task.pos == pos:
                 return task
         return 0
@@ -96,14 +97,14 @@ class WorldState():
         return result
 
     def isBlockedAtRow(self, row):
-        for x in range(2, self.width/self.gridSize - 2):
-            if self.isBlocked([x,row]):
+        for x in range(2, self.width / self.gridSize - 2):
+            if self.isBlocked([x, row]):
                 return True
         return False
 
     def isBlockedAtColumn(self, col):
-        for y in range(2, self.height/self.gridSize - 2):
-            if self.isBlocked([col,y]):
+        for y in range(2, self.height / self.gridSize - 2):
+            if self.isBlocked([col, y]):
                 return True
         return False
 
@@ -112,66 +113,81 @@ class WorldState():
         self.canvas.itemconfig(self.timerLabel, text=str(self.timer))
 
     def checkTasksStatus(self):
-        self.canvas.itemconfig(self.taskCountLabel, text=str(len(self.tasks)))
-        for task in self.tasks:
-            if task.progress < task.cost:
-                if not self.hasRobotAt(task.pos):
-                    task.resetProgress()
-                elif task not in self.findRobotAt(task.pos).task:
-                    task.resetProgress()
-                for robot in self.robots:
+        self.canvas.itemconfig(self.taskCountLabel, text=str(len(self.taskCache)))
+        for robot in self.robots:
+            for task in robot.task:
+                if task.progress < task.cost:
+                    if not self.hasRobotAt(task.pos):
+                        task.resetProgress()
+                    elif task not in self.findRobotAt(task.pos).task:
+                        task.resetProgress()
+                    if task.pos == robot.pos and len(robot.path) == 0:
+                        task.addProgress()
+                else:
+                    task.timer += 1
+                    if task.timer >= 10:
+                        r = self.findRobotWithTask(task)
+                        if r != 0:
+                            r.task.remove(task)
+                            write_log("\nat time:" + str(self.timer) + "\n" +
+                                      str(task) + "at " + str(task.pos) + " is consumed\n")
+                            r.capacityCount += 1
+                        self.canvas.delete(task.id)
 
-                    if task in robot.task:
-                        if task.pos == robot.pos and len(robot.path) == 0:
-                            task.addProgress()
-            else:
-                task.timer += 1
-                if task.timer >= 10:
-                    r = self.findRobotWithTask(task)
-                    if r !=0:
-                        r.task.remove(task)
-                        r.capacityCount+=1
-                    self.canvas.delete(task.id)
-                    self.tasks.remove(task)
+    def set_task_aloc(self):
+        """
+        Divide unassigned task into several segment.
+        :return:None
+        """
+        table = saving_dist_table(self, [1, 1])
+        # print table
+        task_amount = len(self.taskCache)
+        self.taskAloc = sort_task(table, task_amount)
+        print self.taskAloc
 
     def aloc_rob(self):
         """
-        Calculate the distance saving by saving_dist_table()
-        Divide tasks into several segments by sort_task()
-        :return: None
+        Assign task to the free robot.
+        :return:None
         """
-        table = saving_dist_table(self, [1, 1])
-        #print table
-        task_amount = len(self.tasks)
-        aloc_task = sort_task(table, task_amount)
-        print aloc_task
-        for i in range(len(aloc_task)):
-            task = aloc_task[i]
-            num = i%len(self.robots)
-            for j in range(len(task)):
-                tmp_task = self.tasks[task[j] - 1]
-                self.robots[num].setTask(tmp_task)
+        if self.hasRobotAt([1, 1]):
+            r = self.findRobotAt([1, 1])
+            if not r.task:
+                self.set_task_aloc()
+                task = max(self.taskAloc, key=lambda x: len(x))
+                tmp_task = []
+                write_log("\nat time:" + str(self.timer) + "\n" +
+                          "task" + str(task) + "at pos:")
+                for i in range(len(task)):
+                    tmp_task.append(self.taskCache[task[i] - 1])
+                    r.setTask(tmp_task[-1])
+                    text = str(tmp_task[-1].pos)
+                    write_log(text)
+                write_log("\nis allocated to " +
+                          str(r) + "\n")
+                self.taskAloc.remove(task)
+                for i in tmp_task:
+                    self.taskCache.remove(i)
 
     def update_robot_path(self):
         """
         setpath from current position to the next task position
         :return: None
         """
-        for robot_ in self.robots:
-            if not robot_.path:
-                if robot_.task:
-                    if robot_.capacityCount<robot_.capacity:
-                        path=routing.path_generate(self, robot_.pos, robot_.task[0].pos)
+        for r in self.robots:
+            if not r.path:
+                if r.task:
+                    if r.capacityCount < r.capacity:
+                        path = routing.path_generate(self, r.pos, r.task[0].pos)
                     else:
-                        path = routing.path_generate(self, robot_.pos, [1, 1])
-                        robot_.capacityCount=0
-                if not robot_.task:
-                    path = routing.path_generate(self, robot_.pos, [1, 1])
-                robot_.setPath(path)
+                        path = routing.path_generate(self, r.pos, [1, 1])
+                        r.capacityCount = 0
+                if not r.task:
+                    path = routing.path_generate(self, r.pos, [1, 1])
+                r.setPath(path)
 
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
+        self.aloc_rob()
         self.update_robot_path()
-
-

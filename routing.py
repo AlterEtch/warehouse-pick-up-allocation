@@ -108,7 +108,7 @@ def saving_dist_table(world, start):
     :return: (list)saving_table
     """
     task_pos_list = []
-    for item in world.tasks:
+    for item in world.taskCache:
         task_pos_list.append(item.pos)
     task_pos_list.insert(0, start)
     distance_table = {}
