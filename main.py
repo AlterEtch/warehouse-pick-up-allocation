@@ -4,7 +4,7 @@ from search import *
 from layout import *
 import sys
 import argparse
-import time
+import atexit
 
 LAYOUT_MAP = {'1': getLayout1,
               '2': getLayout2,
@@ -21,19 +21,16 @@ getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout, stations = getLayout()
 
 if args.r > len(stations):
-    print 'Number of robots exceeds maxmimum limit'
+    print 'Number of robots exceeds maximum limit'
     sys.exit()
 
 world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
-text = time.strftime("%Y-%m-%d %H:%M:%S\n***START***\n", time.gmtime())
-write_log(text, 'w')
-
-world.addRobot(pos=[1, 1])
-world.addRobot(pos=[1, 1])
-world.addRobot(pos=[1, 1])
+world.addRobot(pos=START_POINT[:])
+world.addRobot(pos=START_POINT[:])
+world.addRobot(pos=START_POINT[:])
 
 # TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
 # for pos in TaskPosList:
@@ -48,6 +45,17 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    graphics.root_window.after(5)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
+    if world.timer == 1000:
+        break
+
+
+def exit_handler():
+    text = time.strftime("\n%Y-%m-%d %H:%M:%S\n******END******\n", time.localtime())
+    write_log(text)
+    write_log("Current time: " + str(world.timer) + "\n"
+              + "Unassigned task: " + str(len(world.taskCache)) + "\n")
+
+
+atexit.register(exit_handler)

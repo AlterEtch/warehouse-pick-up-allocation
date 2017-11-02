@@ -1,8 +1,6 @@
 from robotAgent import RobotAgent
 from task import Task
-from util import *
 from routing import *
-
 import routing
 
 
@@ -18,7 +16,7 @@ class WorldState():
         self.timer = 0
         self.directional = directional
         self.graphics = []
-        self.taskAloc = []
+        self.taskAllocationIndex = []
 
     def setGraphics(self, graphics):
         self.graphics = graphics
@@ -39,8 +37,8 @@ class WorldState():
 
     def addTask(self, pos):
         task = Task(canvas=self.canvas, gridSize=self.gridSize, pos=pos)
-        write_log("\nat time:" + str(self.timer) + "\n" +
-                  str(task)+ "at " + str(task.pos) + " is added\n")
+        write_log("\nAt time:" + str(self.timer) + "\n" +
+                  str(task) + " at " + str(task.pos) + " is added\n")
         self.taskCache.append(task)
 
     def addRandomRobot(self, num):
@@ -129,43 +127,46 @@ class WorldState():
                         r = self.findRobotWithTask(task)
                         if r != 0:
                             r.task.remove(task)
-                            write_log("\nat time:" + str(self.timer) + "\n" +
-                                      str(task) + "at " + str(task.pos) + " is consumed\n")
+                            write_log("\nAt time:" + str(self.timer) + "\n" +
+                                      str(task) + " at " + str(task.pos) + " is consumed\n")
                             r.capacityCount += 1
                         self.canvas.delete(task.id)
 
-    def set_task_aloc(self):
+    def set_task_allocation_index(self):
         """
         Divide unassigned task into several segment.
+        Set self.taskAllocationIndex
         :return:None
         """
-        table = saving_dist_table(self, [1, 1])
+        table = saving_dist_table(self, START_POINT[:])
         # print table
         task_amount = len(self.taskCache)
-        self.taskAloc = sort_task(table, task_amount)
-        print self.taskAloc
+        self.taskAllocationIndex = sort_task(table, task_amount)
+        print self.taskAllocationIndex
 
-    def aloc_rob(self):
+    def allocate_rob(self):
         """
         Assign task to the free robot.
         :return:None
         """
-        if self.hasRobotAt([1, 1]):
-            r = self.findRobotAt([1, 1])
+        if self.hasRobotAt(START_POINT[:]):
+            r = self.findRobotAt(START_POINT[:])
             if not r.task:
-                self.set_task_aloc()
-                task = max(self.taskAloc, key=lambda x: len(x))
+                self.set_task_allocation_index()
+                task = filter(lambda x: len(x) == ROBOT_CAPACITY, self.taskAllocationIndex)
+                early_task_index = min(map(min, task))
+                task = filter(lambda x: early_task_index in x, task)[0]
                 tmp_task = []
-                write_log("\nat time:" + str(self.timer) + "\n" +
-                          "task" + str(task) + "at pos:")
-                for i in range(len(task)):
-                    tmp_task.append(self.taskCache[task[i] - 1])
+                write_log("\nAt time:" + str(self.timer) + "\n" +
+                          str(r) + " labeled as Robot " + str(r.id_num) + "\n" +
+                          "accepts the task" + str(task) + " at pos:")
+                for index in task:
+                    tmp_task.append(self.taskCache[index])
                     r.setTask(tmp_task[-1])
                     text = str(tmp_task[-1].pos)
                     write_log(text)
-                write_log("\nis allocated to " +
-                          str(r) + "\n")
-                self.taskAloc.remove(task)
+                write_log("\n")
+                self.taskAllocationIndex.remove(task)
                 for i in tmp_task:
                     self.taskCache.remove(i)
 
@@ -176,18 +177,19 @@ class WorldState():
         """
         for r in self.robots:
             if not r.path:
+                path = []
                 if r.task:
                     if r.capacityCount < r.capacity:
                         path = routing.path_generate(self, r.pos, r.task[0].pos)
                     else:
-                        path = routing.path_generate(self, r.pos, [1, 1])
+                        path = routing.path_generate(self, r.pos, START_POINT[:])
                         r.capacityCount = 0
                 if not r.task:
-                    path = routing.path_generate(self, r.pos, [1, 1])
+                    path = routing.path_generate(self, r.pos, START_POINT[:])
                 r.setPath(path)
 
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
-        self.aloc_rob()
+        self.allocate_rob()
         self.update_robot_path()

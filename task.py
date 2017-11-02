@@ -1,4 +1,4 @@
-class Task():
+class Task:
     def __init__(self, canvas, gridSize, pos, cost=10, isStation=False):
         self.pos = pos
         self.canvas = canvas

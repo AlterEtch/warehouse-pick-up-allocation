@@ -1,6 +1,14 @@
 from math import *
 from random import randint
+import os
+import time
 
+
+START_POINT = [29, 1]
+
+ROBOT_CAPACITY = 4
+
+FileName = os.getcwd()+time.strftime("\\log\\%Y-%m-%d %H_%M_%S.txt", time.localtime())
 
 def generateRandomPosition(world):
     pos = [randint(2, world.width / world.gridSize - 3), randint(3, world.height / world.gridSize - 4)]
@@ -29,6 +37,8 @@ def calculateEuclideanDistance(pos1, pos2):
 
 
 def write_log(text, mode='a'):
-    f = open("log.txt", mode)
+    f = open(FileName, mode)
     f.write(text)
     f.close()
+
+

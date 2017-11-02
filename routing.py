@@ -1,16 +1,112 @@
 """
 this file include A* algorithm and Clarke and Wright savings algorithm
 """
-
-import heapq
-import graph
-
 from actions import Actions
+from util import *
+import heapq
+
+
+class Graph:
+    """
+    Class Graph based on the graph theory
+    """
+    def __init__(self, nodes):
+        self.__vertices = []
+        self.__graph_group = []  # (list)[[group 0],[group 1]...] elements linked together are put in the same group
+        for i in range(nodes):
+            self.__vertices.append(i)
+            self.__graph_group.append([i])
+
+    def location(self, vert):
+        """
+        Find out where the vert is in the self.__graph_group
+        :param vert
+        :return: i,j i_th group, j_th element
+        """
+        i = 0
+        for group in self.__graph_group:
+            j = 0
+            for item in group:
+                if vert == item:
+                    return i, j
+                j += 1
+            i += 1
+
+    def is_head(self, loc):
+        """
+        Whether the vert is the 1st element in the group
+        :param loc: from self.location()
+        :return: boolean
+        """
+        (i, j) = loc
+        if j == 0:
+            return True
+        else:
+            return False
+
+    def is_tail(self, loc):
+        """
+        Whether the vert is the last element in the group
+        :param loc: from self.location()
+        :return:
+        """
+        (i, j) = loc
+        if j == len(self.__graph_group[i]) - 1:
+            return True
+        else:
+            return False
+
+    def set_edge(self, vert1, vert2):
+        """
+        Set the edge of two vertex, updating the self.__graph_group
+        :param vert1:
+        :param vert2:
+        :return: True for success, False for fail
+        """
+        loc1 = self.location(vert1)
+        loc2 = self.location(vert2)
+        if loc1[0] == loc2[0]:
+            return False
+        if self.is_tail(loc1):
+            if self.is_head(loc2):
+                self.__graph_group[loc1[0]] = self.__graph_group[loc1[0]] + self.__graph_group[loc2[0]]
+                self.__graph_group.pop(loc2[0])
+                return True
+            elif self.is_tail(loc2):
+                self.__graph_group[loc1[0]] = self.__graph_group[loc1[0]] + self.__graph_group[loc2[0]][::-1]
+                self.__graph_group.pop(loc2[0])
+                return True
+        elif self.is_head(loc1):
+            if self.is_head(loc2):
+                self.__graph_group[loc1[0]] = self.__graph_group[loc2[0]][::-1] + self.__graph_group[loc1[0]]
+                self.__graph_group.pop(loc2[0])
+                return True
+            elif self.is_tail(loc2):
+                self.__graph_group[loc1[0]] = self.__graph_group[loc2[0]] + self.__graph_group[loc1[0]]
+                self.__graph_group.pop(loc2[0])
+                return True
+
+    def load(self, vert):
+        """
+
+        :param vert:
+        :return: (int) amount of the tasks
+        """
+        loc = self.location(vert)
+        load = len(self.__graph_group[loc[0]])
+        return load
+
+    def gen_link(self):
+        """
+
+        :return: (list)
+        """
+        return self.__graph_group
 
 
 class PriorityQueue:
     """
-    Priority queue used for A* algorithm
+    Class PriorityQueue used for A* algorithm
     """
 
     def __init__(self):
@@ -51,7 +147,7 @@ def a_star_planning(world, start, goal):
     frontier = PriorityQueue()
     frontier.put(start, 0)
     came_from = {}
-    cost_so_far = {}
+    cost_so_far = dict()
     came_from[start] = None
     cost_so_far[start] = 0
 
@@ -68,6 +164,7 @@ def a_star_planning(world, start, goal):
                 priority = new_cost + heuristic(goal, next_pos)
                 frontier.put(next_pos, priority)
                 came_from[next_pos] = current
+
     return came_from, cost_so_far[current]
 
 
@@ -110,37 +207,39 @@ def saving_dist_table(world, start):
     task_pos_list = []
     for item in world.taskCache:
         task_pos_list.append(item.pos)
-    task_pos_list.insert(0, start)
     distance_table = {}
-    for i in range(len(task_pos_list)):
-        for j in range(i + 1, len(task_pos_list)):
-            cost = a_star_planning(world, task_pos_list[i], task_pos_list[j])[1]
-            distance_table[(i, j)] = cost
+    for index, task in enumerate(task_pos_list):
+        cost = a_star_planning(world, start, task)[1]
+        distance_table[(-1, index)] = cost
+    for index1, task1 in enumerate(task_pos_list[:-1]):
+        for index2, task2 in enumerate(task_pos_list[index1 + 1:]):
+            cost = a_star_planning(world, task1, task2)[1]
+            distance_table[(index1, index2)] = cost
     saving_table = {}
     for (task1, task2) in distance_table:
-        if task1 != 0:
-            saving_table[(task1, task2)] = distance_table[(0, task1)] + distance_table[(0, task2)] - distance_table[(task1, task2)]
+        if task1 != -1:
+            saving_table[(task1, task2)] = \
+                distance_table[(-1, task1)] + distance_table[(-1, task2)] - distance_table[(task1, task2)]
     saving_table = sorted(saving_table.items(), key=lambda x: x[1], reverse=True)
-    # convert to list with decreasing order as[((task1,task2),cost),...]
+    # convert to list with decreasing order as[((task0,task1),cost),...]
     return saving_table
 
 
-def sort_task(saving_table, task_num, capacity=4):
+def sort_task(saving_table, task_num):
     """
-
+    Generate separated sequences according to the saving_table.
     :param saving_table:
     :param task_num:
-    :param capacity:
-    :return:(list)[[task11,task12,...],[task21,task22,...],...]
+    :return:(list)[[task00,task01,...],[task10,task11,...],...]
     """
-    task_list = range(1, task_num + 1)
-    g = graph.Graph(len(task_list))
+    task_list = range(task_num)
+    g = Graph(len(task_list))
     for item in saving_table:
         (task1, task2) = item[0]
         if len(task_list) == 0:
             break
         else:
-            if g.load(task1) + g.load(task2) <= capacity:
+            if g.load(task1) + g.load(task2) <= ROBOT_CAPACITY:
                 if g.set_edge(task1, task2):
                     try:
                         task_list.remove(task1)
