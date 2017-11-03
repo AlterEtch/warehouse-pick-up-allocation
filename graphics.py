@@ -18,8 +18,6 @@ class MainGraphics():
         self.initStatusBar()
 
     def createWindow(self):
-        text = time.strftime("%Y-%m-%d %H:%M:%S\n******************START******************\n", time.localtime())
-        write_log(text, 'w')
         self.root_window.title(self.title)
         self.root_window.resizable(0, 0)
         self.root_window.protocol("WM_DELETE_WINDOW", self.exit_handler)
@@ -62,18 +60,32 @@ class MainGraphics():
                     self.fillCell([x, y], "red", "rect")
 
     def initStatusBar(self):
-        self.canvas.create_text(self.width + 10, 50, anchor=Tkinter.W, fill="white", text="Current Time: ")
-        self.world.timerLabel = self.canvas.create_text(self.width + 130, 50, anchor=Tkinter.W, fill="white", text="0")
-        self.canvas.create_text(self.width + 10, 70, anchor=Tkinter.W, fill="white", text="Unassigned Tasks: ")
-        self.world.taskCountLabel = self.canvas.create_text(self.width + 130, 70, anchor=Tkinter.W, fill="white",
+        self.canvas.create_text(self.width + 10, 30, anchor=Tkinter.W, fill="white", text="Current Time: ")
+        self.world.timerLabel = self.canvas.create_text(self.width + 130, 30, anchor=Tkinter.W, fill="white", text="0")
+        self.canvas.create_text(self.width + 10, 50, anchor=Tkinter.W, fill="white", text="Unassigned Tasks: ")
+        self.world.unassignedLabel = self.canvas.create_text(self.width + 130, 50, anchor=Tkinter.W, fill="white",
+                                                             text="0")
+        self.canvas.create_text(self.width + 10, 70, anchor=Tkinter.W, fill="white", text="Completed Tasks: ")
+        self.world.completedLabel = self.canvas.create_text(self.width + 130, 70, anchor=Tkinter.W, fill="white",
                                                             text="0")
+        self.canvas.create_text(self.width + 10, 90, anchor=Tkinter.W, fill="white", text="Total Mileage: ")
+        self.world.mileageLabel = self.canvas.create_text(self.width + 130, 90, anchor=Tkinter.W, fill="white",
+                                                          text="0")
 
     def number_axis(self):
+        """
+        Number the x and y axis
+        :return: None
+        """
         for x in range(1, self.width / self.gridSize - 1):
             self.canvas.create_text((x + 0.5) * self.gridSize, 0.5 * self.gridSize, text=str(x))
         for y in range(1, self.height / self.gridSize - 1):
             self.canvas.create_text(0.5 * self.gridSize, (y + 0.5) * self.gridSize, text=str(y))
 
     def exit_handler(self):
+        """
+        When windows closed, raise the handler
+        :return: None
+        """
         output_log(self.world)
         self.root_window.destroy()

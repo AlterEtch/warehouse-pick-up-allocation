@@ -3,14 +3,19 @@ from random import randint
 import os
 import time
 import re
+import numpy
 
+"""CONST"""
+# station position as start point and end point
 START_POINT = [29, 1]
-
-ROBOT_CAPACITY = 4
-
+# capacity of each robot
+ROBOT_CAPACITY = 5
+# TBD, whatever it is
 TEMPORAL_PRIORITY_RATIO = 2.5
-
-FileName = os.getcwd() + time.strftime("\\log\\%Y-%m-%d %H_%M_%S.txt", time.localtime())
+# the time interval between two added task
+TASK_TIME_INTERVAL = 10
+# log file name
+FILE_NAME = os.getcwd() + time.strftime("\\log\\%Y-%m-%d %H_%M_%S.txt", time.localtime())
 
 
 def generateRandomPosition(world):
@@ -40,23 +45,40 @@ def calculateEuclideanDistance(pos1, pos2):
 
 
 def write_log(text, mode='a'):
-    f = open(FileName, mode)
+    """
+    Open file and write log
+    :param text:
+    :param mode:
+    :return: None
+    """
+    f = open(FILE_NAME, mode)
     f.write(text)
     f.close()
 
 
 def output_log(world):
+    """
+    When program is terminated raise this function
+    :param world:
+    :return:
+    """
     text = time.strftime("\n%Y-%m-%d %H:%M:%S\n******************END******************\n", time.localtime())
     write_log(text)
     write_log("Current time: " + str(world.timer) + "\n"
-              + "Unassigned task: " + str(len(world.taskCache)) + "\n")
-    write_analysis()
+              + "Unassigned task: " + str(len(world.taskCache)) + "\n"
+              + "Completed task: " + str(world.completedTask) + "\n"
+              + "Total Mileage: " + str(world.totalMileage) + "\n")
+    write_analysis(world)
 
 
-def write_analysis():
-    with open(FileName) as f:
+def write_analysis(world):
+    """
+    Calculate some statistical data
+    :return: None
+    """
+    with open(FILE_NAME) as f:
         task_begin = dict()
-        task_cycle = dict()
+        task_cycle = list()
         for line1 in f:
             if line1.startswith("At time:"):
                 try:
@@ -64,17 +86,16 @@ def write_analysis():
                 except StopIteration:
                     line2 = ''
                 line = line1 + line2
-                m = re.search('.*:(.*)\n<(.*)>', line)
+                m = re.search('.*:(.*)\n\t<(.*)>', line)
                 time_val = int(m.group(1))
                 instance = m.group(2)
                 if instance.startswith("task.Task"):
                     if "added" in line:
                         task_begin[instance] = time_val
                     if "consumed" in line:
-                        task_cycle[instance] = time_val - task_begin[instance]
-    write_log("\nAnalysis:\n" +
-              "task remain time -AVG " + str(mean(task_cycle.values())) + " -MAX " + str(max(task_cycle.values()))+"\n")
-
-
-def mean(numbers):
-    return float(sum(numbers)) / max(len(numbers), 1)
+                        task_cycle.append(time_val - task_begin[instance])
+    write_log("\ntask life cycle data:\n" + str(task_cycle) + "\n")
+    text = "Latency: -AVG " + str(numpy.mean(task_cycle)) + " -MAX " + str(max(task_cycle)) + " -VARIANCE " + \
+           str(numpy.var(task_cycle)) + "\n" + "Throughput: " + str(world.completedTask * 1.0 / world.timer) + "\n"
+    write_log("\n******************ANALYSIS******************\n" + text)
+    print text

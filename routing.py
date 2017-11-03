@@ -10,6 +10,7 @@ class Graph:
     """
     Class Graph based on the graph theory
     """
+
     def __init__(self, nodes):
         self.__vertices = []
         self.__graph_group = []  # (list)[[group 0],[group 1]...] elements linked together are put in the same group
@@ -102,7 +103,7 @@ class Graph:
         :return: (list)
         """
         if self.__graph_group:
-            link=max(self.__graph_group,key=lambda x:len(x))
+            link = max(self.__graph_group, key=lambda x: len(x))
             return link
         return None
 
@@ -112,7 +113,7 @@ class Graph:
         :return: (list)link or None
         """
         for link in self.__graph_group:
-            if len(link)==ROBOT_CAPACITY:
+            if len(link) == ROBOT_CAPACITY:
                 return link
         return None
 
@@ -217,18 +218,18 @@ def saving_dist_table(world):
     :return: (list)saving_table
     """
     task_pos_list = []
-    task_num=int(ROBOT_CAPACITY*TEMPORAL_PRIORITY_RATIO)
+    task_num = int(ROBOT_CAPACITY * TEMPORAL_PRIORITY_RATIO)
     for item in world.taskCache[:task_num]:
         task_pos_list.append(item.pos)
-    task_num=len(task_pos_list)
+    task_num = len(task_pos_list)
     distance_table = {}
     for index, task in enumerate(task_pos_list):
         cost = a_star_planning(world, START_POINT, task)[1]
         distance_table[(-1, index)] = cost
-    for index1 in range(0,len(task_pos_list)-1):
-        for index2 in range(index1+1, len(task_pos_list)):
-            cost = a_star_planning(world, task_pos_list[index1],task_pos_list[index2])[1]
-            distance_table[(index1,index2)]=cost
+    for index1 in range(0, len(task_pos_list) - 1):
+        for index2 in range(index1 + 1, len(task_pos_list)):
+            cost = a_star_planning(world, task_pos_list[index1], task_pos_list[index2])[1]
+            distance_table[(index1, index2)] = cost
     saving_table = {}
     for (task1, task2) in distance_table:
         if task1 != -1:
@@ -236,8 +237,8 @@ def saving_dist_table(world):
                 distance_table[(-1, task1)] + distance_table[(-1, task2)] - distance_table[(task1, task2)]
     saving_table = sorted(saving_table.items(), key=lambda x: x[1], reverse=True)
     # convert to list with decreasing order as[((task0,task1),cost),...]
-    print saving_table
-    return saving_table,task_num
+    # print saving_table
+    return saving_table, task_num
 
 
 def sort_task(world):
@@ -246,7 +247,7 @@ def sort_task(world):
     :param world:
     :return:(list)[[task00,task01,...],[task10,task11,...],...]
     """
-    (saving_table,task_num)=saving_dist_table(world)
+    (saving_table, task_num) = saving_dist_table(world)
     task_index_list = range(task_num)
     g = Graph(len(task_index_list))
     for item in saving_table:

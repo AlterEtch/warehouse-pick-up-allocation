@@ -28,30 +28,38 @@ world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout,
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
-world.addRobot(pos=START_POINT[:])
-world.addRobot(pos=START_POINT[:])
-world.addRobot(pos=START_POINT[:])
+for i in range(3):
+    world.addRobot(pos=START_POINT[:])
 
 # TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
 # for pos in TaskPosList:
 #    world.addTask(pos=pos)
 
-world.addRandomTask(20)
+text = time.strftime("%Y-%m-%d %H:%M:%S\n******************START******************\n", time.localtime())
+write_log(text, 'w')
+write_log("There are " + str(len(world.robots)) + " robots with capacity of " + str(ROBOT_CAPACITY) + ".\n" +
+          "Every " + str(TASK_TIME_INTERVAL) + " units of time, a task is generated randomly \n")
+# world.addRandomTask(10)
 
 # Main loop for window
 while True:
-    if world.timer % 15 == 0:
+    if world.timer % TASK_TIME_INTERVAL == 0:
         world.addRandomTask(1)
     world.update()
     for robot in world.robots:
         robot.followPath()
+    # graphics.root_window.after(25)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
-    if world.timer == 1000:
+    if world.timer == 2000:
         break
 
 
 def exit_handler():
+    """
+    When program exits, raise the handler
+    :return:None
+    """
     output_log(world)
 
 

@@ -2,6 +2,7 @@ from robotAgent import RobotAgent
 from task import Task
 from routing import *
 import routing
+import Tkinter
 
 
 class WorldState():
@@ -14,9 +15,10 @@ class WorldState():
         self.robots = []
         self.taskCache = []
         self.timer = 0
+        self.totalMileage = 0
+        self.completedTask = 0
         self.directional = directional
         self.graphics = []
-        self.taskAllocationIndex = []
 
     def setGraphics(self, graphics):
         self.graphics = graphics
@@ -34,11 +36,15 @@ class WorldState():
     def addRobot(self, pos):
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
+        self.canvas.create_text(self.width + 10, 110 + 20 * robot.id_num, fill="white", anchor=Tkinter.W,
+                                text="Robot " + str(robot.id_num) + ": ")
+        robot.id_task = self.canvas.create_text(self.width + 55, 110 + 20 * robot.id_num, fill="white",
+                                                anchor=Tkinter.W)
 
     def addTask(self, pos):
-        task = Task(canvas=self.canvas, gridSize=self.gridSize, pos=pos)
-        write_log("\nAt time:" + str(self.timer) + "\n" +
-                  str(task) + " at " + str(task.pos) + " is added\n")
+        task = Task(world=self, canvas=self.canvas, gridSize=self.gridSize, pos=pos)
+        write_log("\nAt time:" + str(self.timer) + "\n\t" +
+                  str(task) + " at " + str(task.pos) + " is added")
         self.taskCache.append(task)
 
     def addRandomRobot(self, num):
@@ -111,7 +117,7 @@ class WorldState():
         self.canvas.itemconfig(self.timerLabel, text=str(self.timer))
 
     def checkTasksStatus(self):
-        self.canvas.itemconfig(self.taskCountLabel, text=str(len(self.taskCache)))
+        self.canvas.itemconfig(self.unassignedLabel, text=str(len(self.taskCache)))
         for robot in self.robots:
             for task in robot.task:
                 if task.progress < task.cost:
@@ -126,32 +132,30 @@ class WorldState():
                     if task.timer >= 10:
                         r = self.findRobotWithTask(task)
                         if r != 0:
-                            r.task.remove(task)
-                            write_log("\nAt time:" + str(self.timer) + "\n" +
-                                      str(task) + " at " + str(task.pos) + " is consumed\n")
-                            r.capacityCount += 1
-                        self.canvas.delete(task.id)
-                        self.canvas.delete(task.id_label)
+                            r.delete_task(task)
 
-    def allocate_rob(self):
+
+    def try_allocate_rob(self):
         """
-        Assign task to the free robot.
+        When finding a free robot in the station, assign task to the robot.
         :return:None
         """
         if self.hasRobotAt(START_POINT[:]):
             r = self.findRobotAt(START_POINT[:])
             if not r.task:
+                r.capacityCount = 0
                 task = sort_task(self)
                 tmp_task = []
-                write_log("\nAt time:" + str(self.timer) + "\n" +
-                          str(r) + " labeled as Robot " + str(r.id_num) + " accepts the task:" + str(task) + " at pos:")
                 if task:
+                    write_log("\nAt time:" + str(self.timer) + "\n\t" +
+                              str(r) + " labeled as Robot " + str(r.id_num) + " accepts the task:" + str(
+                        task) + " at pos:")
                     for index in task:
                         tmp_task.append(self.taskCache[index])
                         r.setTask(tmp_task[-1])
                         text = str(tmp_task[-1].pos)
                         write_log(text)
-                    write_log("\n")
+                    self.canvas.itemconfig(r.id_task, text=str(task))
                     for i in tmp_task:
                         self.taskCache.remove(i)
                     self.refresh_task_label()
@@ -165,25 +169,27 @@ class WorldState():
             if not r.path:
                 path = []
                 if r.task:
-                    if r.capacityCount < r.capacity:
+                    if r.capacityCount < ROBOT_CAPACITY:
                         path = routing.path_generate(self, r.pos, r.task[0].pos)
                     else:
                         path = routing.path_generate(self, r.pos, START_POINT[:])
-                        r.capacityCount = 0
                 if not r.task:
                     path = routing.path_generate(self, r.pos, START_POINT[:])
                 r.setPath(path)
 
     def refresh_task_label(self):
+        """
+        Refresh the label of the task.
+        label 0 represents the earliest task.
+        :return: None
+        """
         i = 0
         for task in self.taskCache:
-            self.canvas.itemconfig(task.id_label,text=str(i))
+            self.canvas.itemconfig(task.id_label, text=str(i))
             i += 1
-
-
 
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
-        self.allocate_rob()
+        self.try_allocate_rob()
         self.update_robot_path()

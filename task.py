@@ -1,5 +1,6 @@
 class Task:
-    def __init__(self, canvas, gridSize, pos, cost=10, isStation=False):
+    def __init__(self, world, canvas, gridSize, pos, cost=10, isStation=False):
+        self.world = world
         self.pos = pos
         self.canvas = canvas
         self.size = gridSize * 0.5
@@ -9,9 +10,10 @@ class Task:
             self.id = self.canvas.create_oval(self.pos[0] * gridSize + 0.5 * (gridSize - self.size),
                                               self.pos[1] * gridSize + 0.5 * (gridSize - self.size),
                                               (self.pos[0] + 1) * gridSize - 0.5 * (gridSize - self.size),
-                                              (self.pos[1] + 1) * gridSize - 0.5 * (gridSize - self.size), fill="gray30")
+                                              (self.pos[1] + 1) * gridSize - 0.5 * (gridSize - self.size),
+                                              fill="gray30")
             self.id_label = self.canvas.create_text((self.pos[0] + 0.5) * gridSize, (self.pos[1] + 0.5) * gridSize,
-                                                    fill="white")
+                                                    fill="white", text=str(len(self.world.taskCache)))
         self.progress = 0
         self.timer = 0
         self.assigned = False
@@ -19,6 +21,7 @@ class Task:
     def setAssignStatus(self, status):
         self.assigned = status
         self.canvas.itemconfig(self.id, fill="red")
+        self.canvas.itemconfig(self.id_label, fill="green")
 
     def addProgress(self):
         self.setProgress(self.progress + 1)
