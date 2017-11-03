@@ -131,18 +131,7 @@ class WorldState():
                                       str(task) + " at " + str(task.pos) + " is consumed\n")
                             r.capacityCount += 1
                         self.canvas.delete(task.id)
-
-    def set_task_allocation_index(self):
-        """
-        Divide unassigned task into several segment.
-        Set self.taskAllocationIndex
-        :return:None
-        """
-        table = saving_dist_table(self, START_POINT[:])
-        # print table
-        task_amount = len(self.taskCache)
-        self.taskAllocationIndex = sort_task(table, task_amount)
-        print self.taskAllocationIndex
+                        self.canvas.delete(task.id_label)
 
     def allocate_rob(self):
         """
@@ -152,23 +141,20 @@ class WorldState():
         if self.hasRobotAt(START_POINT[:]):
             r = self.findRobotAt(START_POINT[:])
             if not r.task:
-                self.set_task_allocation_index()
-                task = filter(lambda x: len(x) == ROBOT_CAPACITY, self.taskAllocationIndex)
-                early_task_index = min(map(min, task))
-                task = filter(lambda x: early_task_index in x, task)[0]
+                task = sort_task(self)
                 tmp_task = []
                 write_log("\nAt time:" + str(self.timer) + "\n" +
-                          str(r) + " labeled as Robot " + str(r.id_num) + "\n" +
-                          "accepts the task" + str(task) + " at pos:")
-                for index in task:
-                    tmp_task.append(self.taskCache[index])
-                    r.setTask(tmp_task[-1])
-                    text = str(tmp_task[-1].pos)
-                    write_log(text)
-                write_log("\n")
-                self.taskAllocationIndex.remove(task)
-                for i in tmp_task:
-                    self.taskCache.remove(i)
+                          str(r) + " labeled as Robot " + str(r.id_num) + " accepts the task:" + str(task) + " at pos:")
+                if task:
+                    for index in task:
+                        tmp_task.append(self.taskCache[index])
+                        r.setTask(tmp_task[-1])
+                        text = str(tmp_task[-1].pos)
+                        write_log(text)
+                    write_log("\n")
+                    for i in tmp_task:
+                        self.taskCache.remove(i)
+                    self.refresh_task_label()
 
     def update_robot_path(self):
         """
@@ -187,6 +173,14 @@ class WorldState():
                 if not r.task:
                     path = routing.path_generate(self, r.pos, START_POINT[:])
                 r.setPath(path)
+
+    def refresh_task_label(self):
+        i = 0
+        for task in self.taskCache:
+            self.canvas.itemconfig(task.id_label,text=str(i))
+            i += 1
+
+
 
     def update(self):
         self.timerClick()

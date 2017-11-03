@@ -18,10 +18,11 @@ class MainGraphics():
         self.initStatusBar()
 
     def createWindow(self):
-        text = time.strftime("%Y-%m-%d %H:%M:%S\n******START******\n", time.localtime())
+        text = time.strftime("%Y-%m-%d %H:%M:%S\n******************START******************\n", time.localtime())
         write_log(text, 'w')
         self.root_window.title(self.title)
         self.root_window.resizable(0, 0)
+        self.root_window.protocol("WM_DELETE_WINDOW", self.exit_handler)
 
         self.drawWalls()
         self.drawGrids()
@@ -72,3 +73,7 @@ class MainGraphics():
             self.canvas.create_text((x + 0.5) * self.gridSize, 0.5 * self.gridSize, text=str(x))
         for y in range(1, self.height / self.gridSize - 1):
             self.canvas.create_text(0.5 * self.gridSize, (y + 0.5) * self.gridSize, text=str(y))
+
+    def exit_handler(self):
+        output_log(self.world)
+        self.root_window.destroy()

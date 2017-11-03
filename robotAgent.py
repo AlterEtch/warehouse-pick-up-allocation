@@ -13,7 +13,7 @@ class RobotAgent():
         self.id = self.canvas.create_oval(self.pos[0] * self.size, self.pos[1] * self.size,
                                           (self.pos[0] + 1) * self.size, (self.pos[1] + 1) * self.size, fill="green")
         self.id_label = self.canvas.create_text((self.pos[0]+0.5) * self.size, (self.pos[1]+0.5) * self.size,
-                                                fill="black", text=str(self.id_num))
+                                                text=str(self.id_num))
 
         self.task = []
         self.path = []

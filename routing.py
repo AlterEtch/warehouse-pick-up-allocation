@@ -101,7 +101,20 @@ class Graph:
 
         :return: (list)
         """
-        return self.__graph_group
+        if self.__graph_group:
+            link=max(self.__graph_group,key=lambda x:len(x))
+            return link
+        return None
+
+    def try_gen_link(self):
+        """
+
+        :return: (list)link or None
+        """
+        for link in self.__graph_group:
+            if len(link)==ROBOT_CAPACITY:
+                return link
+        return None
 
 
 class PriorityQueue:
@@ -196,25 +209,26 @@ def path_generate(world, start, goal):
     return path
 
 
-def saving_dist_table(world, start):
+def saving_dist_table(world):
     """
     Calculate distance cost saving between each two task positions
     and sort the saving decreasingly
     :param world:
-    :param start:
     :return: (list)saving_table
     """
     task_pos_list = []
-    for item in world.taskCache:
+    task_num=int(ROBOT_CAPACITY*TEMPORAL_PRIORITY_RATIO)
+    for item in world.taskCache[:task_num]:
         task_pos_list.append(item.pos)
+    task_num=len(task_pos_list)
     distance_table = {}
     for index, task in enumerate(task_pos_list):
-        cost = a_star_planning(world, start, task)[1]
+        cost = a_star_planning(world, START_POINT, task)[1]
         distance_table[(-1, index)] = cost
-    for index1, task1 in enumerate(task_pos_list[:-1]):
-        for index2, task2 in enumerate(task_pos_list[index1 + 1:]):
-            cost = a_star_planning(world, task1, task2)[1]
-            distance_table[(index1, index2)] = cost
+    for index1 in range(0,len(task_pos_list)-1):
+        for index2 in range(index1+1, len(task_pos_list)):
+            cost = a_star_planning(world, task_pos_list[index1],task_pos_list[index2])[1]
+            distance_table[(index1,index2)]=cost
     saving_table = {}
     for (task1, task2) in distance_table:
         if task1 != -1:
@@ -222,31 +236,33 @@ def saving_dist_table(world, start):
                 distance_table[(-1, task1)] + distance_table[(-1, task2)] - distance_table[(task1, task2)]
     saving_table = sorted(saving_table.items(), key=lambda x: x[1], reverse=True)
     # convert to list with decreasing order as[((task0,task1),cost),...]
-    return saving_table
+    print saving_table
+    return saving_table,task_num
 
 
-def sort_task(saving_table, task_num):
+def sort_task(world):
     """
     Generate separated sequences according to the saving_table.
-    :param saving_table:
-    :param task_num:
+    :param world:
     :return:(list)[[task00,task01,...],[task10,task11,...],...]
     """
-    task_list = range(task_num)
-    g = Graph(len(task_list))
+    (saving_table,task_num)=saving_dist_table(world)
+    task_index_list = range(task_num)
+    g = Graph(len(task_index_list))
     for item in saving_table:
         (task1, task2) = item[0]
-        if len(task_list) == 0:
+        if len(task_index_list) == 0:
             break
-        else:
-            if g.load(task1) + g.load(task2) <= ROBOT_CAPACITY:
-                if g.set_edge(task1, task2):
-                    try:
-                        task_list.remove(task1)
-                    except ValueError:
-                        pass
-                    try:
-                        task_list.remove(task2)
-                    except ValueError:
-                        pass
+        if g.try_gen_link():
+            return g.try_gen_link()
+        if g.load(task1) + g.load(task2) <= ROBOT_CAPACITY:
+            if g.set_edge(task1, task2):
+                try:
+                    task_index_list.remove(task1)
+                except ValueError:
+                    pass
+                try:
+                    task_index_list.remove(task2)
+                except ValueError:
+                    pass
     return g.gen_link()

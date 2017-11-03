@@ -40,7 +40,7 @@ world.addRandomTask(20)
 
 # Main loop for window
 while True:
-    if world.timer % 20 == 0:
+    if world.timer % 15 == 0:
         world.addRandomTask(1)
     world.update()
     for robot in world.robots:
@@ -52,10 +52,7 @@ while True:
 
 
 def exit_handler():
-    text = time.strftime("\n%Y-%m-%d %H:%M:%S\n******END******\n", time.localtime())
-    write_log(text)
-    write_log("Current time: " + str(world.timer) + "\n"
-              + "Unassigned task: " + str(len(world.taskCache)) + "\n")
+    output_log(world)
 
 
 atexit.register(exit_handler)

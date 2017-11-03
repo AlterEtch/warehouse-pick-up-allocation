@@ -6,7 +6,12 @@ class Task:
         self.cost = cost
         self.isStation = isStation
         if not self.isStation:
-            self.id = self.canvas.create_oval(self.pos[0]*gridSize + 0.5*(gridSize-self.size), self.pos[1]*(gridSize) + 0.5*(gridSize-self.size), (self.pos[0]+1)*gridSize - 0.5*(gridSize-self.size), (self.pos[1]+1)*gridSize - 0.5*(gridSize-self.size), fill="white")
+            self.id = self.canvas.create_oval(self.pos[0] * gridSize + 0.5 * (gridSize - self.size),
+                                              self.pos[1] * gridSize + 0.5 * (gridSize - self.size),
+                                              (self.pos[0] + 1) * gridSize - 0.5 * (gridSize - self.size),
+                                              (self.pos[1] + 1) * gridSize - 0.5 * (gridSize - self.size), fill="gray30")
+            self.id_label = self.canvas.create_text((self.pos[0] + 0.5) * gridSize, (self.pos[1] + 0.5) * gridSize,
+                                                    fill="white")
         self.progress = 0
         self.timer = 0
         self.assigned = False
