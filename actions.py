@@ -9,14 +9,24 @@ class Actions:
     def possibleActions(pos, world, override=False):
         x, y = pos
         possible = [Actions.STOP]
-        if not world.isBlocked([x + 1, y]):
-            possible.append(Actions.E)
-        if not world.isBlocked([x - 1, y]):
-            possible.append(Actions.W)
-        if not world.isBlocked([x, y + 1]):
-            possible.append(Actions.S)
-        if not world.isBlocked([x, y - 1]):
-            possible.append(Actions.N)
+        if world.mode == 1:
+            if not world.isWall([x+1,y]):
+                possible.append(Actions.E)
+            if not world.isWall([x-1,y]):
+                possible.append(Actions.W)
+            if not world.isWall([x,y+1]):
+                possible.append(Actions.S)
+            if not world.isWall([x,y-1]):
+                possible.append(Actions.N)
+        else:
+            if (not world.isBlocked([x + 1, y])) or world.findStationAt(pos) != 0:
+                possible.append(Actions.E)
+            if (not world.isBlocked([x - 1, y])) or world.findStationAt(pos) != 0:
+                possible.append(Actions.W)
+            if (not world.isBlocked([x, y + 1])) or world.findStationAt(pos) != 0:
+                possible.append(Actions.S)
+            if (not world.isBlocked([x, y - 1])) or world.findStationAt(pos) != 0:
+                possible.append(Actions.N)
 
         if world.directional and not override:
             # for i in range(2, world.width/world.gridSize-2):
