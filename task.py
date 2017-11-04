@@ -1,6 +1,7 @@
 from math import *
 from util import *
 import random
+import copy
 
 class Task():
     def __init__(self, canvas, world, pos, index=0, cost=1, isStation=False, mean=0.05, timeout=300):
@@ -12,14 +13,17 @@ class Task():
         self.index = index
         self.isStation = isStation
         self.mean = mean
-        self.timeout = timeout
+        self.timeout = copy.deepcopy(timeout)
+        self.timeleft = copy.deepcopy(timeout)
         if not self.isStation:
-            self.id = self.canvas.create_oval(self.pos[0]*self.world.gridSize + 0.5*(self.world.gridSize-self.size), self.pos[1]*(self.world.gridSize) + 0.5*(self.world.gridSize-self.size), (self.pos[0]+1)*self.world.gridSize - 0.5*(self.world.gridSize-self.size), (self.pos[1]+1)*self.world.gridSize - 0.5*(self.world.gridSize-self.size), fill="white")
+            self.shape = self.canvas.create_oval(self.pos[0]*self.world.gridSize + 0.5*(self.world.gridSize-self.size), self.pos[1]*(self.world.gridSize) + 0.5*(self.world.gridSize-self.size), (self.pos[0]+1)*self.world.gridSize - 0.5*(self.world.gridSize-self.size), (self.pos[1]+1)*self.world.gridSize - 0.5*(self.world.gridSize-self.size), fill="white")
+            self.text = self.canvas.create_text((self.pos[0]+0.5)*self.world.gridSize, (self.pos[1]+0.5)*self.world.gridSize, fill="blue", text=self.index)
         self.progress = 0
         self.timer = 0
         self.order = 0
         self.assigned = False
         self.p = [0,0,0,0,0,0,0,0,0,0,0]
+        self.records = []
         self.initProbability()
 
     def initProbability(self):
@@ -30,10 +34,11 @@ class Task():
     def checkOrder(self):
         r = random.uniform(0.0, 1.0)
         #print "r = ", r
-        p = 0
+        p = self.p[0]
         for k in range(0, 11):
             if r <= p:
                 self.order += k
+                self.records.append([copy.deepcopy(self.world.timer), self.order])
                 break
             elif k != 10:
                 p += self.p[k+1]
@@ -42,14 +47,26 @@ class Task():
         self.assigned = status
         #self.canvas.itemconfig(self.id, fill="red")
 
-    def timeoutClick(self):
-        self.timeout -= 1
+    def updateTimeLeft(self, order):
+        for record in self.records:
+            if record[1] >= order:
+                self.timeleft = self.timeout - (self.world.timer - record[0])
+                if self.order == 0:
+                    self.timeleft = self.timeout
+                break
+        recordsToDelete = []
+        for record in self.records:
+            record[1] = record[1] - order
+            if record[1] <= 0:
+                recordsToDelete.append(record)
+        for record in recordsToDelete:
+            self.records.remove(record)
+
+    def timeClick(self):
+        self.timeleft -= 1
 
     def setOrder(self, order):
         self.order = order
-
-    def setTimeout(self, time):
-        self.timeout = time
 
     def addProgress(self):
         self.setProgress(self.progress + 1)
@@ -86,12 +103,35 @@ class TaskAllocation():
         return result
 
     @staticmethod
-    def getClosestAvailableRobot(world, pos):
+    def getClosestAvailableRobot(world, pos, radius=1000):
         minDist = 100000
         result = 0
         for robot in world.robots:
             dist = calculateManhattanDistance(robot.pos, pos)
-            if dist < minDist and not robot.task:
+            if dist < minDist and robot.capacity > robot.load:
+                if robot.task:
+                    if not robot.task.isStation or dist > radius:
+                        continue
                 minDist = dist
                 result = robot
+        return result
+
+    @staticmethod
+    def getMostNeededTask(world):
+        minVal = 100000
+        result = []
+        for task in world.tasks:
+            if task.timeleft <= minVal:
+                result = task
+                minVal = task.timeleft
+        return result
+
+    @staticmethod
+    def getMostNeededUnassignedTask(world):
+        minVal = 100000
+        result = 0
+        for task in world.tasks:
+            if task.order and task.timeleft <= minVal and not task.assigned:
+                result = task
+                minVal = task.timeleft
         return result

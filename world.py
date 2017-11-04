@@ -147,22 +147,27 @@ class WorldState():
         # First Algorithm Mode
         if self.mode == 1:
             for task in self.tasks:
-                task.timeoutClick()
-                if task.order and not task.assigned:
-                    r = TaskAllocation.getClosestAvailableRobot(self, task.pos)
-                    if r:
-                        r.setTask(task)
-                        r.updatePathFiner()
+                task.timeClick()
 
                 if self.hasRobotAt(task.pos):
-                    r = self.findRobotAt(task.pos)
-                    if r.task.pos == task.pos:
-                        r.setStatus("Arrived Task Location")
-                        r.addLoad(task.order)
-                        task.setOrder(0)
+                    robot = self.findRobotAt(task.pos)
+                    if robot.task.pos == task.pos:
+                        robot.setStatus("Arrived Task Location")
+                        load = min(robot.capacity - robot.load, task.order)
+                        robot.addLoad(load)
+                        task.setOrder(task.order - load)
+                        task.updateTimeLeft(load)
                         task.setAssignStatus(False)
-                        r.returnToStation()
-                        r.setStatus("Returning to Base")
+                        robot.returnToStation()
+                        robot.setStatus("Returning to Base")
+
+            for i in range(len(self.tasks)):
+                task = TaskAllocation.getMostNeededUnassignedTask(self)
+                if task:
+                    robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 5)
+                    if robot:
+                        robot.setTask(task)
+                        robot.updatePathFiner()
 
     def update(self):
         self.timerClick()

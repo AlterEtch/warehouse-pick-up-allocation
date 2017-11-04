@@ -74,6 +74,6 @@ while True:
         if len(robot.path):
             if robot.status != "Returning to Base":
                 robot.setStatus("Fetching Order")
-    graphics.root_window.after(100)
+    graphics.root_window.after(5)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()

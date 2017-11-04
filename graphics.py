@@ -71,7 +71,6 @@ class MainGraphics():
                   x1, y1+radius,
                   x1, y1+radius,
                   x1, y1]
-
         return self.canvas.create_polygon(points, smooth=True, **kwargs)
 
     def fillCell(self, pos, color, shape, percent=100):
@@ -95,14 +94,16 @@ class MainGraphics():
 
     def initStatusBar(self):
         self.canvas.create_text(self.width + 20, 50, anchor=Tkinter.W, fill="white", text="Current Time: ")
-        self.timerLabel = self.canvas.create_text(self.width + 180, 50, anchor=Tkinter.W, fill="white", text="0")
+        self.timerLabel = self.canvas.create_text(self.width + 220, 50, anchor=Tkinter.W, fill="white", text="0")
         self.canvas.create_text(self.width + 20, 70, anchor=Tkinter.W, fill="white", text="Total Task Locations: ")
-        self.taskCountLabel = self.canvas.create_text(self.width + 180, 70, anchor=Tkinter.W, fill="white", text="0")
+        self.taskCountLabel = self.canvas.create_text(self.width + 220, 70, anchor=Tkinter.W, fill="white", text="0")
         self.canvas.create_text(self.width + 20, 90, anchor=Tkinter.W, fill="white", text="Total Order Completed:")
-        self.taskCompletedLabel = self.canvas.create_text(self.width + 180, 90, anchor=Tkinter.W, fill="white", text="0")
+        self.taskCompletedLabel = self.canvas.create_text(self.width + 220, 90, anchor=Tkinter.W, fill="white", text="0")
+        self.canvas.create_text(self.width + 20, 110, anchor=Tkinter.W, fill="white", text="Order Completion Per Time:")
+        self.taskCompletionSpeedLabel = self.canvas.create_text(self.width + 220, 110, anchor=Tkinter.W, fill="white", text="0")
 
     def createRobotStatusBar(self):
-        self.robotStatusBarY = 150
+        self.robotStatusBarY = 160
         self.robotPosLabels = []
         self.robotStatusLabels = []
         self.robotLoadLabels = []
@@ -137,10 +138,11 @@ class MainGraphics():
 
     def updateStatusBar(self):
         self.canvas.itemconfig(self.taskCompletedLabel, text=str(self.world.completedOrder))
+        self.canvas.itemconfig(self.taskCompletionSpeedLabel, text=str(float(self.world.completedOrder)/float(self.world.timer)))
         for i in range(len(self.robotPosLabels)):
             self.canvas.itemconfig(self.robotPosLabels[i], text=str(self.world.robots[i].pos))
             self.canvas.itemconfig(self.robotStatusLabels[i], text=str(self.world.robots[i].status))
             self.canvas.itemconfig(self.robotLoadLabels[i], text=str(self.world.robots[i].load))
         for i in range(len(self.taskOrderLabels)):
             self.canvas.itemconfig(self.taskOrderLabels[i], text=str(self.world.tasks[i].order))
-            self.canvas.itemconfig(self.taskTimeLabels[i], text=str(self.world.tasks[i].timeout))
+            self.canvas.itemconfig(self.taskTimeLabels[i], text=str(self.world.tasks[i].timeleft))
