@@ -48,7 +48,7 @@ class WorldState():
                                                 anchor=Tkinter.W)
 
     def addTask(self, pos):
-        task = Task(world=self, canvas=self.canvas, gridSize=self.gridSize, pos=pos)
+        task = Task(world=self, canvas=self.canvas, pos=pos)
         write_log("\nAt time:" + str(self.timer) + "\n\t" +
                   str(task) + " at " + str(task.pos) + " is added")
         self.taskCache.append(task)
@@ -109,7 +109,7 @@ class WorldState():
         x,y = pos
         if x > self.width/self.gridSize or y > self.height/self.gridSize or x < 0 or y < 0:
             return False
-        if self.isWall(pos)
+        if self.isWall(pos):
             return True
         return False
 
@@ -136,7 +136,7 @@ class WorldState():
         self.canvas.itemconfig(self.graphics.timerLabel, text=str(self.timer))
 
     def checkTasksStatus(self):
-        self.canvas.itemconfig(self.graphics.taskCountLabel, text=str(len(self.tasks)))
+        self.canvas.itemconfig(self.graphics.taskCompletedLabel, text=str(len(self.taskCache)))
 
         # Fully randomized mode
         if self.mode == 0:
@@ -180,7 +180,7 @@ class WorldState():
                         r.setStatus("Returning to Base")
         #whatever it is
         if self.mode == 10:
-            self.canvas.itemconfig(self.unassignedLabel, text=str(len(self.taskCache)))
+            self.canvas.itemconfig(self.graphics.unassignedLabel, text=str(len(self.taskCache)))
             for robot in self.robots:
                 for task in robot.task:
                     if task.progress < task.cost:
@@ -255,6 +255,5 @@ class WorldState():
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
-        self.graphics.updateStatusBar()
         self.try_allocate_rob()
         self.update_robot_path()

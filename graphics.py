@@ -101,15 +101,20 @@ class MainGraphics():
 
     def initStatusBar(self):
         self.canvas.create_text(self.width + 10, 30, anchor=Tkinter.W, fill="white", text="Current Time: ")
-        self.world.timerLabel = self.canvas.create_text(self.width + 130, 30, anchor=Tkinter.W, fill="white", text="0")
-        self.canvas.create_text(self.width + 10, 50, anchor=Tkinter.W, fill="white", text="Unassigned Tasks: ")
-        self.world.unassignedLabel = self.canvas.create_text(self.width + 130, 50, anchor=Tkinter.W, fill="white",
+        self.timerLabel = self.canvas.create_text(self.width + 130, 30, anchor=Tkinter.W, fill="white", text="0")
+        self.canvas.create_text(self.width + 20, 50, anchor=Tkinter.W, fill="white", text="Total Task Locations: ")
+        self.taskCountLabel = self.canvas.create_text(self.width + 180, 50, anchor=Tkinter.W, fill="white", text="0")
+        self.canvas.create_text(self.width + 20, 70, anchor=Tkinter.W, fill="white", text="Total Order Completed:")
+        self.taskCompletedLabel = self.canvas.create_text(self.width + 180, 70, anchor=Tkinter.W, fill="white",
+                                                          text="0")
+        self.canvas.create_text(self.width + 200, 50, anchor=Tkinter.W, fill="white", text="Unassigned Tasks: ")
+        self.unassignedLabel = self.canvas.create_text(self.width + 320, 50, anchor=Tkinter.W, fill="white",
                                                              text="0")
-        self.canvas.create_text(self.width + 10, 70, anchor=Tkinter.W, fill="white", text="Completed Tasks: ")
-        self.world.completedLabel = self.canvas.create_text(self.width + 130, 70, anchor=Tkinter.W, fill="white",
-                                                            text="0")
+        self.canvas.create_text(self.width + 200, 70, anchor=Tkinter.W, fill="white", text="Completed Tasks: ")
+        self.completedLabel = self.canvas.create_text(self.width + 320, 70, anchor=Tkinter.W, fill="white",
+                                                      text="0")
         self.canvas.create_text(self.width + 10, 90, anchor=Tkinter.W, fill="white", text="Total Mileage: ")
-        self.world.mileageLabel = self.canvas.create_text(self.width + 130, 90, anchor=Tkinter.W, fill="white",
+        self.mileageLabel = self.canvas.create_text(self.width + 130, 90, anchor=Tkinter.W, fill="white",
                                                           text="0")
 
 

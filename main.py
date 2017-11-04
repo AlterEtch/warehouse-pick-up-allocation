@@ -11,24 +11,27 @@ LAYOUT_MAP = {'1': getLayout1,
               '3': getLayout3}
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser.add_argument('-r', type=int, default=5, help="number of robots")
-parser.add_argument('-t', type=int, help="number of tasks")
+parser.add_argument('-rr', type=int, default=5, help="number of randomized robots")
+parser.add_argument('-fr', type=int, default=0, help="number of fixed robots")
+parser.add_argument('-t', type=int, default=5, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
 parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
+parser.add_argument('-m', type=int, default=10, help="task allocation mode")
 args = parser.parse_args()
 
 getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout, stations = getLayout()
 
-if args.r > len(stations):
-    print 'Number of robots exceeds maximum limit'
-    sys.exit()
+# if args.m == 1 and args.r > len(stations):
+#     print 'Number of robots exceeds maxmimum limit'
+#     sys.exit()
 
-world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d)
+print args.m
+world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d, mode=args.m)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
-for i in range(3):
+for i in range(1):
     world.addRobot(pos=START_POINT[:])
 
 # TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
@@ -48,7 +51,7 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    # graphics.root_window.after(25)
+    graphics.root_window.after(25)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
     if world.timer == 2000:

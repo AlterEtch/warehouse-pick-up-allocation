@@ -4,7 +4,7 @@ import copy
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, index, capacity=200):
+    def __init__(self, world, canvas, size, pos, capacity=200):
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas
@@ -17,9 +17,7 @@ class RobotAgent():
                                                 text=str(self.id_num))
         self.task = []
         self.path = []
-        self.station = Task(world=self.world, canvas=self.canvas, gridSize=self.world.gridSize,
-                            pos=copy.deepcopy(self.pos),
-                            isStation=True)
+        self.station = Task(world=self.world, canvas=self.canvas, pos=copy.deepcopy(self.pos), isStation=True)
         self.capacityCount = 0
 
     def move(self, direction):
@@ -35,7 +33,7 @@ class RobotAgent():
                 self.canvas.move(self.id_label, direction[0] * self.size / 2, direction[1] * self.size / 2)
                 self.canvas.update()
                 self.world.totalMileage += 1
-                self.canvas.itemconfig(self.world.mileageLabel, text=str(self.world.totalMileage))
+                self.canvas.itemconfig(self.world.graphics.mileageLabel, text=str(self.world.totalMileage))
 
         else:
             if len(self.path):
@@ -62,7 +60,7 @@ class RobotAgent():
                   str(task) + " at " + str(task.pos) + " is consumed")
         self.capacityCount += 1
         self.world.completedTask += 1
-        self.world.canvas.itemconfig(self.world.completedLabel, text=str(self.world.completedTask))
+        self.world.canvas.itemconfig(self.world.graphics.completedLabel, text=str(self.world.completedTask))
         self.world.canvas.delete(task.id)
         self.world.canvas.delete(task.id_label)
 
@@ -80,7 +78,7 @@ class RobotAgent():
             self.move(self.path[0])
             self.path.pop(0)
             if not len(self.path) and self.task:
-                if self.task.isStation:
+                if self.task[0].isStation:
                     self.setStatus("Waiting for Order")
                     self.world.addCompletedOrder(self.load)
                     self.load = 0
