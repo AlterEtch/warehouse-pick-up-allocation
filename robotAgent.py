@@ -5,7 +5,7 @@ from search import *
 import copy
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, index, capacity=10):
+    def __init__(self, world, canvas, size, pos, index, capacity=100):
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas

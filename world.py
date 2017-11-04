@@ -164,6 +164,7 @@ class WorldState():
             for i in range(len(self.tasks)):
                 task = TaskAllocation.getMostNeededUnassignedTask(self)
                 if task:
+                    print task.index
                     robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 5)
                     if robot:
                         robot.setTask(task)

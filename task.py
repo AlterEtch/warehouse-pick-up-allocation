@@ -45,7 +45,10 @@ class Task():
 
     def setAssignStatus(self, status):
         self.assigned = status
-        #self.canvas.itemconfig(self.id, fill="red")
+        if status:
+            self.canvas.itemconfig(self.shape, fill="yellow")
+        else:
+            self.canvas.itemconfig(self.shape, fill="white")
 
     def updateTimeLeft(self, order):
         for record in self.records:
