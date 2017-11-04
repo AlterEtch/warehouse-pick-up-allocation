@@ -20,7 +20,7 @@ class Task:
 
     def setAssignStatus(self, status):
         self.assigned = status
-        self.canvas.itemconfig(self.id, fill="red")
+        self.canvas.itemconfig(self.id, fill="red4")
         self.canvas.itemconfig(self.id_label, fill="green")
 
     def addProgress(self):
@@ -30,7 +30,7 @@ class Task:
         self.progress = progress
         if self.progress == 0:
             if self.assigned == True:
-                self.canvas.itemconfig(self.id, fill="red")
+                self.canvas.itemconfig(self.id, fill="red4")
             else:
                 self.canvas.itemconfig(self.id, fill="white")
         elif self.progress >= self.cost:
