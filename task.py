@@ -66,7 +66,8 @@ class Task():
             self.records.remove(record)
 
     def timeClick(self):
-        self.timeleft -= 1
+        if self.order:
+            self.timeleft -= 1
 
     def setOrder(self, order):
         self.order = order

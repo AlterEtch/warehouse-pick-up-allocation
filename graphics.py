@@ -1,5 +1,6 @@
 import Tkinter
 
+
 class MainGraphics():
     def __init__(self, world, bgColor="black", title="Warehouse Simulation"):
         self.world = world
@@ -18,7 +19,7 @@ class MainGraphics():
         self.root_window.title(self.title)
         self.root_window.resizable(0, 0)
 
-        self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width + 400, height=self.height)
+        self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width + 500, height=self.height)
 
         self.drawWalls()
         self.drawGrids()
@@ -31,15 +32,15 @@ class MainGraphics():
         for i in range(0,len(path)-1):
             x1 = path[i][0] * self.gridSize + 0.5 * self.gridSize
             y1 = path[i][1] * self.gridSize + 0.5 * self.gridSize
-            x2 = path[i+1][0] * self.gridSize + 0.5 * self.gridSize
-            y2 = path[i+1][1] * self.gridSize + 0.5 * self.gridSize
-            self.canvas.create_line([x1,y1],[x2,y2], fill="yellow")
+            x2 = path[i + 1][0] * self.gridSize + 0.5 * self.gridSize
+            y2 = path[i + 1][1] * self.gridSize + 0.5 * self.gridSize
+            self.canvas.create_line([x1, y1], [x2, y2], fill="yellow")
 
     def drawGrids(self):
         for x in range(0, self.width, self.gridSize):
-            self.canvas.create_line([x,0],[x,self.height], fill="red")
+            self.canvas.create_line([x, 0], [x, self.height], fill="red")
         for y in range(0, self.height, self.gridSize):
-            self.canvas.create_line([0,y],[self.width,y], fill="red")
+            self.canvas.create_line([0, y], [self.width,y], fill="red")
         self.numberAxis()
 
     def drawStations(self):
@@ -47,42 +48,42 @@ class MainGraphics():
             self.fillCell(s.pos, "blue", "rect")
 
     def drawButtons(self):
-        self.startButton = self.createRoundRectangle(self.width + 40, self.height - 100, self.width + 160, self.height - 50, radius=25, outline="blue", fill="red", width=5)
-        self.resetButton = self.createRoundRectangle(self.width + 240, self.height - 100, self.width + 360, self.height - 50, radius=25, outline="blue", fill="red", width=5)
+        self.startButton = self.createRoundRectangle(self.width + 40, self.height - 100, self.width + 160, self.height - 50, radius=25, outline="blue", width=5)
+        self.resetButton = self.createRoundRectangle(self.width + 240, self.height - 100, self.width + 360, self.height - 50, radius=25, outline="blue", width=5)
 
     def createRoundRectangle(self, x1, y1, x2, y2, radius=20, **kwargs):
-        points = [x1+radius, y1,
-                  x1+radius, y1,
-                  x2-radius, y1,
-                  x2-radius, y1,
+        points = [x1 + radius, y1,
+                  x1 + radius, y1,
+                  x2 - radius, y1,
+                  x2 - radius, y1,
                   x2, y1,
-                  x2, y1+radius,
-                  x2, y1+radius,
-                  x2, y2-radius,
-                  x2, y2-radius,
+                  x2, y1 + radius,
+                  x2, y1 + radius,
+                  x2, y2 - radius,
+                  x2, y2 - radius,
                   x2, y2,
-                  x2-radius, y2,
-                  x2-radius, y2,
-                  x1+radius, y2,
-                  x1+radius, y2,
+                  x2 - radius, y2,
+                  x2 - radius, y2,
+                  x1 + radius, y2,
+                  x1 + radius, y2,
                   x1, y2,
-                  x1, y2-radius,
-                  x1, y2-radius,
-                  x1, y1+radius,
-                  x1, y1+radius,
+                  x1, y2 - radius,
+                  x1, y2 - radius,
+                  x1, y1 + radius,
+                  x1, y1 + radius,
                   x1, y1]
         return self.canvas.create_polygon(points, smooth=True, **kwargs)
 
     def fillCell(self, pos, color, shape, percent=100):
-        x,y = pos
+        x, y = pos
         if shape == "rect":
-            self.canvas.create_rectangle(x*self.gridSize, y*self.gridSize, (x+1)*self.gridSize, (y+1)*self.gridSize, fill=color)
+            self.canvas.create_rectangle(x * self.gridSize, y * self.gridSize, (x + 1) * self.gridSize, (y + 1) * self.gridSize, fill=color)
 
     def drawWalls(self):
-        for x in range(0, self.width/self.gridSize):
-            for y in range(0, self.height/self.gridSize):
+        for x in range(0, self.width / self.gridSize):
+            for y in range(0, self.height / self.gridSize):
                 if self.layout[x][y]:
-                    self.fillCell([x,y], "red", "rect")
+                    self.fillCell([x, y], "red", "rect")
 
     def numberAxis(self):
         for x in range(1, self.width / self.gridSize - 1):
@@ -99,7 +100,7 @@ class MainGraphics():
         self.taskCountLabel = self.canvas.create_text(self.width + 220, 70, anchor=Tkinter.W, fill="white", text="0")
         self.canvas.create_text(self.width + 20, 90, anchor=Tkinter.W, fill="white", text="Total Order Completed:")
         self.taskCompletedLabel = self.canvas.create_text(self.width + 220, 90, anchor=Tkinter.W, fill="white", text="0")
-        self.canvas.create_text(self.width + 20, 110, anchor=Tkinter.W, fill="white", text="Order Completion Per Time:")
+        self.canvas.create_text(self.width + 20, 110, anchor=Tkinter.W, fill="white", text="Average Time Per Order:")
         self.taskCompletionSpeedLabel = self.canvas.create_text(self.width + 220, 110, anchor=Tkinter.W, fill="white", text="0")
 
     def createRobotStatusBar(self):
@@ -107,16 +108,20 @@ class MainGraphics():
         self.robotPosLabels = []
         self.robotStatusLabels = []
         self.robotLoadLabels = []
+        self.robotAssignedLabels = []
 
         self.canvas.create_text(self.width + 20, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Robot")
         self.canvas.create_text(self.width + 80, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Position")
         self.canvas.create_text(self.width + 160, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Status")
         self.canvas.create_text(self.width + 320, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Load")
+        self.canvas.create_text(self.width + 400, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Assigned To")
+
         for count in range(len(self.world.robots)):
             self.canvas.create_text(self.width + 20, self.robotStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].index))
-            self.robotPosLabels.append(self.canvas.create_text(self.width + 80, self.robotStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].pos)))
-            self.robotStatusLabels.append(self.canvas.create_text(self.width + 160, self.robotStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text="Waiting for Order"))
-            self.robotLoadLabels.append(self.canvas.create_text(self.width + 320, self.robotStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].load)))
+            self.robotPosLabels.append(self.canvas.create_text(self.width + 80, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].pos)))
+            self.robotStatusLabels.append(self.canvas.create_text(self.width + 160, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="Waiting for Order"))
+            self.robotLoadLabels.append(self.canvas.create_text(self.width + 320, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].load)))
+            self.robotAssignedLabels.append(self.canvas.create_text(self.width + 400, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="None"))
 
     def createTaskStatusBar(self):
         self.taskStatusBarY = self.robotStatusBarY + len(self.world.robots) * 20 + 50
@@ -138,11 +143,23 @@ class MainGraphics():
 
     def updateStatusBar(self):
         self.canvas.itemconfig(self.taskCompletedLabel, text=str(self.world.completedOrder))
-        self.canvas.itemconfig(self.taskCompletionSpeedLabel, text=str(float(self.world.completedOrder)/float(self.world.timer)))
-        for i in range(len(self.robotPosLabels)):
+        if not self.world.completedOrder:
+            self.canvas.itemconfig(self.taskCompletionSpeedLabel, text="N/A")
+        else:
+            self.canvas.itemconfig(self.taskCompletionSpeedLabel, text=str(float(self.world.timer) / float(self.world.completedOrder)))
+
+        for i in range(len(self.world.robots)):
             self.canvas.itemconfig(self.robotPosLabels[i], text=str(self.world.robots[i].pos))
             self.canvas.itemconfig(self.robotStatusLabels[i], text=str(self.world.robots[i].status))
             self.canvas.itemconfig(self.robotLoadLabels[i], text=str(self.world.robots[i].load))
+            if self.world.robots[i].task:
+                if not self.world.robots[i].task.isStation:
+                    self.canvas.itemconfig(self.robotAssignedLabels[i], text=str(self.world.robots[i].task.index))
+                else:
+                    self.canvas.itemconfig(self.robotAssignedLabels[i], text="Base")
+            else:
+                self.canvas.itemconfig(self.robotAssignedLabels[i], text="None")
+
         for i in range(len(self.taskOrderLabels)):
             self.canvas.itemconfig(self.taskOrderLabels[i], text=str(self.world.tasks[i].order))
             self.canvas.itemconfig(self.taskTimeLabels[i], text=str(self.world.tasks[i].timeleft))

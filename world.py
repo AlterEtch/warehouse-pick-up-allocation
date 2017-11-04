@@ -1,11 +1,11 @@
-from graphics import MainGraphics
 from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
-from util import *
+import util
+
 
 class WorldState():
-    def __init__(self, width, height, gridSize, layout, stations, mode, directional = False):
+    def __init__(self, width, height, gridSize, layout, stations, mode, directional=False):
         self.gridSize = gridSize
         self.width = width
         self.height = height
@@ -36,7 +36,6 @@ class WorldState():
         self.completedOrder += order
 
     def addRobot(self, pos):
-        station = pos
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos, index=len(self.robots) + 1)
         self.robots.append(robot)
 
@@ -47,13 +46,13 @@ class WorldState():
     def addRandomRobot(self, num):
         for x in range(num):
             if self.stations is not None:
-                self.addRobot(generateRandomStation(self))
+                self.addRobot(util.generateRandomStation(self))
             else:
-                self.addRobot(generateRandomPosition(self))
+                self.addRobot(util.generateRandomPosition(self))
 
     def addRandomTask(self, num):
         for x in range(num):
-            self.addTask(generateRandomPosition(self))
+            self.addTask(util.generateRandomPosition(self))
 
     def hasRobotAt(self, pos):
         return self.findRobotAt(pos) != 0
@@ -89,30 +88,30 @@ class WorldState():
         return 0
 
     def isWall(self, pos):
-        x,y = pos
-        if x > self.width/self.gridSize or y > self.height/self.gridSize or x < 0 or y < 0:
+        x, y = pos
+        if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
             return False
         if self.layout[x][y] == 1:
             return True
         return False
 
     def isBlocked(self, pos):
-        x,y = pos
-        if x > self.width/self.gridSize or y > self.height/self.gridSize or x < 0 or y < 0:
+        x, y = pos
+        if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
             return False
         if self.isWall(pos) or self.hasRobotAt(pos):
             return True
         return False
 
     def isBlockedAtRow(self, row):
-        for x in range(2, self.width/self.gridSize - 2):
-            if self.isBlocked([x,row]):
+        for x in range(2, self.width / self.gridSize - 2):
+            if self.isBlocked([x, row]):
                 return True
         return False
 
     def isBlockedAtColumn(self, col):
-        for y in range(2, self.height/self.gridSize - 2):
-            if self.isBlocked([col,y]):
+        for y in range(2, self.height / self.gridSize - 2):
+            if self.isBlocked([col, y]):
                 return True
         return False
 
@@ -144,6 +143,7 @@ class WorldState():
                             print self.mode
                         self.canvas.delete(task.id)
                         self.tasks.remove(task)
+
         # First Algorithm Mode
         if self.mode == 1:
             for task in self.tasks:
@@ -164,7 +164,6 @@ class WorldState():
             for i in range(len(self.tasks)):
                 task = TaskAllocation.getMostNeededUnassignedTask(self)
                 if task:
-                    print task.index
                     robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 5)
                     if robot:
                         robot.setTask(task)

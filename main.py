@@ -1,16 +1,11 @@
 from graphics import MainGraphics
-from robotAgent import RobotAgent
 from world import WorldState
-from actions import Actions
-from task import Task
-from search import *
-from layout import *
-import sys
+import layout
 import argparse
 
-LAYOUT_MAP = {'1' : getLayout1,
-              '2' : getLayout2,
-              '3' : getLayout3}
+LAYOUT_MAP = {'1' : layout.getLayout1,
+              '2' : layout.getLayout2,
+              '3' : layout.getLayout3}
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-rr', type=int, default=5, help="number of randomized robots")
@@ -28,7 +23,6 @@ width, height, gridSize, layout, stations = getLayout()
 #     print 'Number of robots exceeds maxmimum limit'
 #     sys.exit()
 
-print args.m
 world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d, mode=args.m)
 graphics = MainGraphics(world=world)
 world.setGraphics(graphics)

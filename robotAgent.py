@@ -1,8 +1,8 @@
-from time import sleep
 from actions import Actions
-from task import *
-from search import *
+from task import Task
+from search import PathFind
 import copy
+
 
 class RobotAgent():
     def __init__(self, world, canvas, size, pos, index, capacity=100):
@@ -14,11 +14,12 @@ class RobotAgent():
         self.capacity = capacity
         self.load = 0
         self.status = "Waiting for Order"
-        self.shape = self.canvas.create_oval(self.pos[0]*self.size, self.pos[1]*self.size, (self.pos[0]+1)*self.size, (self.pos[1]+1)*self.size, fill="green", tag="robot"+str(self.index))
-        self.text = self.canvas.create_text((self.pos[0]+0.5)*self.size, (self.pos[1]+0.5)*self.size, fill="black", text=self.index, tag="robot"+str(self.index))
+        self.shape = self.canvas.create_oval(self.pos[0] * self.size, self.pos[1] * self.size, (self.pos[0] + 1) * self.size, (self.pos[1] + 1) * self.size, fill="green", tag="robot" + str(self.index))
+        self.text = self.canvas.create_text((self.pos[0] + 0.5) * self.size, (self.pos[1] + 0.5) * self.size, fill="black", text=self.index, tag="robot" + str(self.index))
         self.task = []
         self.path = []
         self.station = Task(canvas=self.canvas, world=self.world, pos=copy.deepcopy(self.pos), isStation=True)
+        self.assignable = True
 
     def move(self, direction):
         possibleActions = self.getPossibleActions()
@@ -28,21 +29,21 @@ class RobotAgent():
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
             # Animate the movement of robot
-            for x in range(0,2):
-                for obj in self.canvas.find_withtag("robot"+str(self.index)):
-                    self.canvas.move(obj, direction[0]*self.size/2, direction[1]*self.size/2)
+            for x in range(0, 2):
+                for obj in self.canvas.find_withtag("robot" + str(self.index)):
+                    self.canvas.move(obj, direction[0] * self.size / 2, direction[1] * self.size / 2)
                     self.canvas.update()
         else:
             if len(self.path):
-                #print 'recalculating path'
                 self.updatePathFiner()
                 try:
                     path, dirPath = self.pathfinder.performAStarSearch(override=True)
                 except TypeError:
-                    self.path.insert(0,[0,0])
+                    self.path.insert(0, [0, 0])
                 else:
                     self.path = dirPath
-                    #self.world.graphics.drawPath(path)
+                    if False:
+                        self.world.graphics.drawPath(path)
 
     def getPossibleActions(self, override=False):
         return Actions.possibleActions(self.pos, self.world, override)
@@ -85,6 +86,7 @@ class RobotAgent():
         try:
             path, dirPath = self.pathfinder.performAStarSearch()
             self.setPath(dirPath)
-            #self.world.graphics.drawPath(path)
+            if False:
+                self.world.graphics.drawPath(path)
         except TypeError:
             print 'error1'

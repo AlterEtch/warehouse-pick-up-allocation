@@ -2,7 +2,7 @@ from station import *
 
 # One base station
 def getLayout1():
-    width, height, gridSize = 1040, 800, 40
+    width, height, gridSize = 1000, 1000, 40
     wallLayout = [[0 for row in range(0,height/gridSize+1)] for col in range(0,width/gridSize+1)]
     for x in range(0, width/gridSize):
         for y in range(0, height/gridSize):
