@@ -8,7 +8,7 @@ class Task():
         self.pos = pos
         self.canvas = canvas
         self.world = world
-        self.size = self.world.gridSize * 0.
+        self.size = self.world.gridSize * 0.6
         self.cost = cost
         self.index = len(self.world.taskCache)
         self.isStation = isStation

@@ -45,8 +45,6 @@ class WorldState():
     def addRobot(self, pos):
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
-        self.canvas.create_text(self.width + 10, 110 + 20 * robot.id_text, fill="white", anchor=Tkinter.W,
-                                text="Robot " + str(robot.id_text) + ": ")
         robot.id_task = self.canvas.create_text(self.width + 55, 110 + 20 * robot.id_text, fill="white",
                                                 anchor=Tkinter.W)
 
@@ -157,7 +155,7 @@ class WorldState():
         self.canvas.itemconfig(self.graphics.timerLabel, text=str(self.timer))
 
     def checkTasksStatus(self):
-        self.canvas.itemconfig(self.graphics.taskCompletedLabel, text=str(len(self.taskCache)))
+        self.canvas.itemconfig(self.graphics.taskCountLabel, text=str(len(self.tasks)))
 
         # Fully randomized mode
         if self.mode == 0:
@@ -245,7 +243,6 @@ class WorldState():
                         r.setTask(tmp_task[-1])
                         text = str(tmp_task[-1].pos)
                         write_log(text)
-                    self.canvas.itemconfig(r.id_task, text=str(task))
                     for i in tmp_task:
                         self.taskCache.remove(i)
                     self.refresh_task_label()
