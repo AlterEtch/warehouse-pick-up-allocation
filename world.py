@@ -1,6 +1,7 @@
 from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
+from actions import Actions
 import util
 
 
@@ -63,6 +64,13 @@ class WorldState():
     def hasStationAt(self, pos):
         return self.findStationAt(pos) != 0
 
+    def hasRobotNextTo(self, pos):
+        neighbours = Actions.nearbyLocation(pos, self)
+        for neighbour in neighbours:
+            if self.hasRobotAt(neighbour):
+                return True
+        return False
+
     def findRobotAt(self, pos):
         for robot in self.robots:
             if robot.pos == pos:
@@ -85,6 +93,17 @@ class WorldState():
         for robot in self.robots:
             if robot.task == task:
                 return robot
+        return 0
+
+    def findRobotNextToWithTask(self, pos, task):
+        if not self.hasRobotNextTo(pos):
+            return 0
+        locations = Actions.nearbyLocation(pos, self)
+        for location in locations:
+            robot = self.findRobotAt(location)
+            if robot:
+                if robot.task.pos == pos:
+                    return robot
         return 0
 
     def isWall(self, pos):
@@ -149,9 +168,9 @@ class WorldState():
             for task in self.tasks:
                 task.timeClick()
 
-                if self.hasRobotAt(task.pos):
-                    robot = self.findRobotAt(task.pos)
-                    if robot.task.pos == task.pos:
+                if self.hasRobotNextTo(task.pos):
+                    robot = self.findRobotNextToWithTask(task.pos, task)
+                    if robot:
                         robot.setStatus("Arrived Task Location")
                         load = min(robot.capacity - robot.load, task.order)
                         robot.addLoad(load)
@@ -164,7 +183,7 @@ class WorldState():
             for i in range(len(self.tasks)):
                 task = TaskAllocation.getMostNeededUnassignedTask(self)
                 if task:
-                    robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 5)
+                    robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 10)
                     if robot:
                         robot.setTask(task)
                         robot.updatePathFiner()

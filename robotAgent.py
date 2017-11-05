@@ -5,13 +5,14 @@ import copy
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, index, capacity=100):
+    def __init__(self, world, canvas, size, pos, index, capacity=100, power=30):
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas
         self.size = size
         self.index = index
         self.capacity = capacity
+        self.power = power
         self.load = 0
         self.status = "Waiting for Order"
         self.shape = self.canvas.create_oval(self.pos[0] * self.size, self.pos[1] * self.size, (self.pos[0] + 1) * self.size, (self.pos[1] + 1) * self.size, fill="green", tag="robot" + str(self.index))
@@ -45,8 +46,8 @@ class RobotAgent():
                     if False:
                         self.world.graphics.drawPath(path)
 
-    def getPossibleActions(self, override=False):
-        return Actions.possibleActions(self.pos, self.world, override)
+    def getPossibleActions(self):
+        return Actions.possibleActions(self.pos, self.world)
 
     def setTask(self, task):
         self.task = task

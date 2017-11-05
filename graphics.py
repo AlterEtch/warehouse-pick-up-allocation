@@ -19,7 +19,8 @@ class MainGraphics():
         self.root_window.title(self.title)
         self.root_window.resizable(0, 0)
 
-        self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width + 500, height=self.height)
+        self.statusBarWidth = 500
+        self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width + self.statusBarWidth, height=self.height)
 
         self.drawWalls()
         self.drawGrids()
@@ -40,7 +41,7 @@ class MainGraphics():
         for x in range(0, self.width, self.gridSize):
             self.canvas.create_line([x, 0], [x, self.height], fill="red")
         for y in range(0, self.height, self.gridSize):
-            self.canvas.create_line([0, y], [self.width,y], fill="red")
+            self.canvas.create_line([0, y], [self.width, y], fill="red")
         self.numberAxis()
 
     def drawStations(self):
@@ -48,8 +49,14 @@ class MainGraphics():
             self.fillCell(s.pos, "blue", "rect")
 
     def drawButtons(self):
-        self.startButton = self.createRoundRectangle(self.width + 40, self.height - 100, self.width + 160, self.height - 50, radius=25, outline="blue", width=5)
-        self.resetButton = self.createRoundRectangle(self.width + 240, self.height - 100, self.width + 360, self.height - 50, radius=25, outline="blue", width=5)
+        buttonWidth = 120
+        buttonHeight = 50
+        leadingSpace = (self.statusBarWidth - 2 * buttonWidth) / 3
+        bottomSpace = 50
+        self.startButton = self.createRoundRectangle(self.width + leadingSpace, self.height - (bottomSpace + buttonHeight), self.width + leadingSpace + buttonWidth, self.height - bottomSpace, radius=0, outline="#6E6E6E", width=3)
+        self.canvas.create_text(self.width + leadingSpace + buttonWidth / 2, self.height - (bottomSpace + buttonHeight / 2), anchor=Tkinter.CENTER, fill="#6E6E6E", text="Start")
+        self.resetButton = self.createRoundRectangle(self.width + leadingSpace * 2 + buttonWidth, self.height - (bottomSpace + buttonHeight), self.width + 2 * (leadingSpace + buttonWidth), self.height - bottomSpace, radius=0, outline="#6E6E6E", width=3)
+        self.canvas.create_text(self.width + (2 * leadingSpace + 3 * buttonWidth / 2), self.height - (bottomSpace + buttonHeight / 2), anchor=Tkinter.CENTER, fill="#6E6E6E", text="Reset")
 
     def createRoundRectangle(self, x1, y1, x2, y2, radius=20, **kwargs):
         points = [x1 + radius, y1,
