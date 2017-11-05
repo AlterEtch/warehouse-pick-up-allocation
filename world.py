@@ -1,9 +1,8 @@
 from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
-from routing import *
 from util import *
-import routing
+import search
 import Tkinter
 from actions import Actions
 
@@ -232,7 +231,7 @@ class WorldState():
             r = self.findRobotAt(START_POINT[:])
             if not r.task:
                 r.capacityCount = 0
-                task = sort_task(self)
+                task = search.sort_task(self)
                 tmp_task = []
                 if task:
                     write_log("\nAt time:" + str(self.timer) + "\n\t" +
@@ -257,11 +256,11 @@ class WorldState():
                 path = []
                 if r.task:
                     if r.capacityCount < ROBOT_CAPACITY:
-                        path = routing.path_generate(self, r.pos, r.task[0].pos)
+                        path = search.path_generate(self, r.pos, r.task[0].pos)
                     else:
-                        path = routing.path_generate(self, r.pos, START_POINT[:])
+                        path = search.path_generate(self, r.pos, START_POINT[:])
                 if not r.task:
-                    path = routing.path_generate(self, r.pos, START_POINT[:])
+                    path = search.path_generate(self, r.pos, START_POINT[:])
                 r.setPath(path)
 
     def refresh_task_label(self):
