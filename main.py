@@ -2,9 +2,11 @@ from graphics import MainGraphics
 from world import WorldState
 from search import *
 from layout import *
+from util import *
 import sys
 import argparse
 import atexit
+
 
 LAYOUT_MAP = {'1': getLayout1,
               '2': getLayout2,
@@ -32,7 +34,7 @@ graphics = MainGraphics(world=world)
 world.setGraphics(graphics)
 
 for i in range(1):
-    world.addRobot(pos=START_POINT[:])
+    world.addRobot(pos=util.START_POINT[:])
 
 # TaskPosList = [[1, 4], [5, 3], [9, 6], [6, 9], [14, 15], [9, 19], [15, 19]]
 # for pos in TaskPosList:
@@ -45,6 +47,35 @@ write_log("There are " + str(len(world.robots)) + " robots with capacity of " + 
 # world.addRandomTask(10)
 
 # Main loop for window
+def setup():
+    if args.rr:
+        world.addRandomRobot(args.rr)
+    for i in range(args.fr):
+        world.addRobot(world.stations[0].pos)
+    world.addRandomTask(args.t)
+
+    if args.m == 0:
+        for i in range(len(world.robots)):
+            if i < len(world.tasks):
+                world.robots[i].setTask(world.tasks[i])
+
+    graphics.createRobotStatusBar()
+    graphics.createTaskStatusBar()
+
+    if args.m == 0:
+        for robot in world.robots:
+            if robot.task != []:
+                robot.updatePathFiner()
+                try:
+                    path, dirPath = robot.pathfinder.performAStarSearch()
+                except TypeError:
+                    print 'restarting'
+                    setup()
+                else:
+                    robot.setPath(dirPath)
+                    #graphics.drawPath(path)
+
+setup()
 while True:
     if world.timer % TASK_TIME_INTERVAL == 0:
         world.addRandomTask(1)

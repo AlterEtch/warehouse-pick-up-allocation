@@ -79,13 +79,13 @@ class Task():
         self.progress = progress
         if self.progress == 0:
             if self.assigned == True:
-                self.canvas.itemconfig(self.id, fill="red4")
+                self.canvas.itemconfig(self.id_shape, fill="red4")
             else:
-                self.canvas.itemconfig(self.id, fill="white")
+                self.canvas.itemconfig(self.id_shape, fill="white")
         elif self.progress >= self.cost:
-            self.canvas.itemconfig(self.id, fill="blue")
+            self.canvas.itemconfig(self.id_shape, fill="blue")
         else:
-            self.canvas.itemconfig(self.id, fill="yellow")
+            self.canvas.itemconfig(self.id_shape, fill="yellow")
 
     def resetProgress(self):
         self.setProgress(0)

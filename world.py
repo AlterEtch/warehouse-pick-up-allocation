@@ -2,10 +2,10 @@ from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
 from routing import *
+from util import *
 import routing
 import Tkinter
 from actions import Actions
-import util
 
 
 class WorldState():
@@ -17,6 +17,7 @@ class WorldState():
         self.stations = stations
         self.robots = []
         self.taskCache = []
+        self.tasks = []
         self.timer = 0
         self.totalMileage = 0
         self.completedTask = 0
@@ -44,9 +45,9 @@ class WorldState():
     def addRobot(self, pos):
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
-        self.canvas.create_text(self.width + 10, 110 + 20 * robot.id_num, fill="white", anchor=Tkinter.W,
-                                text="Robot " + str(robot.id_num) + ": ")
-        robot.id_task = self.canvas.create_text(self.width + 55, 110 + 20 * robot.id_num, fill="white",
+        self.canvas.create_text(self.width + 10, 110 + 20 * robot.id_text, fill="white", anchor=Tkinter.W,
+                                text="Robot " + str(robot.id_text) + ": ")
+        robot.id_task = self.canvas.create_text(self.width + 55, 110 + 20 * robot.id_text, fill="white",
                                                 anchor=Tkinter.W)
 
     def addTask(self, pos):
@@ -58,13 +59,13 @@ class WorldState():
     def addRandomRobot(self, num):
         for x in range(num):
             if self.stations is not None:
-                self.addRobot(util.generateRandomStation(self))
+                self.addRobot(generateRandomStation(self))
             else:
-                self.addRobot(util.generateRandomPosition(self))
+                self.addRobot(generateRandomPosition(self))
 
     def addRandomTask(self, num):
         for x in range(num):
-            self.addTask(util.generateRandomPosition(self))
+            self.addTask(generateRandomPosition(self))
 
     def hasRobotAt(self, pos):
         return self.findRobotAt(pos) != 0
@@ -237,7 +238,7 @@ class WorldState():
                 tmp_task = []
                 if task:
                     write_log("\nAt time:" + str(self.timer) + "\n\t" +
-                              str(r) + " labeled as Robot " + str(r.id_num) + " accepts the task:" + str(
+                              str(r) + " labeled as Robot " + str(r.id_text) + " accepts the task:" + str(
                         task) + " at pos:")
                     for index in task:
                         tmp_task.append(self.taskCache[index])
@@ -274,7 +275,7 @@ class WorldState():
         """
         i = 0
         for task in self.taskCache:
-            self.canvas.itemconfig(task.id_label, text=str(i))
+            self.canvas.itemconfig(task.id_text, text=str(i))
             i += 1
 
     def checkRobotStatus(self):
