@@ -188,7 +188,14 @@ class WorldState():
                         robot.setTask(task)
                         robot.updatePathFiner()
 
+    def checkRobotStatus(self):
+        for robot in self.robots:
+            if robot.task:
+                if robot.task.isStation and robot.atStation():
+                    robot.chargeBattery()
+
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
+        self.checkRobotStatus()
         self.graphics.updateStatusBar()

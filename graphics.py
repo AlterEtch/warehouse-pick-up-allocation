@@ -19,7 +19,7 @@ class MainGraphics():
         self.root_window.title(self.title)
         self.root_window.resizable(0, 0)
 
-        self.statusBarWidth = 500
+        self.statusBarWidth = 600
         self.canvas = Tkinter.Canvas(self.root_window, bg=self.bgColor, width=self.width + self.statusBarWidth, height=self.height)
 
         self.drawWalls()
@@ -116,19 +116,22 @@ class MainGraphics():
         self.robotStatusLabels = []
         self.robotLoadLabels = []
         self.robotAssignedLabels = []
+        self.robotPowerLabels = []
 
         self.canvas.create_text(self.width + 20, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Robot")
         self.canvas.create_text(self.width + 80, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Position")
         self.canvas.create_text(self.width + 160, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Status")
-        self.canvas.create_text(self.width + 320, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Load")
-        self.canvas.create_text(self.width + 400, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Assigned To")
+        self.canvas.create_text(self.width + 300, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Load")
+        self.canvas.create_text(self.width + 360, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Power")
+        self.canvas.create_text(self.width + 420, self.robotStatusBarY, anchor=Tkinter.W, fill="white", text="Assigned To")
 
         for count in range(len(self.world.robots)):
             self.canvas.create_text(self.width + 20, self.robotStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].index))
             self.robotPosLabels.append(self.canvas.create_text(self.width + 80, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].pos)))
             self.robotStatusLabels.append(self.canvas.create_text(self.width + 160, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="Waiting for Order"))
-            self.robotLoadLabels.append(self.canvas.create_text(self.width + 320, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].load)))
-            self.robotAssignedLabels.append(self.canvas.create_text(self.width + 400, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="None"))
+            self.robotLoadLabels.append(self.canvas.create_text(self.width + 300, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text=str(self.world.robots[count].load)))
+            self.robotPowerLabels.append(self.canvas.create_text(self.width + 360, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="None"))
+            self.robotAssignedLabels.append(self.canvas.create_text(self.width + 420, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="None"))
 
     def createTaskStatusBar(self):
         self.taskStatusBarY = self.robotStatusBarY + len(self.world.robots) * 20 + 50
@@ -139,14 +142,13 @@ class MainGraphics():
         self.canvas.create_text(self.width + 20, self.taskStatusBarY, anchor=Tkinter.W, fill="white", text="Task")
         self.canvas.create_text(self.width + 80, self.taskStatusBarY, anchor=Tkinter.W, fill="white", text="Position")
         self.canvas.create_text(self.width + 160, self.taskStatusBarY, anchor=Tkinter.W, fill="white", text="Remaining Time")
-        self.canvas.create_text(self.width + 320, self.taskStatusBarY, anchor=Tkinter.W, fill="white", text="Order")
+        self.canvas.create_text(self.width + 300, self.taskStatusBarY, anchor=Tkinter.W, fill="white", text="Order")
 
         for count in range(len(self.world.tasks)):
             self.canvas.create_text(self.width + 20, self.taskStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.tasks[count].index))
             self.taskPosLabels.append(self.canvas.create_text(self.width + 80, self.taskStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.tasks[count].pos)))
             self.taskTimeLabels.append(self.canvas.create_text(self.width + 160, self.taskStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.tasks[count].timeout)))
-            self.taskOrderLabels.append(self.canvas.create_text(self.width + 320, self.taskStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.tasks[count].order)))
-
+            self.taskOrderLabels.append(self.canvas.create_text(self.width + 300, self.taskStatusBarY + 20 * (count+1), anchor=Tkinter.W, fill="white", text=str(self.world.tasks[count].order)))
 
     def updateStatusBar(self):
         self.canvas.itemconfig(self.taskCompletedLabel, text=str(self.world.completedOrder))
@@ -159,6 +161,7 @@ class MainGraphics():
             self.canvas.itemconfig(self.robotPosLabels[i], text=str(self.world.robots[i].pos))
             self.canvas.itemconfig(self.robotStatusLabels[i], text=str(self.world.robots[i].status))
             self.canvas.itemconfig(self.robotLoadLabels[i], text=str(self.world.robots[i].load))
+            self.canvas.itemconfig(self.robotPowerLabels[i], text=str(self.world.robots[i].power))
             if self.world.robots[i].task:
                 if not self.world.robots[i].task.isStation:
                     self.canvas.itemconfig(self.robotAssignedLabels[i], text=str(self.world.robots[i].task.index))

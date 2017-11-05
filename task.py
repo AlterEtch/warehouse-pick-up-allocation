@@ -134,7 +134,8 @@ class TaskAllocation():
     def getMostNeededUnassignedTask(world):
         minVal = 100000
         result = 0
-        for task in world.tasks:
+        tasks = copy.copy(world.tasks)
+        for task in tasks:
             if task.order and task.timeleft <= minVal and not task.assigned:
                 result = task
                 minVal = task.timeleft

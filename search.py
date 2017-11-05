@@ -1,5 +1,5 @@
-from util import *
 from actions import Actions
+import util
 
 class Node():
     def __init__(self, pos):
@@ -67,7 +67,7 @@ class PathFind():
                 if not self.checkNodeInSet(node, openSet):
                     openSet.append(node)
 
-                tentativeTravelCost = self.current.getTravelCost() + calculateEuclideanDistance(self.current.pos, node.pos)
+                tentativeTravelCost = self.current.getTravelCost() + util.calculateEuclideanDistance(self.current.pos, node.pos)
                 if tentativeTravelCost >= node.getTravelCost():
                     continue
 
@@ -116,7 +116,7 @@ class PathFind():
     def getHeuristicCost(self, node):
         minDist = 1000000
         for goal in self.goals:
-            dist = calculateManhattanDistance(node.pos, goal.pos)
+            dist = util.calculateManhattanDistance(node.pos, goal.pos)
             if dist < minDist:
                 minDist = dist
         return minDist
