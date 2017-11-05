@@ -238,7 +238,7 @@ class WorldState():
                 tmp_task = []
                 if task:
                     write_log("\nAt time:" + str(self.timer) + "\n\t" +
-                              str(r) + " labeled as Robot " + str(r.id_text) + " accepts the task:" + str(
+                              str(r) + " labeled as Robot " + str(r.index) + " accepts the task:" + str(
                         task) + " at pos:")
                     for index in task:
                         tmp_task.append(self.taskCache[index])
@@ -281,7 +281,7 @@ class WorldState():
     def checkRobotStatus(self):
         for robot in self.robots:
             if robot.task:
-                if robot.task.isStation and robot.atStation():
+                if robot.task[0].isStation and robot.atStation():
                     robot.chargeBattery()
 
     def update(self):

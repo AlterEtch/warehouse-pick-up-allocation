@@ -115,14 +115,14 @@ class MainGraphics():
         self.canvas.create_text(self.width + 20, 110, anchor=Tkinter.W, fill="white", text="Average Time Per Order:")
         self.taskCompletionSpeedLabel = self.canvas.create_text(self.width + 220, 110, anchor=Tkinter.W, fill="white", text="0")
 
-        self.canvas.create_text(self.width + 200, 70, anchor=Tkinter.W, fill="white", text="Unassigned Tasks: ")
-        self.unassignedLabel = self.canvas.create_text(self.width + 320, 70, anchor=Tkinter.W, fill="white",
+        self.canvas.create_text(self.width + 300, 70, anchor=Tkinter.W, fill="white", text="Unassigned Tasks: ")
+        self.unassignedLabel = self.canvas.create_text(self.width + 450, 70, anchor=Tkinter.W, fill="white",
                                                              text="0")
-        self.canvas.create_text(self.width + 200, 90, anchor=Tkinter.W, fill="white", text="Completed Tasks: ")
-        self.completedLabel = self.canvas.create_text(self.width + 320, 90, anchor=Tkinter.W, fill="white",
+        self.canvas.create_text(self.width + 300, 90, anchor=Tkinter.W, fill="white", text="Completed Tasks: ")
+        self.completedLabel = self.canvas.create_text(self.width + 450, 90, anchor=Tkinter.W, fill="white",
                                                       text="0")
-        self.canvas.create_text(self.width + 10, 110, anchor=Tkinter.W, fill="white", text="Total Mileage: ")
-        self.mileageLabel = self.canvas.create_text(self.width + 130, 110, anchor=Tkinter.W, fill="white",
+        self.canvas.create_text(self.width + 300, 110, anchor=Tkinter.W, fill="white", text="Total Mileage: ")
+        self.mileageLabel = self.canvas.create_text(self.width + 450, 110, anchor=Tkinter.W, fill="white",
                                                           text="0")
 
 
@@ -188,7 +188,7 @@ class MainGraphics():
             self.canvas.itemconfig(self.robotLoadLabels[i], text=str(self.world.robots[i].load))
             self.canvas.itemconfig(self.robotPowerLabels[i], text=str(self.world.robots[i].power))
             if self.world.robots[i].task:
-                if not self.world.robots[i].task.isStation:
+                if not self.world.robots[i].task[0].isStation:
                     self.canvas.itemconfig(self.robotAssignedLabels[i], text=str(self.world.robots[i].task.index))
                 else:
                     self.canvas.itemconfig(self.robotAssignedLabels[i], text="Base")

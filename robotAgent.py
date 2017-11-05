@@ -1,11 +1,12 @@
 from actions import Actions
 from task import Task
 from search import PathFind
+from util import *
 import copy
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, capacity=20, power=100):
+    def __init__(self, world, canvas, size, pos, capacity=ROBOT_CAPACITY, power=100000):
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas
@@ -65,8 +66,8 @@ class RobotAgent():
         self.capacityCount += 1
         self.world.completedTask += 1
         self.world.canvas.itemconfig(self.world.graphics.completedLabel, text=str(self.world.completedTask))
-        self.world.canvas.delete(task.id)
-        self.world.canvas.delete(task.id_label)
+        self.world.canvas.delete(task.id_shape)
+        self.world.canvas.delete(task.id_text)
 
     def setPath(self, path):
         self.path += path
