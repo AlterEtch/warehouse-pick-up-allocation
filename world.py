@@ -4,9 +4,12 @@ from task import TaskAllocation
 from routing import *
 import routing
 import Tkinter
+from actions import Actions
+import util
+
 
 class WorldState():
-    def __init__(self, width, height, gridSize, layout, stations, mode, directional = False):
+    def __init__(self, width, height, gridSize, layout, stations, mode, directional=False):
         self.gridSize = gridSize
         self.width = width
         self.height = height
@@ -39,7 +42,6 @@ class WorldState():
         self.completedOrder += order
 
     def addRobot(self, pos):
-        station = pos
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
         self.robots.append(robot)
         self.canvas.create_text(self.width + 10, 110 + 20 * robot.id_num, fill="white", anchor=Tkinter.W,
@@ -56,13 +58,13 @@ class WorldState():
     def addRandomRobot(self, num):
         for x in range(num):
             if self.stations is not None:
-                self.addRobot(generateRandomStation(self))
+                self.addRobot(util.generateRandomStation(self))
             else:
-                self.addRobot(generateRandomPosition(self))
+                self.addRobot(util.generateRandomPosition(self))
 
     def addRandomTask(self, num):
         for x in range(num):
-            self.addTask(generateRandomPosition(self))
+            self.addTask(util.generateRandomPosition(self))
 
     def hasRobotAt(self, pos):
         return self.findRobotAt(pos) != 0
@@ -72,6 +74,13 @@ class WorldState():
 
     def hasStationAt(self, pos):
         return self.findStationAt(pos) != 0
+
+    def hasRobotNextTo(self, pos):
+        neighbours = Actions.nearbyLocation(pos, self)
+        for neighbour in neighbours:
+            if self.hasRobotAt(neighbour):
+                return True
+        return False
 
     def findRobotAt(self, pos):
         for robot in self.robots:
@@ -97,17 +106,28 @@ class WorldState():
                 return robot
         return 0
 
+    def findRobotNextToWithTask(self, pos, task):
+        if not self.hasRobotNextTo(pos):
+            return 0
+        locations = Actions.nearbyLocation(pos, self)
+        for location in locations:
+            robot = self.findRobotAt(location)
+            if robot:
+                if robot.task.pos == pos:
+                    return robot
+        return 0
+
     def isWall(self, pos):
-        x,y = pos
-        if x > self.width/self.gridSize or y > self.height/self.gridSize or x < 0 or y < 0:
+        x, y = pos
+        if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
             return False
         if self.layout[x][y] == 1:
             return True
         return False
 
     def isBlocked(self, pos):
-        x,y = pos
-        if x > self.width/self.gridSize or y > self.height/self.gridSize or x < 0 or y < 0:
+        x, y = pos
+        if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
             return False
         if self.isWall(pos):
             return True
@@ -159,26 +179,33 @@ class WorldState():
                             print self.mode
                         self.canvas.delete(task.id)
                         self.tasks.remove(task)
+
         # First Algorithm Mode
         if self.mode == 1:
             for task in self.tasks:
-                task.timeoutClick()
-                if task.order and not task.assigned:
-                    r = TaskAllocation.getClosestAvailableRobot(self, task.pos)
-                    if r:
-                        r.setTask(task)
-                        r.updatePathFiner()
+                task.timeClick()
 
-                if self.hasRobotAt(task.pos):
-                    r = self.findRobotAt(task.pos)
-                    if r.task.pos == task.pos:
-                        r.setStatus("Arrived Task Location")
-                        r.addLoad(task.order)
-                        task.setOrder(0)
+                if self.hasRobotNextTo(task.pos):
+                    robot = self.findRobotNextToWithTask(task.pos, task)
+                    if robot:
+                        robot.setStatus("Arrived Task Location")
+                        load = min(robot.capacity - robot.load, task.order)
+                        robot.addLoad(load)
+                        task.setOrder(task.order - load)
+                        task.updateTimeLeft(load)
                         task.setAssignStatus(False)
-                        r.returnToStation()
-                        r.setStatus("Returning to Base")
-        #whatever it is
+                        robot.returnToStation()
+                        robot.setStatus("Returning to Base")
+
+            for i in range(len(self.tasks)):
+                task = TaskAllocation.getMostNeededUnassignedTask(self)
+                if task:
+                    robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 10)
+                    if robot:
+                        robot.setTask(task)
+                        robot.updatePathFiner()
+
+        # whatever it is
         if self.mode == 10:
             self.canvas.itemconfig(self.graphics.unassignedLabel, text=str(len(self.taskCache)))
             for robot in self.robots:
@@ -196,7 +223,6 @@ class WorldState():
                             r = self.findRobotWithTask(task)
                             if r != 0:
                                 r.delete_task(task)
-
 
     def try_allocate_rob(self):
         """
@@ -251,9 +277,16 @@ class WorldState():
             self.canvas.itemconfig(task.id_label, text=str(i))
             i += 1
 
+    def checkRobotStatus(self):
+        for robot in self.robots:
+            if robot.task:
+                if robot.task.isStation and robot.atStation():
+                    robot.chargeBattery()
 
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
+        self.checkRobotStatus()
+        self.graphics.updateStatusBar()
         self.try_allocate_rob()
         self.update_robot_path()

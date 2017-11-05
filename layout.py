@@ -1,29 +1,28 @@
-from station import *
+from station import Station
 
 # One base station
 def getLayout1():
-    width, height, gridSize = 1040, 800, 40
-    wallLayout = [[0 for row in range(0,height/gridSize+1)] for col in range(0,width/gridSize+1)]
-    for x in range(0, width/gridSize):
-        for y in range(0, height/gridSize):
+    width, height, gridSize = 1000, 1000, 50
+    wallLayout = [[0 for row in range(0, height / gridSize + 1)] for col in range(0, width / gridSize + 1)]
+    for x in range(0, width / gridSize):
+        for y in range(0, height / gridSize):
             if x == 0 or y == 0 or x == width/gridSize-1 or y == height/gridSize-1:
                 wallLayout[x][y] = 1
 
     stations = []
 
-    for i in range(11,15):
+    for i in range(width / (2 * gridSize) - 2, width / (2 * gridSize) + 2):
         for j in range(1,3):
             stations.append(Station([i, j]))
     return width, height, gridSize, wallLayout, stations
 
 
 def getLayout2():
-    width, height, gridSize = 1180, 840, 20
+    width, height, gridSize = 1180, 980, 20
     wallLayout = [[0 for row in range(0, height / gridSize)] for col in range(0, width / gridSize)]
     for x in range(0, width / gridSize):
         for y in range(0, height / gridSize):
-            if x in {0, 0, width / gridSize - 1, width / gridSize - 1} or y in {0, 0, height / gridSize - 1,
-                                                                                height / gridSize - 1}:
+            if x in {0, 0, width / gridSize - 1, width / gridSize - 1} or y in {0, 0, height / gridSize - 1, height / gridSize - 1}:
                 wallLayout[x][y] = 1
 
     for i in range(1, width / (3 * gridSize) - 1):

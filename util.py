@@ -18,9 +18,10 @@ TASK_TIME_INTERVAL = 10
 FILE_NAME = os.getcwd() + time.strftime("\\log\\%Y-%m-%d %H_%M_%S.txt", time.localtime())
 
 
+
 def generateRandomPosition(world):
-    pos = [randint(2, world.width / world.gridSize - 3), randint(3, world.height / world.gridSize - 4)]
-    if world.isBlocked(pos) or world.hasStationAt(pos) or len(world.neighbors(pos)) == 4:
+    pos = [randint(2, world.width/world.gridSize-3),randint(3, world.height/world.gridSize-4)]
+    if world.isBlocked(pos) or world.hasStationAt(pos)or len(world.neighbors(pos)) == 4:
         return generateRandomPosition(world)
     return pos
 

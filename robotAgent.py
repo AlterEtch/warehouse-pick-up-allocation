@@ -1,43 +1,46 @@
-from task import *
-from search import *
+from actions import Actions
+from task import Task
+from search import PathFind
 import copy
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, capacity=200):
+    def __init__(self, world, canvas, size, pos, capacity=20, power=100):
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas
         self.size = size
-        self.id_num = len(world.robots)
-        self.id = self.canvas.create_oval(self.pos[0] * self.size, self.pos[1] * self.size,
-                                          (self.pos[0] + 1) * self.size, (self.pos[1] + 1) * self.size, fill="green")
+        self.index = len(world.robots)+1
+        self.capacity = capacity
+        self.maxPower = power
+        self.power = copy.deepcopy(power)
+        self.load = 0
         self.status = "Waiting for Order"
-        self.id_label = self.canvas.create_text((self.pos[0] + 0.5) * self.size, (self.pos[1] + 0.5) * self.size,
-                                                text=str(self.id_num))
+        self.id_shape = self.canvas.create_oval(self.pos[0] * self.size, self.pos[1] * self.size, (self.pos[0] + 1) * self.size, (self.pos[1] + 1) * self.size, fill="green", tag="robot" + str(self.index))
+        self.id_text = self.canvas.create_text((self.pos[0] + 0.5) * self.size, (self.pos[1] + 0.5) * self.size, fill="black", text=self.index, tag="robot" + str(self.index))
         self.task = []
         self.path = []
-        self.station = Task(world=self.world, canvas=self.canvas, pos=copy.deepcopy(self.pos), isStation=True)
+        self.station = Task(canvas=self.canvas, world=self.world, pos=copy.deepcopy(self.pos), isStation=True)
+        self.assignable = True
         self.capacityCount = 0
 
     def move(self, direction):
         possibleActions = self.getPossibleActions()
         if possibleActions == [Actions.STOP] and len(self.path):
             possibleActions = self.getPossibleActions(override=True)
-        if direction in possibleActions:
+        if direction in possibleActions and self.power:
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
+            self.power -= 1
             # Animate the movement of robot
-            for x in range(0, self.size / (self.size / 2)):
-                self.canvas.move(self.id, direction[0] * self.size / 2, direction[1] * self.size / 2)
-                self.canvas.move(self.id_label, direction[0] * self.size / 2, direction[1] * self.size / 2)
-                self.canvas.update()
-                self.world.totalMileage += 1
-                self.canvas.itemconfig(self.world.graphics.mileageLabel, text=str(self.world.totalMileage))
-
+            for x in range(0, 2):
+                for obj in self.canvas.find_withtag("robot" + str(self.index)):
+                    self.canvas.move(obj, direction[0] * self.size / 2, direction[1] * self.size / 2)
+                    self.canvas.update()
+        elif not self.power:
+            self.setStatus("Out of Power")
         else:
             if len(self.path):
-                print 'recalculating path'
                 self.updatePathFiner()
                 try:
                     path, dirPath = self.pathfinder.performAStarSearch(override=True)
@@ -45,10 +48,11 @@ class RobotAgent():
                     self.path.insert(0, [0, 0])
                 else:
                     self.path = dirPath
-                    #self.world.graphics.drawPath(path)
+                    if False:
+                        self.world.graphics.drawPath(path)
 
-    def getPossibleActions(self, override=False):
-        return Actions.possibleActions(self.pos, self.world, override)
+    def getPossibleActions(self):
+        return Actions.possibleActions(self.pos, self.world)
 
     def setTask(self, task):
         self.task.append(task)
@@ -72,6 +76,14 @@ class RobotAgent():
 
     def addLoad(self, load):
         self.load += load
+
+    def atStation(self):
+        return self.world.findStationAt(self.pos)
+
+    def chargeBattery(self):
+        station = self.world.findStationAt(self.station.pos)
+        if station:
+            self.power = min(self.power + station.chargingRate, self.maxPower)
 
     def followPath(self):
         if len(self.path) != 0:
@@ -98,6 +110,7 @@ class RobotAgent():
         try:
             path, dirPath = self.pathfinder.performAStarSearch()
             self.setPath(dirPath)
-            #self.world.graphics.drawPath(path)
+            if False:
+                self.world.graphics.drawPath(path)
         except TypeError:
             print 'error1'

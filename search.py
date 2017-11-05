@@ -1,5 +1,5 @@
-from util import *
 from actions import Actions
+import util
 
 class Node():
     def __init__(self, pos):
@@ -31,9 +31,14 @@ class PathFind():
         self.robot = robot
         self.start = Node(self.robot.pos)
         self.current = Node(self.robot.pos)
-        self.goal = Node(self.robot.task.pos)
+        self.goals = [Node(self.robot.task.pos)]
+        self.toNeighbours = False
 
-    def performAStarSearch(self, override=False):
+    def performAStarSearch(self, toNeighbours=False):
+        if toNeighbours:
+            self.toNeighbours = toNeighbours
+            self.goals = self.getSuccessors(self.goal.pos)
+
         # The set of nodes already evaluated
         closedSet = []
 
@@ -49,10 +54,11 @@ class PathFind():
             openSet.remove(self.current)
             closedSet.append(self.current)
 
-            if self.current.pos == self.goal.pos:
-                return self.reconstructPath(self.current)
+            for goal in self.goals:
+                if self.current.pos == goal.pos:
+                    return self.reconstructPath(self.current)
 
-            successors = self.getSuccessors(override)
+            successors = self.getRobotSuccessors(self.current.pos)
 
             for node in successors:
                 if self.checkNodeInSet(node, closedSet):
@@ -61,7 +67,7 @@ class PathFind():
                 if not self.checkNodeInSet(node, openSet):
                     openSet.append(node)
 
-                tentativeTravelCost = self.current.getTravelCost() + calculateEuclideanDistance(self.current.pos, node.pos)
+                tentativeTravelCost = self.current.getTravelCost() + util.calculateEuclideanDistance(self.current.pos, node.pos)
                 if tentativeTravelCost >= node.getTravelCost():
                     continue
 
@@ -71,13 +77,14 @@ class PathFind():
 
     def reconstructPath(self, current):
         path = [current.pos]
-        dirPath = [self.robot.pos]
+        dirPath = []
         while current.getPreviousNode().pos != current.pos:
             current = current.getPreviousNode()
             path.insert(0, current.pos)
 
         for i in range(len(path)-1):
             dirPath.append([path[i+1][0] - path[i][0],path[i+1][1] - path[i][1]])
+
         return path, dirPath
 
     def checkNodeInSet(self, node, set):
@@ -86,15 +93,15 @@ class PathFind():
                 return True
         return False
 
-    def getSuccessors(self, override=False):
+    def getRobotSuccessors(self, pos):
         possible = []
-        possible = Actions.possibleActions(self.current.pos, self.robot.world)
+        possible = Actions.possibleActions(pos, self.robot.world)
         if possible == [Actions.STOP]:
-            possible = Actions.possibleActions(self.current.pos, self.robot.world, override)
+            possible = Actions.possibleActions(pos, self.robot.world)
         successor = []
         for direction in possible:
-            x = self.current.pos[0] + direction[0]
-            y = self.current.pos[1] + direction[1]
+            x = pos[0] + direction[0]
+            y = pos[1] + direction[1]
             successor.append(Node([x,y]))
         return successor
 
@@ -107,4 +114,9 @@ class PathFind():
         return minNode
 
     def getHeuristicCost(self, node):
-        return calculateManhattanDistance(node.pos, self.goal.pos)
+        minDist = 1000000
+        for goal in self.goals:
+            dist = util.calculateManhattanDistance(node.pos, goal.pos)
+            if dist < minDist:
+                minDist = dist
+        return minDist
