@@ -1,7 +1,9 @@
 from actions import Actions
 from task import Task
+from task import TaskAllocation
 from search import PathFind
 import copy
+import util
 
 
 class RobotAgent():
@@ -21,6 +23,7 @@ class RobotAgent():
         self.task = []
         self.path = []
         self.station = Task(canvas=self.canvas, world=self.world, pos=copy.deepcopy(self.pos), isStation=True)
+        self.prevStation = self.station
         self.assignable = True
 
     def move(self, direction):
@@ -70,9 +73,21 @@ class RobotAgent():
         return self.world.findStationAt(self.pos)
 
     def chargeBattery(self):
-        station = self.world.findStationAt(self.station.pos)
-        if station:
+        if self.atStation():
+            station = self.world.findStationAt(self.pos)
             self.power = min(self.power + station.chargingRate, self.maxPower)
+            self.setStatus("Charging")
+            if self.power == self.maxPower:
+                self.assignable = True
+                self.setStatus("Waiting for Order")
+
+    def checkPower(self):
+        if self.power <= util.calculateManhattanDistance(self.pos, self.station.pos) + self.maxPower * 0.2:
+            if self.task:
+                self.task.setAssignStatus(False)
+            self.returnToStation()
+            self.setStatus("Return for Charging")
+            self.assignable = False
 
     def followPath(self):
         if len(self.path) != 0:
@@ -83,6 +98,7 @@ class RobotAgent():
                     self.setStatus("Waiting for Order")
                     self.world.addCompletedOrder(self.load)
                     self.load = 0
+                    self.prevStation = self.task
                     self.task = []
 
     def updatePathFiner(self):
@@ -94,12 +110,15 @@ class RobotAgent():
             self.setStatus("Error")
 
     def returnToStation(self):
-        self.task = self.station
-        self.updatePathFiner()
-        try:
-            path, dirPath = self.pathfinder.performAStarSearch()
-            self.setPath(dirPath)
-            if False:
-                self.world.graphics.drawPath(path)
-        except TypeError:
-            print 'error1'
+        closestStation = TaskAllocation.getClosestAvailableStation(self.world, self.pos)
+        if closestStation:
+            self.station = Task(canvas=self.canvas, world=self.world, pos=copy.deepcopy(closestStation.pos), isStation=True)
+            self.task = self.station
+            self.updatePathFiner()
+            try:
+                path, dirPath = self.pathfinder.performAStarSearch()
+                self.setPath(dirPath)
+                if False:
+                    self.world.graphics.drawPath(path)
+            except TypeError:
+                print 'error1'

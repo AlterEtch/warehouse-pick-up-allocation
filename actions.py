@@ -19,13 +19,13 @@ class Actions:
             if not world.isWall([x,y-1]):
                 possible.append(Actions.N)
         else:
-            if (not world.isBlocked([x+1,y])) or world.findStationAt(pos) != 0:
+            if (not world.isBlocked([x+1,y])) or world.findStationAt([x+1,y]) != 0:
                 possible.append(Actions.E)
-            if (not world.isBlocked([x-1,y])) or world.findStationAt(pos) != 0:
+            if (not world.isBlocked([x-1,y])) or world.findStationAt([x-1,y]) != 0:
                 possible.append(Actions.W)
-            if (not world.isBlocked([x,y+1])) or world.findStationAt(pos) != 0:
+            if (not world.isBlocked([x,y+1])) or world.findStationAt([x,y+1]) != 0:
                 possible.append(Actions.S)
-            if (not world.isBlocked([x,y-1])) or world.findStationAt(pos) != 0:
+            if (not world.isBlocked([x,y-1])) or world.findStationAt([x,y-1]) != 0:
                 possible.append(Actions.N)
 
         return possible

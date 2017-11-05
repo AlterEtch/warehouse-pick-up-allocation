@@ -1,5 +1,5 @@
 from math import *
-from util import *
+import util
 import random
 import copy
 
@@ -45,10 +45,11 @@ class Task():
 
     def setAssignStatus(self, status):
         self.assigned = status
-        if status:
-            self.canvas.itemconfig(self.shape, fill="yellow")
-        else:
-            self.canvas.itemconfig(self.shape, fill="white")
+        if not self.isStation:
+            if status:
+                self.canvas.itemconfig(self.shape, fill="yellow")
+            else:
+                self.canvas.itemconfig(self.shape, fill="white")
 
     def updateTimeLeft(self, order):
         for record in self.records:
@@ -79,13 +80,13 @@ class Task():
         self.progress = progress
         if self.progress == 0:
             if self.assigned == True:
-                self.canvas.itemconfig(self.id, fill="red")
+                self.canvas.itemconfig(self.shape, fill="red")
             else:
-                self.canvas.itemconfig(self.id, fill="white")
+                self.canvas.itemconfig(self.shape, fill="white")
         elif self.progress >= self.cost:
-            self.canvas.itemconfig(self.id, fill="blue")
+            self.canvas.itemconfig(self.shape, fill="blue")
         else:
-            self.canvas.itemconfig(self.id, fill="yellow")
+            self.canvas.itemconfig(self.shape, fill="yellow")
 
     def resetProgress(self):
         self.setProgress(0)
@@ -95,24 +96,45 @@ class Task():
 
 
 class TaskAllocation():
+
     @staticmethod
-    def getClosestRobot(world, pos):
+    def getClosestObject(world, pos, obj):
         minDist = 100000
         result = 0
-        for robot in world.robots:
-            dist = calculateManhattanDistance(robot.pos, pos)
+        if obj == "Robot":
+            objects = world.robots
+        elif obj in ["Station", "AvailableStation"] :
+            objects = world.stations
+
+        for item in objects:
+            dist = util.calculateManhattanDistance(item.pos, pos)
             if dist < minDist:
+                if obj == "AvailableStation":
+                    if not item.getAvailability():
+                        continue
                 minDist = dist
-                result = robot
+                result = item
         return result
+
+    @staticmethod
+    def getClosestRobot(world, pos):
+        return TaskAllocation.getClosestObject(world, pos, "Robot")
+
+    @staticmethod
+    def getClosestStation(world, pos):
+        return TaskAllocation.getClosestObject(world, pos, "Station")
+
+    @staticmethod
+    def getClosestAvailableStation(world, pos):
+        return TaskAllocation.getClosestObject(world, pos, "AvailableStation")
 
     @staticmethod
     def getClosestAvailableRobot(world, pos, radius=1000):
         minDist = 100000
         result = 0
         for robot in world.robots:
-            dist = calculateManhattanDistance(robot.pos, pos)
-            if dist < minDist and robot.capacity > robot.load:
+            dist = util.calculateManhattanDistance(robot.pos, pos)
+            if dist < minDist and robot.capacity > robot.load and robot.assignable:
                 if robot.task:
                     if not robot.task.isStation or dist > radius:
                         continue

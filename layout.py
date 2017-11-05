@@ -53,11 +53,11 @@ def getLayout2():
     return width, height, gridSize, wallLayout, stations
 
 def getLayout3():
-    width, height, gridSize = 1300, 940, 20
-    wallLayout = [[0 for row in range(0,height/gridSize)] for col in range(0,width/gridSize)]
+    width, height, gridSize = 840, 620, 20
+    wallLayout = [[0 for row in range(0,height/gridSize+1)] for col in range(0,width/gridSize+1)]
     for x in range(0, width/gridSize):
         for y in range(0, height/gridSize):
-            if x in {0, 0, width/gridSize-1, width/gridSize-1} or y in {0,0, height/gridSize-1, height/gridSize-1}:
+            if x in {0, 0, width/gridSize, width/gridSize-1} or y in {0,0, height/gridSize-1, height/gridSize-1}:
                 wallLayout[x][y] = 1
 
     for i in range(1, width/(3*gridSize)-1):

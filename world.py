@@ -38,6 +38,7 @@ class WorldState():
 
     def addRobot(self, pos):
         robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos, index=len(self.robots) + 1)
+        self.findStationAt(pos).setAvailability(False)
         self.robots.append(robot)
 
     def addTask(self, pos):
@@ -89,10 +90,11 @@ class WorldState():
                 return station
         return 0
 
-    def findRobotWithTask(self, task):
+    def findRobotWithTask(self, pos):
         for robot in self.robots:
-            if robot.task == task:
-                return robot
+            if robot.task:
+                if robot.task.pos == pos:
+                    return robot
         return 0
 
     def findRobotNextToWithTask(self, pos, task):
@@ -102,14 +104,15 @@ class WorldState():
         for location in locations:
             robot = self.findRobotAt(location)
             if robot:
-                if robot.task.pos == pos:
-                    return robot
+                if robot.task:
+                    if robot.task.pos == task.pos:
+                        return robot
         return 0
 
     def isWall(self, pos):
         x, y = pos
         if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
-            return False
+            return True
         if self.layout[x][y] == 1:
             return True
         return False
@@ -117,7 +120,7 @@ class WorldState():
     def isBlocked(self, pos):
         x, y = pos
         if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
-            return False
+            return True
         if self.isWall(pos) or self.hasRobotAt(pos):
             return True
         return False
@@ -156,11 +159,12 @@ class WorldState():
                 else:
                     task.timer += 1
                     if task.timer >= 10:
-                        r = self.findRobotWithTask(task)
+                        r = self.findRobotWithTask(task.pos)
                         if r != 0:
                             r.returnToStation()
                             print self.mode
-                        self.canvas.delete(task.id)
+                        self.canvas.delete(task.shape)
+                        self.canvas.delete(task.text)
                         self.tasks.remove(task)
 
         # First Algorithm Mode
@@ -183,19 +187,34 @@ class WorldState():
             for i in range(len(self.tasks)):
                 task = TaskAllocation.getMostNeededUnassignedTask(self)
                 if task:
-                    robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 10)
+                    robot = TaskAllocation.getClosestAvailableRobot(self, task.pos, 6)
                     if robot:
                         robot.setTask(task)
                         robot.updatePathFiner()
 
     def checkRobotStatus(self):
         for robot in self.robots:
-            if robot.task:
-                if robot.task.isStation and robot.atStation():
-                    robot.chargeBattery()
+            robot.checkPower()
+            if robot.atStation() and robot.status in ["Waiting for Order", "Charging"] or not robot.power:
+                robot.chargeBattery()
+
+    def checkStationStatus(self):
+        for station in self.stations:
+            if self.findRobotWithTask(station.pos) or self.findRobotAt(station.pos):
+                station.setAvailability(False)
+                print False
+            else:
+                station.setAvailability(True)
+                print True
 
     def update(self):
         self.timerClick()
         self.checkTasksStatus()
-        self.checkRobotStatus()
-        self.graphics.updateStatusBar()
+
+        for station in self.stations:
+            print station.getAvailability(),
+        print " \n"
+        if self.mode == 1:
+            self.checkStationStatus()
+            self.checkRobotStatus()
+            self.graphics.updateStatusBar()
