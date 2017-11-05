@@ -125,16 +125,6 @@ class MainGraphics():
         self.mileageLabel = self.canvas.create_text(self.width + 450, 110, anchor=Tkinter.W, fill="white",
                                                           text="0")
 
-
-    def exit_handler(self):
-        """
-        When windows closed, raise the handler
-        :return: None
-        """
-        output_log(self.world)
-        self.root_window.destroy()
-
-
     def createRobotStatusBar(self):
         self.robotStatusBarY = 160
         self.robotPosLabels = []
@@ -182,6 +172,9 @@ class MainGraphics():
             self.canvas.itemconfig(self.taskCompletionSpeedLabel, text="N/A")
         else:
             self.canvas.itemconfig(self.taskCompletionSpeedLabel, text=str(float(self.world.timer) / float(self.world.completedOrder)))
+        self.canvas.itemconfig(self.unassignedLabel, text=str(len(self.world.taskCache)))
+        self.canvas.itemconfig(self.completedLabel, text=str(self.world.completedTask))
+        self.canvas.itemconfig(self.mileageLabel, text=str(self.world.totalMileage))
 
         for i in range(len(self.world.robots)):
             self.canvas.itemconfig(self.robotPosLabels[i], text=str(self.world.robots[i].pos))
@@ -202,3 +195,12 @@ class MainGraphics():
         for i in range(len(self.taskOrderLabels)):
             self.canvas.itemconfig(self.taskOrderLabels[i], text=str(self.world.tasks[i].order))
             self.canvas.itemconfig(self.taskTimeLabels[i], text=str(self.world.tasks[i].timeleft))
+
+
+    def exit_handler(self):
+        """
+        When windows closed, raise the handler
+        :return: None
+        """
+        output_log(self.world)
+        self.root_window.destroy()

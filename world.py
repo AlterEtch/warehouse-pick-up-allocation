@@ -205,7 +205,6 @@ class WorldState():
 
         # whatever it is
         if self.mode == 10:
-            self.canvas.itemconfig(self.graphics.unassignedLabel, text=str(len(self.taskCache)))
             for robot in self.robots:
                 for task in robot.task:
                     if task.progress < task.cost:

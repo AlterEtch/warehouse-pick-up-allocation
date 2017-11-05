@@ -33,6 +33,7 @@ class RobotAgent():
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
             self.power -= 1
+            self.world.totalMileage += 1
             # Animate the movement of robot
             for x in range(0, 2):
                 for obj in self.canvas.find_withtag("robot" + str(self.index)):
@@ -65,7 +66,6 @@ class RobotAgent():
                   str(task) + " at " + str(task.pos) + " is consumed")
         self.capacityCount += 1
         self.world.completedTask += 1
-        self.world.canvas.itemconfig(self.world.graphics.completedLabel, text=str(self.world.completedTask))
         self.world.canvas.delete(task.id_shape)
         self.world.canvas.delete(task.id_text)
 
