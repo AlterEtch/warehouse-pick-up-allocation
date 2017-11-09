@@ -172,7 +172,10 @@ class WorldState():
             for task in self.tasks:
                 task.timeClick()
 
-                if self.hasRobotNextTo(task.pos):
+                if not self.findRobotWithTask(task.pos):
+                    task.setAssignStatus(False)
+
+                if self.hasRobotNextTo(task.pos) or self.hasRobotAt(task.pos):
                     robot = self.findRobotNextToWithTask(task.pos, task)
                     if robot:
                         robot.setStatus("Arrived Task Location")

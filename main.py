@@ -56,6 +56,7 @@ def setup():
                     #graphics.drawPath(path)
 
 setup()
+print 'Setup Done'
 # Main loop for window
 while True:
     world.update()

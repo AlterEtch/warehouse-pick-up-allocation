@@ -1,6 +1,6 @@
 from math import sqrt
 from random import randint
-
+import task
 
 def generateRandomPosition(world):
     pos = [randint(1, world.width / world.gridSize - 2), randint(1, world.height / world.gridSize - 2)]
@@ -26,3 +26,7 @@ def calculateManhattanDistance(pos1, pos2):
 
 def calculateEuclideanDistance(pos1, pos2):
     return sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
+
+def calculateEuclideanDistanceFromClosestStation(world, pos):
+    station = task.TaskAllocation.getClosestAvailableStation(world, pos)
+    return calculateEuclideanDistance(station.pos, pos)

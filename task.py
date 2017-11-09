@@ -107,10 +107,14 @@ class TaskAllocation():
             objects = world.stations
 
         for item in objects:
+            print item.pos, pos
             dist = util.calculateManhattanDistance(item.pos, pos)
             if dist < minDist:
                 if obj == "AvailableStation":
                     if not item.getAvailability():
+                        continue
+                if obj == "Robot":
+                    if not item.assignable:
                         continue
                 minDist = dist
                 result = item

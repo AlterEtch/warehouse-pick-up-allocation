@@ -7,7 +7,7 @@ import util
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, index, capacity=20, power=100):
+    def __init__(self, world, canvas, size, pos, index, capacity=20, power=60):
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas
@@ -73,8 +73,8 @@ class RobotAgent():
         return self.world.findStationAt(self.pos)
 
     def chargeBattery(self):
-        if self.atStation():
-            station = self.world.findStationAt(self.pos)
+        if self.pos == self.station.pos:
+            station = self.world.findStationAt(self.station.pos)
             self.power = min(self.power + station.chargingRate, self.maxPower)
             self.setStatus("Charging")
             if self.power == self.maxPower:
@@ -82,12 +82,12 @@ class RobotAgent():
                 self.setStatus("Waiting for Order")
 
     def checkPower(self):
-        if self.power <= util.calculateManhattanDistance(self.pos, self.station.pos) + self.maxPower * 0.2:
-            if self.task:
+        if self.power <= util.calculateEuclideanDistanceFromClosestStation(self.world, self.pos) + self.maxPower * 0.2:
+            if self.task and self.status != "Return for Charging":
                 self.task.setAssignStatus(False)
-            self.returnToStation()
-            self.setStatus("Return for Charging")
-            self.assignable = False
+                self.returnToStation()
+                self.setStatus("Return for Charging")
+                self.assignable = False
 
     def followPath(self):
         if len(self.path) != 0:
