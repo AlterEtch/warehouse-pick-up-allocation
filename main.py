@@ -82,7 +82,7 @@ while True:
     world.update()
     for robot in world.robots:
         robot.followPath()
-    #graphics.root_window.after(25)
+    graphics.root_window.after(100)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
     if world.timer == 2000:

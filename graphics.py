@@ -108,10 +108,13 @@ class MainGraphics():
     def initStatusBar(self):
         self.canvas.create_text(self.width + 20, 50, anchor=Tkinter.W, fill="white", text="Current Time: ")
         self.timerLabel = self.canvas.create_text(self.width + 220, 50, anchor=Tkinter.W, fill="white", text="0")
+
         self.canvas.create_text(self.width + 20, 70, anchor=Tkinter.W, fill="white", text="Total Task Locations: ")
         self.taskCountLabel = self.canvas.create_text(self.width + 220, 70, anchor=Tkinter.W, fill="white", text="0")
+
         self.canvas.create_text(self.width + 20, 90, anchor=Tkinter.W, fill="white", text="Total Order Completed:")
         self.taskCompletedLabel = self.canvas.create_text(self.width + 220, 90, anchor=Tkinter.W, fill="white", text="0")
+
         self.canvas.create_text(self.width + 20, 110, anchor=Tkinter.W, fill="white", text="Average Time Per Order:")
         self.taskCompletionSpeedLabel = self.canvas.create_text(self.width + 220, 110, anchor=Tkinter.W, fill="white", text="0")
 
