@@ -203,7 +203,7 @@ class WorldState():
                         robot.setTask(task)
                         robot.updatePathFiner()
 
-        # whatever it is
+        # Clarke and Wright Savings Algorithm Mode
         if self.mode == 10:
             for robot in self.robots:
                 for task in robot.task:
