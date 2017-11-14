@@ -4,17 +4,17 @@ import random
 import copy
 
 class Task():
-    def __init__(self, canvas, world, pos, index=0, cost=1, isStation=False, mean=0.05, timeout=300):
+    def __init__(self, canvas, world, pos, index=0, cost=10, isStation=False, mean=0.05, timeout=300):
         self.pos = pos
         self.canvas = canvas
         self.world = world
         self.size = self.world.gridSize * 0.6
-        self.cost = cost
+        self.timeCost = cost
         self.index = len(self.world.taskCache)
         self.isStation = isStation
         self.mean = mean
         self.timeout = copy.deepcopy(timeout)
-        self.timeleft = copy.deepcopy(timeout)
+        self.timeLeft = copy.deepcopy(timeout)
         if not self.isStation:
             self.id_shape = self.canvas.create_oval(self.pos[0]*self.world.gridSize + 0.5*(self.world.gridSize-self.size), self.pos[1]*(self.world.gridSize) + 0.5*(self.world.gridSize-self.size), (self.pos[0]+1)*self.world.gridSize - 0.5*(self.world.gridSize-self.size), (self.pos[1]+1)*self.world.gridSize - 0.5*(self.world.gridSize-self.size), fill="gray30")
             self.id_text = self.canvas.create_text((self.pos[0]+0.5)*self.world.gridSize, (self.pos[1]+0.5)*self.world.gridSize, fill="white", text=self.index)
@@ -24,16 +24,14 @@ class Task():
         self.assigned = False
         self.p = [0,0,0,0,0,0,0,0,0,0,0]
         self.records = []
-        self.initProbability()
+        self.init_probability()
 
-    def initProbability(self):
+    def init_probability(self):
         for k in range(11):
             self.p[k] = exp(-self.mean) * pow(self.mean, k) / factorial(k)
-            #print "p(", k, ") = ", self.p[k]
 
-    def checkOrder(self):
+    def check_order(self):
         r = random.uniform(0.0, 1.0)
-        #print "r = ", r
         p = self.p[0]
         for k in range(0, 11):
             if r <= p:
@@ -43,100 +41,102 @@ class Task():
             elif k != 10:
                 p += self.p[k+1]
 
-    def setAssignStatus(self, status):
+    def set_assign_status(self, status):
         self.assigned = status
         if status:
             self.canvas.itemconfig(self.id_shape, fill="red4")
             self.canvas.itemconfig(self.id_text, fill="green")
+        else:
+            self.canvas.itemconfig(self.id_text, fill="white")
 
-
-    def updateTimeLeft(self, order):
+    def update_time_left(self, order):
         for record in self.records:
             if record[1] >= order:
-                self.timeleft = self.timeout - (self.world.timer - record[0])
+                self.timeLeft = self.timeout - (self.world.timer - record[0])
                 if self.order == 0:
-                    self.timeleft = self.timeout
+                    self.timeLeft = self.timeout
                 break
-        recordsToDelete = []
+        records_to_delete = []
         for record in self.records:
             record[1] = record[1] - order
             if record[1] <= 0:
-                recordsToDelete.append(record)
-        for record in recordsToDelete:
+                records_to_delete.append(record)
+        for record in records_to_delete:
             self.records.remove(record)
 
-    def timeClick(self):
+    def timer_click(self):
         if self.order:
-            self.timeleft -= 1
+            self.timeLeft -= 1
 
-    def setOrder(self, order):
+    def set_order(self, order):
         self.order = order
 
-    def addProgress(self):
-        self.setProgress(self.progress + 1)
+    def add_progress(self):
+        self.set_progress(self.progress + 1)
 
-    def setProgress(self, progress):
+    def set_progress(self, progress):
         self.progress = progress
-        if self.progress == 0:
-            if self.assigned == True:
-                self.canvas.itemconfig(self.id_shape, fill="red4")
-            else:
-                self.canvas.itemconfig(self.id_shape, fill="white")
-        elif self.progress >= self.cost:
-            self.canvas.itemconfig(self.id_shape, fill="blue")
-        else:
-            self.canvas.itemconfig(self.id_shape, fill="yellow")
+        # if self.progress == 0:
+        #     if self.assigned:
+        #         self.canvas.itemconfig(self.id_shape, fill="red4")
+        #     else:
+        #         self.canvas.itemconfig(self.id_shape, fill="white")
+        # elif self.progress >= self.timeCost:
+        #     self.canvas.itemconfig(self.id_shape, fill="blue")
+        # else:
+        #     self.canvas.itemconfig(self.id_shape, fill="yellow")
 
-    def resetProgress(self):
-        self.setProgress(0)
+    def reset_progress(self):
+        self.set_progress(0)
 
-    def getCost(self):
-        return self.cost
+    def get_cost(self):
+        return self.timeCost
 
 
 class TaskAllocation():
     @staticmethod
-    def getClosestRobot(world, pos):
+    def get_closest_robot(world, pos):
         minDist = 100000
         result = 0
         for robot in world.robots:
-            dist = calculateManhattanDistance(robot.pos, pos)
+            dist = calculate_manhattan_distance(robot.pos, pos)
             if dist < minDist:
                 minDist = dist
                 result = robot
         return result
 
     @staticmethod
-    def getClosestAvailableRobot(world, pos, radius=1000):
-        minDist = 100000
+    def get_closest_available_robot(world, pos, radius):
+        min_dist = 100000
         result = 0
         for robot in world.robots:
-            dist = calculateManhattanDistance(robot.pos, pos)
-            if dist < minDist and robot.capacity > robot.load:
+            dist = calculate_manhattan_distance(robot.pos, pos)
+            if dist < min_dist and robot.capacity > robot.load and dist <= radius and len(robot.task) < MAX_TASK_ASSIGNMENT:
                 if robot.task:
-                    if not robot.task.isStation or dist > radius:
-                        continue
-                minDist = dist
+                    for robot_task in robot.task:
+                        if not robot_task.isStation or not robot.assignable:
+                            continue
+                min_dist = dist
                 result = robot
         return result
 
     @staticmethod
-    def getMostNeededTask(world):
-        minVal = 100000
+    def get_most_needed_task(world):
+        min_val = 100000
         result = []
         for task in world.tasks:
-            if task.timeleft <= minVal:
+            if task.timeLeft <= min_val:
                 result = task
-                minVal = task.timeleft
+                min_val = task.timeLeft
         return result
 
     @staticmethod
-    def getMostNeededUnassignedTask(world):
-        minVal = 100000
+    def get_most_needed_unassigned_task(world):
+        min_val = 100000
         result = 0
         tasks = copy.copy(world.tasks)
         for task in tasks:
-            if task.order and task.timeleft <= minVal and not task.assigned:
+            if task.order and task.timeLeft <= min_val and not task.assigned:
                 result = task
-                minVal = task.timeleft
+                min_val = task.timeLeft
         return result

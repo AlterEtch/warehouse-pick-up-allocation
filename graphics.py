@@ -152,6 +152,7 @@ class MainGraphics():
             self.robotPowerLabels.append(self.canvas.create_text(self.width + 360, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="None"))
             self.robotAssignedLabels.append(self.canvas.create_text(self.width + 420, self.robotStatusBarY + 20 * (count + 1), anchor=Tkinter.W, fill="white", text="None"))
             self.robotTaskSequence.append(self.canvas.create_text(self.width + 450, self.robotStatusBarY + 20 * (count +1), fill="white",anchor=Tkinter.W))
+
     def createTaskStatusBar(self):
         self.taskStatusBarY = self.robotStatusBarY + len(self.world.robots) * 20 + 50
         self.taskPosLabels = []
@@ -195,9 +196,11 @@ class MainGraphics():
             for j in range(len(self.world.robots[i].task)):
                 task_plan.append(self.world.robots[i].task[j].index)
             self.canvas.itemconfig(self.robotTaskSequence[i], text=str(task_plan))
-        for i in range(len(self.taskOrderLabels)):
-            self.canvas.itemconfig(self.taskOrderLabels[i], text=str(self.world.tasks[i].order))
-            self.canvas.itemconfig(self.taskTimeLabels[i], text=str(self.world.tasks[i].timeleft))
+
+        if self.world.mode in [0, 1]:
+            for i in range(len(self.taskOrderLabels)):
+                self.canvas.itemconfig(self.taskOrderLabels[i], text=str(self.world.tasks[i].order))
+                self.canvas.itemconfig(self.taskTimeLabels[i], text=str(self.world.tasks[i].timeLeft))
 
 
     def exit_handler(self):

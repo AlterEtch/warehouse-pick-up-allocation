@@ -10,6 +10,8 @@ import numpy
 START_POINT = [29, 1]
 # capacity of each robot
 ROBOT_CAPACITY = 5
+# max number of task assigned to each robot
+MAX_TASK_ASSIGNMENT = 5
 # TBD, whatever it is
 TEMPORAL_PRIORITY_RATIO = 2.5
 # the time interval between two added task
@@ -18,30 +20,29 @@ TASK_TIME_INTERVAL = 10
 FILE_NAME = os.getcwd() + time.strftime("\\log\\%Y-%m-%d %H_%M_%S.txt", time.localtime())
 
 
-
-def generateRandomPosition(world):
+def generate_random_position(world):
     pos = [randint(2, world.width/world.gridSize-3),randint(3, world.height/world.gridSize-4)]
-    if world.isBlocked(pos) or world.hasStationAt(pos)or len(world.neighbors(pos)) == 4:
-        return generateRandomPosition(world)
+    if world.is_blocked(pos) or world.has_station_at(pos)or len(world.neighbors(pos)) == 4:
+        return generate_random_position(world)
     return pos
 
 
-def generateRandomStation(world):
-    stationSet = []
+def generate_random_station(world):
+    station_set = []
     for s in world.stations:
-        if not world.isBlocked(s.pos):
-            stationSet.append(s)
-    pos = stationSet[randint(0, len(stationSet) - 1)].pos
-    if world.isBlocked(pos):
-        return generateRandomStation(world)
+        if not world.is_blocked(s.pos):
+            station_set.append(s)
+    pos = station_set[randint(0, len(station_set) - 1)].pos
+    if world.is_blocked(pos):
+        return generate_random_station(world)
     return pos
 
 
-def calculateManhattanDistance(pos1, pos2):
+def calculate_manhattan_distance(pos1, pos2):
     return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
 
 
-def calculateEuclideanDistance(pos1, pos2):
+def calculate_euclidean_distance(pos1, pos2):
     return sqrt((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2)
 
 

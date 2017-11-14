@@ -24,12 +24,11 @@ class RobotAgent():
         self.station = Task(canvas=self.canvas, world=self.world, pos=copy.deepcopy(self.pos), isStation=True)
         self.assignable = True
         self.capacityCount = 0
+        self.pathfinder = PathFind(self)
 
     def move(self, direction):
-        possibleActions = self.getPossibleActions()
-        if possibleActions == [Actions.STOP] and len(self.path):
-            possibleActions = self.getPossibleActions(override=True)
-        if direction in possibleActions and self.power:
+        possible_actions = self.get_possible_actions()
+        if direction in possible_actions and self.power:
             self.pos[0] += direction[0]
             self.pos[1] += direction[1]
             self.power -= 1
@@ -40,78 +39,86 @@ class RobotAgent():
                     self.canvas.move(obj, direction[0] * self.size / 2, direction[1] * self.size / 2)
                     self.canvas.update()
         elif not self.power:
-            self.setStatus("Out of Power")
+            self.set_status("Out of Power")
         else:
-            if len(self.path):
-                self.updatePathFiner()
-                try:
-                    path, dirPath = self.pathfinder.performAStarSearch(override=True)
-                except TypeError:
-                    self.path.insert(0, [0, 0])
-                else:
-                    self.path = dirPath
-                    if False:
-                        self.world.graphics.drawPath(path)
+            if self.task:
+                self.update_path_finder()
+            else:
+                self.update_path_finder()
+            print self.path[0]
 
-    def getPossibleActions(self):
+    def get_possible_actions(self):
         return Actions.possibleActions(self.pos, self.world)
 
-    def setTask(self, task):
+    def set_task(self, task):
+        self.task = [task]
+        task.set_assign_status(True)
+
+    def add_task(self, task):
         self.task.append(task)
-        task.setAssignStatus(True)
+        task.set_assign_status(True)
 
     def delete_task(self, task):
-        self.task.remove(task)
+        if task in self.task:
+            self.task.remove(task)
         write_log("\nAt time:" + str(self.world.timer) + "\n\t" +
                   str(task) + " at " + str(task.pos) + " is consumed")
         self.capacityCount += 1
+        self.load += task.order
         self.world.completedTask += 1
-        self.world.canvas.delete(task.id_shape)
-        self.world.canvas.delete(task.id_text)
+        if self.world.mode == 10:
+            if not task.isStation:
+                self.world.canvas.delete(task.id_shape)
+                self.world.canvas.delete(task.id_text)
+            if task in self.world.tasks:
+                self.world.tasks.remove(task)
 
-    def setPath(self, path):
-        self.path += path
+    def set_path(self, path):
+        self.path = path
 
-    def setStatus(self, status):
+    def set_status(self, status):
         self.status = status
 
-    def addLoad(self, load):
+    def add_load(self, load):
         self.load += load
 
-    def atStation(self):
-        return self.world.findStationAt(self.pos)
+    def at_station(self):
+        return self.world.find_station_at(self.pos)
 
-    def chargeBattery(self):
-        station = self.world.findStationAt(self.station.pos)
+    def charge_battery(self):
+        station = self.world.find_station_at(self.station.pos)
         if station:
             self.power = min(self.power + station.chargingRate, self.maxPower)
 
-    def followPath(self):
+    def follow_path(self):
         if len(self.path) != 0:
             self.move(self.path[0])
             self.path.pop(0)
             if not len(self.path) and self.task:
                 if self.task[0].isStation:
-                    self.setStatus("Waiting for Order")
-                    self.world.addCompletedOrder(self.load)
+                    self.set_status("Waiting for Order")
+                    self.world.add_completed_order(self.load)
                     self.load = 0
                     self.task = []
 
-    def updatePathFiner(self):
+    def update_path_finder(self):
+        if not self.task:
+            self.task = [self.station]
         self.pathfinder = PathFind(self)
         try:
-            path, dirPath = self.pathfinder.performAStarSearch()
-            self.setPath(dirPath)
+            path, dir_path = self.pathfinder.perform_a_star_search()
+            self.set_path(dir_path)
         except TypeError:
-            self.setStatus("Error")
+            self.set_status("Error")
 
-    def returnToStation(self):
-        self.task = self.station
-        self.updatePathFiner()
-        try:
-            path, dirPath = self.pathfinder.performAStarSearch()
-            self.setPath(dirPath)
-            if False:
-                self.world.graphics.drawPath(path)
-        except TypeError:
-            print 'error1'
+    def return_to_station(self):
+        #self.task.append(self.station)
+        self.set_task(self.station)
+        #self.update_path_finder()
+        # try:
+        #     path, dirPath = self.pathfinder.perform_a_star_search()
+        #     self.set_path(dirPath)
+        #     if False:
+        #         self.world.graphics.drawPath(path)
+        # except TypeError:
+        #     print 'error1'

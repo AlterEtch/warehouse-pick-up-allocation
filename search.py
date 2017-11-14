@@ -10,95 +10,99 @@ class Node():
         self.f = 100000
         self.prev = self
 
-    def setTravelCost(self, cost):
+    def set_travel_cost(self, cost):
         self.g = cost
 
-    def setTotalCost(self, cost):
+    def set_total_cost(self, cost):
         self.f = cost
 
-    def setPreviousNode(self, node):
+    def set_previous_node(self, node):
         self.prev = node
 
-    def getTravelCost(self):
+    def get_travel_cost(self):
         return self.g
 
-    def getTotalCost(self):
+    def get_total_cost(self):
         return self.f
 
-    def getPreviousNode(self):
+    def get_previous_node(self):
         return self.prev
-
 
 class PathFind():
     def __init__(self, robot):
         self.robot = robot
         self.start = Node(self.robot.pos)
-        self.current = Node(self.robot.pos)
-        self.goals = [Node(self.robot.task.pos)]
+        self.current = self.start
+        if self.robot.task:
+            self.goals = [Node(self.robot.task[0].pos)]
+        else:
+            self.goals = []
         self.toNeighbours = False
 
-    def performAStarSearch(self, toNeighbours=False):
-        if toNeighbours:
-            self.toNeighbours = toNeighbours
-            self.goals = self.getSuccessors(self.goal.pos)
+    # do not use this
+    def perform_a_star_search(self, to_neighbours=False):
+
+        if to_neighbours:
+            self.toNeighbours = to_neighbours
+            self.goals = self.get_robot_successors(self.goals[0].pos)
 
         # The set of nodes already evaluated
-        closedSet = []
+        closed_set = []
 
         # The set of currently discovered nodes that are not evaluated yet.
         # Initially, only the start node is known.
-        openSet = [self.start]
+        open_set = [self.start]
 
-        self.start.setTravelCost(0)
-        self.start.setTotalCost(self.getHeuristicCost(self.start))
+        self.start.set_travel_cost(0)
+        self.start.set_total_cost(self.get_heuristic_cost(self.start))
 
-        while len(openSet) > 0:
-            self.current = self.getMinCostNode(openSet)
-            openSet.remove(self.current)
-            closedSet.append(self.current)
+        while len(open_set) > 0:
+            self.current = self.get_min_cost_node(open_set)
+
+            open_set.remove(self.current)
+            closed_set.append(self.current)
 
             for goal in self.goals:
                 if self.current.pos == goal.pos:
-                    return self.reconstructPath(self.current)
+                    return self.reconstruct_path(self.current)
 
-            successors = self.getRobotSuccessors(self.current.pos)
+            successors = self.get_robot_successors(self.current.pos)
 
             for node in successors:
-                if self.checkNodeInSet(node, closedSet):
+                if self.check_node_in_set(node, closed_set):
                     continue
 
-                if not self.checkNodeInSet(node, openSet):
-                    openSet.append(node)
+                if not self.check_node_in_set(node, open_set):
+                    open_set.append(node)
 
-                tentativeTravelCost = self.current.getTravelCost() + util.calculateEuclideanDistance(self.current.pos,
-                                                                                                     node.pos)
-                if tentativeTravelCost >= node.getTravelCost():
+                tentativeTravelCost = self.current.get_travel_cost() + calculate_euclidean_distance(self.current.pos,
+                                                                                                       node.pos)
+                if tentativeTravelCost >= node.get_travel_cost():
                     continue
 
-                node.setPreviousNode(self.current)
-                node.setTravelCost(tentativeTravelCost)
-                node.setTotalCost(node.getTravelCost() + self.getHeuristicCost(node))
+                node.set_previous_node(self.current)
+                node.set_travel_cost(tentativeTravelCost)
+                node.set_total_cost(node.get_travel_cost() + self.get_heuristic_cost(node))
 
-    def reconstructPath(self, current):
+    def reconstruct_path(self, current):
         path = [current.pos]
-        dirPath = []
-        while current.getPreviousNode().pos != current.pos:
-            current = current.getPreviousNode()
+        dir_path = []
+        while current.get_previous_node().pos != current.pos:
+            current = current.get_previous_node()
             path.insert(0, current.pos)
 
         for i in range(len(path) - 1):
-            dirPath.append([path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1]])
+            dir_path.append([path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1]])
 
-        return path, dirPath
+        return path, dir_path
 
-    def checkNodeInSet(self, node, set):
+    def check_node_in_set(self, node, set):
         for setNode in set:
             if node.pos == setNode.pos:
                 return True
         return False
 
-    def getRobotSuccessors(self, pos):
-        possible = []
+    def get_robot_successors(self, pos):
         possible = Actions.possibleActions(pos, self.robot.world)
         if possible == [Actions.STOP]:
             possible = Actions.possibleActions(pos, self.robot.world)
@@ -109,21 +113,22 @@ class PathFind():
             successor.append(Node([x, y]))
         return successor
 
-    def getMinCostNode(self, set):
-        minVal = 1000000
+    def get_min_cost_node(self, set):
+        min_val = 1000000
+        min_node = []
         for node in set:
-            if node.getTotalCost() < minVal:
-                minVal = node.getTotalCost()
-                minNode = node
-        return minNode
+            if node.get_total_cost() < min_val:
+                min_val = node.get_total_cost()
+                min_node = node
+        return min_node
 
-    def getHeuristicCost(self, node):
-        minDist = 1000000
+    def get_heuristic_cost(self, node):
+        min_dist = 1000000
         for goal in self.goals:
-            dist = util.calculateManhattanDistance(node.pos, goal.pos)
-            if dist < minDist:
-                minDist = dist
-        return minDist
+            dist = calculate_manhattan_distance(node.pos, goal.pos)
+            if dist < min_dist:
+                min_dist = dist
+        return min_dist
 
 
 """
@@ -293,6 +298,7 @@ def a_star_planning(world, start, goal):
     cost_so_far = dict()
     came_from[start] = None
     cost_so_far[start] = 0
+    current = []
 
     while not frontier.empty():
         current = frontier.get()
@@ -311,32 +317,32 @@ def a_star_planning(world, start, goal):
     return came_from, cost_so_far[current]
 
 
-def path_generate(world, start, goal):
-    """
-    Generate a list indicate direction including:E,W,N,S
-    :param world:
-    :param start:
-    :param goal:
-    :return: (list) path
-    """
-    start = tuple(start)
-    goal = tuple(goal)
-    came_from = a_star_planning(world, start, goal)[0]
-    path = []
-    position = goal
-    (x, y) = position
-    while position != start:
-        if came_from[position] == (x - 1, y):
-            path.insert(0, Actions.E)
-        elif came_from[position] == (x + 1, y):
-            path.insert(0, Actions.W)
-        elif came_from[position] == (x, y - 1):
-            path.insert(0, Actions.S)
-        elif came_from[position] == (x, y + 1):
-            path.insert(0, Actions.N)
-        position = came_from[position]
-        [x, y] = position
-    return path
+# def path_generate(world, start, goal):
+#     """
+#     Generate a list indicate direction including: E,W,N,S
+#     :param world:
+#     :param start:
+#     :param goal:
+#     :return: (list) path
+#     """
+#     start = tuple(start)
+#     goal = tuple(goal)
+#     came_from = a_star_planning(world, start, goal)[0]
+#     path = []
+#     position = goal
+#     (x, y) = position
+#     while position != start:
+#         if came_from[position] == (x - 1, y):
+#             path.insert(0, Actions.E)
+#         elif came_from[position] == (x + 1, y):
+#             path.insert(0, Actions.W)
+#         elif came_from[position] == (x, y - 1):
+#             path.insert(0, Actions.S)
+#         elif came_from[position] == (x, y + 1):
+#             path.insert(0, Actions.N)
+#         position = came_from[position]
+#         [x, y] = position
+#     return path
 
 
 def saving_dist_table(world):
