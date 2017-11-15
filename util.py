@@ -13,7 +13,7 @@ ROBOT_CAPACITY = 5
 # max number of task assigned to each robot
 MAX_TASK_ASSIGNMENT = 5
 # TBD, whatever it is
-TEMPORAL_PRIORITY_RATIO = 2.5
+TEMPORAL_PRIORITY_RATIO = 4
 # the time interval between two added task
 TASK_TIME_INTERVAL = 10
 # log file name
@@ -22,7 +22,7 @@ FILE_NAME = os.getcwd() + time.strftime("\\log\\%Y-%m-%d %H_%M_%S.txt", time.loc
 
 def generate_random_position(world):
     pos = [randint(2, world.width/world.gridSize-3),randint(3, world.height/world.gridSize-4)]
-    if world.is_blocked(pos) or world.has_station_at(pos)or len(world.neighbors(pos)) == 4:
+    if world.is_blocked(pos) or world.has_station_at(pos) or len(world.neighbors(pos)) == 4 or world.has_task_at(pos):
         return generate_random_position(world)
     return pos
 

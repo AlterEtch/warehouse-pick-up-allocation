@@ -2,6 +2,7 @@ from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
 from util import *
+from random import randint
 import search
 import Tkinter
 from actions import Actions
@@ -265,30 +266,30 @@ class WorldState():
         :return: None
         """
         for robot in self.robots:
-            #if not robot.path:
+            if self.mode == 10:
+                par = robot.capacityCount
+            else:
+                par = robot.load
             if True:
-                path = []
                 if robot.task:
-                    if self.mode == 10:
-                        par = robot.capacityCount
-                    else:
-                        par = robot.load
                     if par < ROBOT_CAPACITY:
-                        # path = search.path_generate(self, robot.pos, robot.task[0].pos)
-                        # robot.set_path(path)
-                        robot.update_path_finder()
+                        rand = randint(0, 100)
+                        if not len(robot.path):
+                            robot.update_path_finder()
+                        elif rand > 50:
+                            robot.update_path_finder()
+                        # else:
+                        #     print 'add stop'
+                        #     path = [Actions.STOP]
+                        #     path.append(robot.path)
+                        #     robot.set_path(path)
                     else:
                         robot.task = []
                         robot.assignable = False
                         robot.update_path_finder()
-                        # path = search.path_generate(self, robot.pos, START_POINT[:])
-                        # robot.set_path(path)
-
-                if not robot.task:
+                else:
                     robot.task = []
                     robot.update_path_finder()
-                    # path = search.path_generate(self, robot.pos, START_POINT[:])
-                    # robot.set_path(path)
 
     def refresh_task_label(self):
         """

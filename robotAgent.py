@@ -44,16 +44,9 @@ class RobotAgent():
         # Collision
         else:
             print 'collision'
-            rand = randint(0,100)
-            if rand >= 50:
-                if self.task:
-                    self.update_path_finder()
-                else:
-                    self.update_path_finder()
-            else:
-                path = [Actions.STOP]
-                path.append(self.path)
-                self.set_path(path)
+            path = [Actions.STOP]
+            path.append(self.path)
+            self.set_path(path)
 
     def get_possible_actions(self):
         return Actions.possibleActions(self.pos, self.world)
@@ -114,10 +107,13 @@ class RobotAgent():
             self.task = [self.station]
         self.pathfinder = PathFind(self)
         try:
-            path, dir_path = self.pathfinder.perform_a_star_search()
-            self.set_path(dir_path)
+            dir_path = self.pathfinder.perform_a_star_search()[1]
         except TypeError:
-            self.set_status("Error")
+            print 'error'
+            dir_path = [Actions.STOP]
+            dir_path.append(self.path)
+        self.set_path(dir_path)
+
 
     def return_to_station(self):
         #self.task.append(self.station)
