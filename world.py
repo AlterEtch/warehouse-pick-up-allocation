@@ -290,7 +290,6 @@ class WorldState():
                     # path = search.path_generate(self, robot.pos, START_POINT[:])
                     # robot.set_path(path)
 
-
     def refresh_task_label(self):
         """
         Refresh the label of the task.

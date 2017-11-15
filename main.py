@@ -14,8 +14,8 @@ LAYOUT_MAP = {'1': getLayout1,
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-rr', type=int, default=0, help="number of randomized robots")
-parser.add_argument('-fr', type=int, default=3, help="number of fixed robots")
-parser.add_argument('-t', type=int, default=10, help="number of tasks")
+parser.add_argument('-fr', type=int, default=5, help="number of fixed robots")
+parser.add_argument('-t', type=int, default=50, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
 parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
 parser.add_argument('-m', type=int, default=10, help="task allocation mode")

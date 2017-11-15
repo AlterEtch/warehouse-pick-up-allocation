@@ -2,6 +2,7 @@ from actions import Actions
 from task import Task
 from search import PathFind
 from util import *
+from random import randint
 import copy
 
 
@@ -40,12 +41,19 @@ class RobotAgent():
                     self.canvas.update()
         elif not self.power:
             self.set_status("Out of Power")
+        # Collision
         else:
-            if self.task:
-                self.update_path_finder()
+            print 'collision'
+            rand = randint(0,100)
+            if rand >= 50:
+                if self.task:
+                    self.update_path_finder()
+                else:
+                    self.update_path_finder()
             else:
-                self.update_path_finder()
-            print self.path[0]
+                path = [Actions.STOP]
+                path.append(self.path)
+                self.set_path(path)
 
     def get_possible_actions(self):
         return Actions.possibleActions(self.pos, self.world)
