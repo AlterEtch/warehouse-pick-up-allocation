@@ -2,12 +2,20 @@ from actions import Actions
 from task import Task
 from search import PathFind
 from util import *
-from random import randint
 import copy
 
 
 class RobotAgent():
     def __init__(self, world, canvas, size, pos, capacity=ROBOT_CAPACITY, power=100000):
+        """
+        Initilize the robot
+        :param world:
+        :param canvas:
+        :param size:
+        :param pos:
+        :param capacity:
+        :param power:
+        """
         self.pos = copy.deepcopy(pos)
         self.world = world
         self.canvas = canvas
@@ -28,6 +36,10 @@ class RobotAgent():
         self.pathfinder = PathFind(self)
 
     def move(self, direction):
+        """
+        Move the robot in the direction
+        :param direction:
+        """
         possible_actions = self.get_possible_actions()
         if direction in possible_actions and self.power:
             self.pos[0] += direction[0]
@@ -35,13 +47,13 @@ class RobotAgent():
             self.power -= 1
             self.world.totalMileage += 1
             # Animate the movement of robot
-            for x in range(0, 2):
-                for obj in self.canvas.find_withtag("robot" + str(self.index)):
-                    self.canvas.move(obj, direction[0] * self.size / 2, direction[1] * self.size / 2)
-                    self.canvas.update()
+            if GRAPHICS:
+                for x in range(0, 2):
+                    for obj in self.canvas.find_withtag("robot" + str(self.index)):
+                        self.canvas.move(obj, direction[0] * self.size / 2, direction[1] * self.size / 2)
+                        self.canvas.update()
         elif not self.power:
             self.set_status("Out of Power")
-        # Collision
         else:
             print 'collision'
             path = [Actions.STOP]
@@ -49,24 +61,43 @@ class RobotAgent():
             self.set_path(path)
 
     def get_possible_actions(self):
+        """
+        Return the possition actions at the current state
+        :return: (list)directions
+        """
         return Actions.possibleActions(self.pos, self.world)
 
     def set_task(self, task):
+        """
+        Set the current task of the robot
+        :param task:
+        """
         self.task = [task]
         task.set_assign_status(True)
 
     def add_task(self, task):
+        """
+        Append a task to be current task list
+        :param task:
+        """
         self.task.append(task)
         task.set_assign_status(True)
 
     def delete_task(self, task):
+        """
+        Complete and delete a task from task list
+        :param task:
+        """
         if task in self.task:
             self.task.remove(task)
-        write_log("\nAt time:" + str(self.world.timer) + "\n\t" +
-                  str(task) + " at " + str(task.pos) + " is consumed")
-        self.capacityCount += 1
-        self.load += task.order
-        self.world.completedTask += 1
+        if not task.isStation:
+            self.capacityCount += 1
+            self.load += 1
+            self.world.completedTask += 1
+            if task.index <= INITIAL_TASK:
+                self.world.taskRewards += TASK_REWARD * pow(DISCOUNTING_FACTOR, self.world.timer)
+            else:
+                self.world.taskRewards += TASK_REWARD * pow(DISCOUNTING_FACTOR, (self.world.timer - (task.index - INITIAL_TASK) * TASK_TIME_INTERVAL))
         if self.world.mode == 10:
             if not task.isStation:
                 self.world.canvas.delete(task.id_shape)
@@ -75,23 +106,45 @@ class RobotAgent():
                 self.world.tasks.remove(task)
 
     def set_path(self, path):
+        """
+        Set the current path of the robot
+        :param path:
+        """
         self.path = path
 
     def set_status(self, status):
+        """
+        Set the status of the robot
+        :param status:
+        """
         self.status = status
 
     def add_load(self, load):
+        """
+        Increment the robot load
+        :param load:
+        """
         self.load += load
 
     def at_station(self):
+        """
+        Check whether the robot is at a station
+        :return: boolean
+        """
         return self.world.find_station_at(self.pos)
 
     def charge_battery(self):
+        """
+        Charge battery and increment the power of robot
+        """
         station = self.world.find_station_at(self.station.pos)
         if station:
             self.power = min(self.power + station.chargingRate, self.maxPower)
 
     def follow_path(self):
+        """
+        Follow the current path of the robot
+        """
         if len(self.path) != 0:
             self.move(self.path[0])
             self.path.pop(0)
@@ -103,6 +156,9 @@ class RobotAgent():
                     self.task = []
 
     def update_path_finder(self):
+        """
+        Update the path finder and find a new path
+        """
         if not self.task:
             self.task = [self.station]
         self.pathfinder = PathFind(self)
@@ -114,15 +170,9 @@ class RobotAgent():
             dir_path.append(self.path)
         self.set_path(dir_path)
 
-
     def return_to_station(self):
-        #self.task.append(self.station)
+        """
+        Return the station
+        """
         self.set_task(self.station)
-        #self.update_path_finder()
-        # try:
-        #     path, dirPath = self.pathfinder.perform_a_star_search()
-        #     self.set_path(dirPath)
-        #     if False:
-        #         self.world.graphics.drawPath(path)
-        # except TypeError:
-        #     print 'error1'
+

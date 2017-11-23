@@ -3,7 +3,7 @@ from util import *
 import heapq
 
 
-class Node():
+class Node:
     def __init__(self, pos):
         self.pos = pos
         self.g = 100000
@@ -28,8 +28,13 @@ class Node():
     def get_previous_node(self):
         return self.prev
 
-class PathFind():
+
+class PathFind:
     def __init__(self, robot):
+        """
+        Initialize the PathFind object
+        :param robot:
+        """
         self.robot = robot
         self.start = Node(self.robot.pos)
         self.current = self.start
@@ -39,14 +44,11 @@ class PathFind():
             self.goals = []
         self.toNeighbours = False
 
-    # do not use this
-    def perform_a_star_search(self, to_neighbours=False):
-
-        if to_neighbours:
-            self.toNeighbours = to_neighbours
-            self.goals = self.get_robot_successors(self.goals[0].pos)
-
-        # The set of nodes already evaluated
+    def perform_a_star_search(self):
+        """
+        A regular A* graph search that returns the absolute path and relative path (in terms of directions)
+        :return: absPath, dirPath
+        """
         closed_set = []
 
         # The set of currently discovered nodes that are not evaluated yet.
@@ -75,16 +77,21 @@ class PathFind():
                 if not self.check_node_in_set(node, open_set):
                     open_set.append(node)
 
-                tentativeTravelCost = self.current.get_travel_cost() + calculate_euclidean_distance(self.current.pos,
-                                                                                                       node.pos)
-                if tentativeTravelCost >= node.get_travel_cost():
+                tentative_travel_cost = self.current.get_travel_cost() + calculate_euclidean_distance(self.current.pos,
+                                                                                                      node.pos)
+                if tentative_travel_cost >= node.get_travel_cost():
                     continue
 
                 node.set_previous_node(self.current)
-                node.set_travel_cost(tentativeTravelCost)
+                node.set_travel_cost(tentative_travel_cost)
                 node.set_total_cost(node.get_travel_cost() + self.get_heuristic_cost(node))
 
     def reconstruct_path(self, current):
+        """
+        Reconstruct the absolute and directional path based on the results of A* search.
+        :param current:
+        :return: abs_path, dir_path
+        """
         path = [current.pos]
         dir_path = []
         while current.get_previous_node().pos != current.pos:
@@ -96,13 +103,24 @@ class PathFind():
 
         return path, dir_path
 
-    def check_node_in_set(self, node, set):
-        for setNode in set:
+    def check_node_in_set(self, node, target_set):
+        """
+        Returns whether the set contains a node with identical position with the parameter node.
+        :param node:
+        :param target_set:
+        :return: boolean
+        """
+        for setNode in target_set:
             if node.pos == setNode.pos:
                 return True
         return False
 
     def get_robot_successors(self, pos):
+        """
+        Returns the successor positions of the robot at pos
+        :param pos:
+        :return: (list)position
+        """
         possible = Actions.possibleActions(pos, self.robot.world)
         if possible == [Actions.STOP]:
             possible = Actions.possibleActions(pos, self.robot.world)
@@ -113,16 +131,26 @@ class PathFind():
             successor.append(Node([x, y]))
         return successor
 
-    def get_min_cost_node(self, set):
+    def get_min_cost_node(self, target_set):
+        """
+        Returns the node in target_set with the lowest cost
+        :param target_set:
+        :return: min_node
+        """
         min_val = 1000000
         min_node = []
-        for node in set:
+        for node in target_set:
             if node.get_total_cost() < min_val:
                 min_val = node.get_total_cost()
                 min_node = node
         return min_node
 
     def get_heuristic_cost(self, node):
+        """
+        Calculate the heuristic cost of a particular node
+        :param node:
+        :return: heuristic_cost
+        """
         min_dist = 1000000
         for goal in self.goals:
             dist = calculate_manhattan_distance(node.pos, goal.pos)
@@ -183,7 +211,7 @@ class Graph:
         """
         Whether the vert is the last element in the group
         :param loc: from self.location()
-        :return:
+        :return: boolean
         """
         (i, j) = loc
         if j == len(self.__graph_group[i]) - 1:
@@ -270,21 +298,11 @@ class PriorityQueue:
         return heapq.heappop(self.element)[1]
 
 
-def heuristic(pos1, pos2):
-    """
-
-    :param pos1:
-    :param pos2:
-    :return: heuristic distance between pos1 and pos2
-    """
-    (x1, y1) = pos1
-    (x2, y2) = pos2
-    return abs(x1 - x2) + abs(y1 - y2)
-
-
 def a_star_planning(world, start, goal):
     """
-    Calculate distance cost of each point and show from which parent point the current point comes from
+    Calculate distance cost of each point and show from which parent point the current point comes from.
+    This is an exhaustive search that generates a table for every node and is only used for the saving table because of
+    the longer search time than regular A* search.
     :param world:
     :param start:
     :param goal:
@@ -310,45 +328,17 @@ def a_star_planning(world, start, goal):
             new_cost = cost_so_far[current] + 1
             if next_pos not in cost_so_far or new_cost < cost_so_far[next_pos]:
                 cost_so_far[next_pos] = new_cost
-                priority = new_cost + heuristic(goal, next_pos)
+                priority = new_cost + calculate_manhattan_distance(goal, next_pos)
                 frontier.put(next_pos, priority)
                 came_from[next_pos] = current
 
     return came_from, cost_so_far[current]
 
 
-# def path_generate(world, start, goal):
-#     """
-#     Generate a list indicate direction including: E,W,N,S
-#     :param world:
-#     :param start:
-#     :param goal:
-#     :return: (list) path
-#     """
-#     start = tuple(start)
-#     goal = tuple(goal)
-#     came_from = a_star_planning(world, start, goal)[0]
-#     path = []
-#     position = goal
-#     (x, y) = position
-#     while position != start:
-#         if came_from[position] == (x - 1, y):
-#             path.insert(0, Actions.E)
-#         elif came_from[position] == (x + 1, y):
-#             path.insert(0, Actions.W)
-#         elif came_from[position] == (x, y - 1):
-#             path.insert(0, Actions.S)
-#         elif came_from[position] == (x, y + 1):
-#             path.insert(0, Actions.N)
-#         position = came_from[position]
-#         [x, y] = position
-#     return path
-
-
 def saving_dist_table(world):
     """
     Calculate distance cost saving between each two task positions
-    and sort the saving decreasingly
+    and sort the saving decreasingly. Used in Clarke and Wright Algorithm only.
     :param world:
     :return: (list)saving_table
     """
@@ -371,8 +361,6 @@ def saving_dist_table(world):
             saving_table[(task1, task2)] = \
                 distance_table[(-1, task1)] + distance_table[(-1, task2)] - distance_table[(task1, task2)]
     saving_table = sorted(saving_table.items(), key=lambda x: x[1], reverse=True)
-    # convert to list with decreasing order as[((task0,task1),cost),...]
-    # print saving_table
     return saving_table, task_num
 
 

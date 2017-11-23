@@ -11,13 +11,16 @@ LAYOUT_MAP = {'1': getLayout1,
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-rr', type=int, default=0, help="number of randomized robots")
-parser.add_argument('-fr', type=int, default=5, help="number of fixed robots")
+parser.add_argument('-fr', type=int, default=6, help="number of fixed robots")
 parser.add_argument('-t', type=int, default=10, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
 parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
 parser.add_argument('-m', type=int, default=10, help="task allocation mode")
+parser.add_argument('-g', type=bool, default=False, help="graphics")
 args = parser.parse_args()
 
+INITIAL_TASK = args.t
+GRAPHICS = args.g
 getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout, stations = getLayout()
 
@@ -31,7 +34,7 @@ def setup():
     if args.rr:
         world.add_random_robot(args.rr)
     for i in range(args.fr):
-        world.add_robot(world.stations[8].pos)
+        world.add_robot(world.stations[0].pos)
     world.add_random_task(args.t)
 
     if args.m == 0:
@@ -39,10 +42,10 @@ def setup():
             if i < len(world.tasks):
                 world.robots[i].add_task(world.tasks[i])
 
-    graphics.createRobotStatusBar()
+    graphics.create_robot_status_bar()
 
     if args.m != 10:
-        graphics.createTaskStatusBar()
+        graphics.create_task_status_bar()
 
     if args.m == 0:
         for robot in world.robots:
@@ -59,10 +62,6 @@ def setup():
 
 setup()
 
-text = time.strftime("%Y-%m-%d %H:%M:%S\n******************START******************\n", time.localtime())
-write_log(text, 'w')
-write_log("There are " + str(len(world.robots)) + " robots with capacity of " + str(ROBOT_CAPACITY) + ".\n" +
-          "Every " + str(TASK_TIME_INTERVAL) + " units of time, a task is generated randomly \n")
 while True:
     if world.timer % TASK_TIME_INTERVAL == 0 and world.mode == 10:
         world.add_random_task(1)
@@ -81,7 +80,11 @@ def exit_handler():
     When program exits, raise the handler
     :return:None
     """
-    output_log(world)
+    #output_log(world)
+    print 'Task Reward: ', world.taskRewards
+    print 'Energy Cost: ', float(world.totalMileage) / float(world.completedTask)
+    print 'Total Reward: ', world.taskRewards - float(world.totalMileage) / float(world.completedTask)
+    print 'Task Completed: ', world.completedTask
 
 
 atexit.register(exit_handler)
