@@ -10,7 +10,7 @@ class Task():
         self.world = world
         self.size = self.world.gridSize * 0.6
         self.timeCost = cost
-        self.index = len(self.world.taskCache)
+        self.index = index
         self.isStation = isStation
         self.mean = mean
         self.timeout = copy.deepcopy(timeout)
@@ -106,12 +106,12 @@ class TaskAllocation():
         return result
 
     @staticmethod
-    def get_closest_available_robot(world, pos, radius):
+    def get_closest_available_robot(world, pos, radius=10000):
         min_dist = 100000
         result = 0
         for robot in world.robots:
             dist = calculate_manhattan_distance(robot.pos, pos)
-            if dist < min_dist and robot.capacity > robot.load and dist <= radius and len(robot.task) < MAX_TASK_ASSIGNMENT:
+            if dist < min_dist and robot.capacity > robot.load and dist <= radius and (len(robot.task) < MAX_TASK_ASSIGNMENT or TaskAllocation.is_task_station(robot.task)):
                 if robot.task:
                     for robot_task in robot.task:
                         if not robot_task.isStation or not robot.assignable:
@@ -140,3 +140,8 @@ class TaskAllocation():
                 result = task
                 min_val = task.timeLeft
         return result
+
+    @staticmethod
+    def is_task_station(tasks):
+        if len(tasks) == 1:
+            return tasks[0].isStation
