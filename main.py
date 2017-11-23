@@ -70,7 +70,7 @@ while True:
     world.update()
     for robot in world.robots:
         robot.follow_path()
-    graphics.root_window.after(0)
+    graphics.root_window.after(50)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
     if world.timer == util.SIMULATION_TIME:

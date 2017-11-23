@@ -1,8 +1,8 @@
 from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
-from util import *
 from random import randint
+import util
 import search
 import Tkinter
 from actions import Actions
@@ -93,9 +93,9 @@ class WorldState():
         """
         for x in range(num):
             if self.stations is not None:
-                self.add_robot(generate_random_station(self))
+                self.add_robot(util.generate_random_station(self))
             else:
-                self.add_robot(generate_random_position(self))
+                self.add_robot(util.generate_random_position(self))
 
     def add_random_task(self, num):
         """
@@ -103,7 +103,7 @@ class WorldState():
         :param num: number of tasks to be added
         """
         for x in range(num):
-            self.add_task(generate_random_position(self))
+            self.add_task(util.generate_random_position(self))
 
     def has_robot_at(self, pos):
         """
@@ -223,7 +223,7 @@ class WorldState():
         :return: boolean
         """
         x, y = pos
-        if pos == START_POINT:
+        if pos == util.START_POINT:
             return False
         if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
             return True
@@ -339,8 +339,8 @@ class WorldState():
         When finding a free robot in the station, assign task to the robot. Only used in Clarke and Wright Algorithm.
         :return:None
         """
-        if self.has_robot_at(START_POINT[:]):
-            r = self.find_robot_at(START_POINT[:])
+        if self.has_robot_at(util.START_POINT[:]):
+            r = self.find_robot_at(util.START_POINT[:])
             if not r.task:
                 r.capacityCount = 0
                 task = search.sort_task(self)
@@ -364,7 +364,7 @@ class WorldState():
                 par = robot.load
             if True:
                 if robot.task:
-                    if par < ROBOT_CAPACITY:
+                    if par < util.ROBOT_CAPACITY:
                         rand = randint(0, 100)
                         if not len(robot.path):
                             robot.update_path_finder()
