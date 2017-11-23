@@ -1,7 +1,5 @@
 from math import *
 from random import randint
-import os
-import time
 
 """CONST"""
 # station position as start point and end point
@@ -15,13 +13,15 @@ TEMPORAL_PRIORITY_RATIO = 1
 # the time interval between two added task
 TASK_TIME_INTERVAL = 10
 # task reward
-TASK_REWARD = 10
+TASK_REWARD = 100
 # discounting factor
 DISCOUNTING_FACTOR = 0.999
 # initial task
-INITIAL_TASK = 10
+INITIAL_TASK = 1
 # graphics on
-GRAPHICS = False
+GRAPHICS_ON = 1
+# simulation time
+SIMULATION_TIME = 2000
 
 
 def generate_random_position(world):

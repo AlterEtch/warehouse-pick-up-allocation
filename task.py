@@ -1,4 +1,3 @@
-from math import *
 from util import *
 import random
 import copy

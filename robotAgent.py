@@ -1,12 +1,12 @@
 from actions import Actions
 from task import Task
 from search import PathFind
-from util import *
+import util
 import copy
 
 
 class RobotAgent():
-    def __init__(self, world, canvas, size, pos, capacity=ROBOT_CAPACITY, power=100000):
+    def __init__(self, world, canvas, size, pos, capacity=util.ROBOT_CAPACITY, power=100000):
         """
         Initilize the robot
         :param world:
@@ -47,7 +47,7 @@ class RobotAgent():
             self.power -= 1
             self.world.totalMileage += 1
             # Animate the movement of robot
-            if GRAPHICS:
+            if util.GRAPHICS_ON:
                 for x in range(0, 2):
                     for obj in self.canvas.find_withtag("robot" + str(self.index)):
                         self.canvas.move(obj, direction[0] * self.size / 2, direction[1] * self.size / 2)
@@ -94,10 +94,10 @@ class RobotAgent():
             self.capacityCount += 1
             self.load += 1
             self.world.completedTask += 1
-            if task.index <= INITIAL_TASK:
-                self.world.taskRewards += TASK_REWARD * pow(DISCOUNTING_FACTOR, self.world.timer)
+            if task.index <= util.INITIAL_TASK:
+                self.world.taskRewards += util.TASK_REWARD * pow(util.DISCOUNTING_FACTOR, self.world.timer)
             else:
-                self.world.taskRewards += TASK_REWARD * pow(DISCOUNTING_FACTOR, (self.world.timer - (task.index - INITIAL_TASK) * TASK_TIME_INTERVAL))
+                self.world.taskRewards += util.TASK_REWARD * pow(util.DISCOUNTING_FACTOR, (self.world.timer - (task.index - util.INITIAL_TASK) * util.TASK_TIME_INTERVAL))
         if self.world.mode == 10:
             if not task.isStation:
                 self.world.canvas.delete(task.id_shape)

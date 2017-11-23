@@ -14,6 +14,7 @@ This is a simple python simulation for warehouse multi-robot automation system.
 4.  [math](https://docs.python.org/2/library/math.html#module-math)
 5.  [argparse](https://docs.python.org/2/howto/argparse.html)
 6.  [copy](https://docs.python.org/2/library/copy.html)
+7.  [atexit]()
 
 ### Running the Project
 The project can be run in terminal using the following command:
@@ -21,8 +22,9 @@ The project can be run in terminal using the following command:
 python main.py
 ```
 
-Command line arguments are supported to modify the simulation parameters. The available arguments and the corresponding default values and description are listed below:
 ####Command Line Arguments
+Command line arguments are supported to modify some of the simulation parameters. The available arguments and the corresponding default values and description are listed below:
+
 | Arguments | Type     | Default | Description                           |
 | ----------|:---------|:--------|:--------------------------------------|
 | -rr       | Int      | 0       | Number of initial robots in the world, randomly generated in stations. Only applicable with multiple stations |
@@ -30,3 +32,4 @@ Command line arguments are supported to modify the simulation parameters. The av
 | -t        | Int      | 10      | Number of initial tasks in the world  |
 | -l        | Int/Char | 2       | Layout selection                      |
 | -g        | Int      | 1       | Graphics Option: Full Graphics=1, Partial Graphics=0 |
+| -st       | Int      | 2000    | Total Simulation Time                 |
