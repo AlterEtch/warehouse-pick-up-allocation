@@ -1,11 +1,24 @@
-class Station():
-    def __init__(self, pos, chargingRate=100):
+class Station:
+    def __init__(self, pos, charging_rate=100):
+        """
+        Initialize stations
+        :param pos:
+        :param charging_rate:
+        """
         self.pos = pos
         self.available = True
-        self.chargingRate = chargingRate
+        self.chargingRate = charging_rate
 
-    def setAvailability(self, state):
+    def set_availability(self, state):
+        """
+        Set the availability of the station
+        :param state:
+        """
         self.available = state
 
-    def getAvailability(self):
+    def get_availability(self):
+        """
+        Get the availability of the station
+        :return: boolean
+        """
         return self.available

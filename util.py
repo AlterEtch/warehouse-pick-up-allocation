@@ -9,7 +9,7 @@ ROBOT_CAPACITY = 5
 # max number of task assigned to each robot
 MAX_TASK_ASSIGNMENT = 5
 # TBD, whatever it is
-TEMPORAL_PRIORITY_RATIO = 1
+TEMPORAL_PRIORITY_FACTOR = 1
 # the time interval between two added task
 TASK_TIME_INTERVAL = 10
 # task reward

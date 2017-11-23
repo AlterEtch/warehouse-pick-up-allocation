@@ -65,7 +65,7 @@ class RobotAgent():
         Return the possition actions at the current state
         :return: (list)directions
         """
-        return Actions.possibleActions(self.pos, self.world)
+        return Actions.get_possible_actions(self.pos, self.world)
 
     def set_task(self, task):
         """

@@ -1,12 +1,18 @@
 class Actions:
-    E = [1,0]
-    S = [0,1]
-    W = [-1,0]
-    N = [0,-1]
-    STOP = [0,0]
+    E = [1, 0]
+    S = [0, 1]
+    W = [-1, 0]
+    N = [0, -1]
+    STOP = [0, 0]
 
     @staticmethod
-    def possibleActions(pos, world):
+    def get_possible_actions(pos, world):
+        """
+        Return the possible actions available for a position
+        :param pos: position to be checked
+        :param world:
+        :return: (list)actions
+        """
         x,y = pos
         possible = [Actions.STOP]
         if world.mode == 1:
@@ -31,9 +37,15 @@ class Actions:
         return possible
 
     @staticmethod
-    def nearbyLocation(pos, world):
+    def get_nearby_locations(pos, world):
+        """
+        Return the nearby locations of a position
+        :param pos: position to be checked
+        :param world:
+        :return: (list)locations
+        """
         location = []
-        possible = Actions.possibleActions(pos, world)
+        possible = Actions.get_possible_actions(pos, world)
         for action in possible:
             location.append([pos[0] + action[0], pos[1] + action[1]])
         return location

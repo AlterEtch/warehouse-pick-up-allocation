@@ -1,4 +1,3 @@
-from util import *
 import Tkinter
 
 
@@ -170,9 +169,13 @@ class MainGraphics():
         self.canvas.create_text(self.width + 300, 90, anchor=Tkinter.W, fill="white", text="Completed Tasks: ")
         self.completedLabel = self.canvas.create_text(self.width + 450, 90, anchor=Tkinter.W, fill="white",
                                                       text="0")
-        self.canvas.create_text(self.width + 300, 110, anchor=Tkinter.W, fill="white", text="Total Mileage: ")
+        self.canvas.create_text(self.width + 300, 110, anchor=Tkinter.W, fill="white", text="Energy Cost: ")
         self.mileageLabel = self.canvas.create_text(self.width + 450, 110, anchor=Tkinter.W, fill="white",
-                                                          text="0")
+                                                    text="0")
+
+        self.canvas.create_text(self.width + 20, 130, anchor=Tkinter.W, fill="white", text="Total Rewards: ")
+        self.totalRewardLabel = self.canvas.create_text(self.width + 220, 130, anchor=Tkinter.W, fill="white",
+                                                        text="0")
 
     def create_robot_status_bar(self):
         """
@@ -232,10 +235,11 @@ class MainGraphics():
         # else:
         #     self.canvas.itemconfig(self.taskCompletionSpeedLabel,
         #                            text=str(float(self.world.timer) / float(self.world.completedOrder)))
-        self.canvas.itemconfig(self.taskRewardLabel, text=str(self.world.taskRewards))
+        self.canvas.itemconfig(self.taskRewardLabel, text=str(self.world.taskRewards)[:8])
         self.canvas.itemconfig(self.unassignedLabel, text=str(len(self.world.taskCache)))
         self.canvas.itemconfig(self.completedLabel, text=str(self.world.completedTask))
         self.canvas.itemconfig(self.mileageLabel, text=str(self.world.totalMileage))
+        self.canvas.itemconfig(self.totalRewardLabel, text=str(self.world.taskRewards - self.world.totalMileage)[:8])
 
         for i in range(len(self.world.robots)):
             self.canvas.itemconfig(self.robotPosLabels[i], text=str(self.world.robots[i].pos))

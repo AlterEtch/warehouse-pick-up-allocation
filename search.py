@@ -1,31 +1,59 @@
 from actions import Actions
-from util import *
+import util
 import heapq
 
 
 class Node:
     def __init__(self, pos):
+        """
+        Initialize node
+        :param pos: node position
+        """
         self.pos = pos
         self.g = 100000
         self.f = 100000
         self.prev = self
 
     def set_travel_cost(self, cost):
+        """
+        Set the travel cost
+        :param cost:
+        """
         self.g = cost
 
     def set_total_cost(self, cost):
+        """
+        Set the total cost
+        :param cost:
+        """
         self.f = cost
 
     def set_previous_node(self, node):
+        """
+        Set the previous node
+        :param node:
+        """
         self.prev = node
 
     def get_travel_cost(self):
+        """
+        Return the travel cost so far
+        :return: travel_cost
+        """
         return self.g
 
     def get_total_cost(self):
+        """
+        Return the total cost so far
+        :return: total_cost
+        """
         return self.f
 
     def get_previous_node(self):
+        """
+        Return the previous node of this node
+        :return: node
+        """
         return self.prev
 
 
@@ -77,7 +105,7 @@ class PathFind:
                 if not self.check_node_in_set(node, open_set):
                     open_set.append(node)
 
-                tentative_travel_cost = self.current.get_travel_cost() + calculate_euclidean_distance(self.current.pos,
+                tentative_travel_cost = self.current.get_travel_cost() + util.calculate_euclidean_distance(self.current.pos,
                                                                                                       node.pos)
                 if tentative_travel_cost >= node.get_travel_cost():
                     continue
@@ -121,9 +149,9 @@ class PathFind:
         :param pos:
         :return: (list)position
         """
-        possible = Actions.possibleActions(pos, self.robot.world)
+        possible = Actions.get_possible_actions(pos, self.robot.world)
         if possible == [Actions.STOP]:
-            possible = Actions.possibleActions(pos, self.robot.world)
+            possible = Actions.get_possible_actions(pos, self.robot.world)
         successor = []
         for direction in possible:
             x = pos[0] + direction[0]
@@ -153,18 +181,18 @@ class PathFind:
         """
         min_dist = 1000000
         for goal in self.goals:
-            dist = calculate_manhattan_distance(node.pos, goal.pos)
+            dist = util.calculate_manhattan_distance(node.pos, goal.pos)
             if dist < min_dist:
                 min_dist = dist
         return min_dist
 
 
 """
-    ------------------------------------------------------------------------
-    |                                                                       |
-    |   The codes below mainly include Clarke and Wright savings algorithm  |
-    |                                                                       |
-    -------------------------------------------------------------------------
+    ------------------------------------------------------------------------------
+    |                                                                            |
+    |   The codes below are mainly used for Clarke and Wright savings algorithm  |
+    |                                                                            |
+    ------------------------------------------------------------------------------
 """
 
 
@@ -275,7 +303,7 @@ class Graph:
         :return: (list)link or None
         """
         for link in self.__graph_group:
-            if len(link) == ROBOT_CAPACITY:
+            if len(link) == util.ROBOT_CAPACITY:
                 return link
         return None
 
@@ -301,8 +329,8 @@ class PriorityQueue:
 def a_star_planning(world, start, goal):
     """
     Calculate distance cost of each point and show from which parent point the current point comes from.
-    This is an exhaustive search that generates a table for every node and is only used for the saving table because of
-    the longer search time than regular A* search.
+    This is an exhaustive search that generates a table for every node and should only be used for the saving table
+    because of the longer search time than regular A* search.
     :param world:
     :param start:
     :param goal:
@@ -328,7 +356,7 @@ def a_star_planning(world, start, goal):
             new_cost = cost_so_far[current] + 1
             if next_pos not in cost_so_far or new_cost < cost_so_far[next_pos]:
                 cost_so_far[next_pos] = new_cost
-                priority = new_cost + calculate_manhattan_distance(goal, next_pos)
+                priority = new_cost + util.calculate_manhattan_distance(goal, next_pos)
                 frontier.put(next_pos, priority)
                 came_from[next_pos] = current
 
@@ -343,13 +371,13 @@ def saving_dist_table(world):
     :return: (list)saving_table
     """
     task_pos_list = []
-    task_num = int(ROBOT_CAPACITY * TEMPORAL_PRIORITY_RATIO)
+    task_num = int(util.ROBOT_CAPACITY * util.TEMPORAL_PRIORITY_FACTOR)
     for item in world.taskCache[:task_num]:
         task_pos_list.append(item.pos)
     task_num = len(task_pos_list)
     distance_table = {}
     for index, task in enumerate(task_pos_list):
-        cost = a_star_planning(world, START_POINT, task)[1]
+        cost = a_star_planning(world, util.START_POINT, task)[1]
         distance_table[(-1, index)] = cost
     for index1 in range(0, len(task_pos_list) - 1):
         for index2 in range(index1 + 1, len(task_pos_list)):
@@ -379,7 +407,7 @@ def sort_task(world):
             break
         if g.try_gen_link():
             return g.try_gen_link()
-        if g.load(task1) + g.load(task2) <= ROBOT_CAPACITY:
+        if g.load(task1) + g.load(task2) <= util.ROBOT_CAPACITY:
             if g.set_edge(task1, task2):
                 try:
                     task_index_list.remove(task1)

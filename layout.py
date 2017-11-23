@@ -1,7 +1,8 @@
 from station import Station
 import util
 
-def getLayout1():
+
+def get_layout1():
     width, height, gridSize = 1000, 1000, 50
     wall_layout = [[0 for row in range(0, height / gridSize + 1)] for col in range(0, width / gridSize + 1)]
     for x in range(0, width / gridSize):
@@ -17,7 +18,7 @@ def getLayout1():
     return width, height, gridSize, wall_layout, stations
 
 
-def getLayout2():
+def get_layout2():
     width, height, grid_size = 1180, 980, 20
     wall_layout = [[0 for row in range(0, height / grid_size)] for col in range(0, width / grid_size)]
     for x in range(0, width / grid_size):
@@ -54,7 +55,7 @@ def getLayout2():
     return width, height, grid_size, wall_layout, stations
 
 
-def getLayout3():
+def get_layout3():
     width, height, grid_size = 1300, 940, 20
     wall_layout = [[0 for row in range(0, height / grid_size)] for col in range(0, width / grid_size)]
     for x in range(0, width / grid_size):

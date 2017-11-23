@@ -5,9 +5,9 @@ import util
 import argparse
 import atexit
 
-LAYOUT_MAP = {'1': getLayout1,
-              '2': getLayout2,
-              '3': getLayout3}
+LAYOUT_MAP = {'1': get_layout1,
+              '2': get_layout2,
+              '3': get_layout3}
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-rr', type=int, default=0, help="number of randomized robots")
@@ -18,11 +18,23 @@ parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="
 parser.add_argument('-m', type=int, default=10, help="task allocation mode")
 parser.add_argument('-g', type=int, default=1, help="graphics")
 parser.add_argument('-st', type=int, default=2000, help="simulation time")
+parser.add_argument('-tr', type=int, default=100, help="task rewards")
+parser.add_argument('-df', type=float, default=0.999, help="discounting factor")
+parser.add_argument('-tpf', type=float, default=3, help="temporal priority factor")
+parser.add_argument('-tg', type=int, default=10, help="task generation time interval")
+parser.add_argument('-rc', type=int, default=10, help="robot capacity")
+
 args = parser.parse_args()
 
 util.INITIAL_TASK = args.t
 util.GRAPHICS_ON = args.g
 util.SIMULATION_TIME = args.st
+util.TASK_REWARD = args.tr
+util.DISCOUNTING_FACTOR = args.df
+util.TEMPORAL_PRIORITY_FACTOR = args.tpf
+util.TASK_TIME_INTERVAL = args.tg
+util.ROBOT_CAPACITY = args.rc
+
 getLayout = LAYOUT_MAP[args.l]
 width, height, gridSize, layout, stations = getLayout()
 
@@ -74,5 +86,6 @@ def exit_handler():
     print 'Energy Cost: ', float(world.totalMileage)
     print 'Total Reward: ', world.taskRewards - float(world.totalMileage)
     print 'Task Completed: ', world.completedTask
+
 
 atexit.register(exit_handler)

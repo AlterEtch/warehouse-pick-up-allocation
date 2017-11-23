@@ -135,7 +135,7 @@ class WorldState():
         :param pos: position to be checked
         :return: boolean
         """
-        neighbours = Actions.nearbyLocation(pos, self)
+        neighbours = Actions.get_nearby_locations(pos, self)
         for neighbour in neighbours:
             if self.has_robot_at(neighbour):
                 return True
@@ -194,7 +194,7 @@ class WorldState():
         """
         if not self.has_robot_next_to(pos):
             return 0
-        locations = Actions.nearbyLocation(pos, self)
+        locations = Actions.get_nearby_locations(pos, self)
         for location in locations:
             robot = self.find_robot_at(location)
             if robot:
