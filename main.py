@@ -22,7 +22,7 @@ parser.add_argument('-tr', type=int, default=100, help="task rewards")
 parser.add_argument('-df', type=float, default=0.999, help="discounting factor")
 parser.add_argument('-tpf', type=float, default=3, help="temporal priority factor")
 parser.add_argument('-tg', type=int, default=10, help="task generation time interval")
-parser.add_argument('-rc', type=int, default=10, help="robot capacity")
+parser.add_argument('-rc', type=int, default=5, help="robot capacity")
 
 args = parser.parse_args()
 
