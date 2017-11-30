@@ -15,7 +15,7 @@ parser.add_argument('-rr', type=int, default=0, help="number of randomized robot
 parser.add_argument('-fr', type=int, default=10, help="number of fixed robots")
 parser.add_argument('-t', type=int, default=10, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
-parser.add_argument('-l', default='4', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
+parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
 parser.add_argument('-m', type=int, default=10, help="task allocation mode")
 parser.add_argument('-g', type=int, default=1, help="graphics")
 parser.add_argument('-st', type=int, default=2000, help="simulation time")
@@ -71,7 +71,7 @@ while True:
     world.update()
     for robot in world.robots:
         robot.follow_path()
-    graphics.root_window.after(1000)
+    graphics.root_window.after(0)
     graphics.root_window.update_idletasks()
     graphics.root_window.update()
     if world.timer == util.SIMULATION_TIME:
