@@ -15,14 +15,14 @@ parser.add_argument('-rr', type=int, default=0, help="number of randomized robot
 parser.add_argument('-fr', type=int, default=10, help="number of fixed robots")
 parser.add_argument('-t', type=int, default=10, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
-parser.add_argument('-l', default='2', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
+parser.add_argument('-l', default='4', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
 parser.add_argument('-m', type=int, default=10, help="task allocation mode")
 parser.add_argument('-g', type=int, default=1, help="graphics")
 parser.add_argument('-st', type=int, default=2000, help="simulation time")
 parser.add_argument('-tr', type=int, default=100, help="task rewards")
 parser.add_argument('-df', type=float, default=0.999, help="discounting factor")
-parser.add_argument('-tpf', type=float, default=3, help="temporal priority factor")
-parser.add_argument('-tg', type=int, default=200, help="task generation time interval")
+parser.add_argument('-tpf', type=float, default=5, help="temporal priority factor")
+parser.add_argument('-tg', type=int, default=50, help="task generation time interval")
 parser.add_argument('-rc', type=int, default=10, help="robot capacity")
 
 args = parser.parse_args()
@@ -37,9 +37,9 @@ util.TASK_TIME_INTERVAL = args.tg
 util.ROBOT_CAPACITY = args.rc
 
 getLayout = LAYOUT_MAP[args.l]
-width, height, gridSize, layout, stations = getLayout()
+width, height, gridSize, layout, stations, gridCost = getLayout()
 
-world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, directional=args.d, mode=args.m)
+world = WorldState(width=width, height=height, gridSize=gridSize, layout=layout, stations=stations, gridCost=gridCost, directional=args.d, mode=args.m)
 graphics = MainGraphics(world=world)
 world.set_graphics(graphics)
 

@@ -104,7 +104,8 @@ class PathFind:
                 if not self.check_node_in_set(node, open_set):
                     open_set.append(node)
 
-                tentative_travel_cost = self.current.get_travel_cost() + self.one_step_cost(self.current.pos, node.pos)
+                one_step_cost=self.robot.world.gridCost.get(tuple(self.current.pos+node.pos))
+                tentative_travel_cost = self.current.get_travel_cost() + one_step_cost
                 if tentative_travel_cost >= node.get_travel_cost():
                     continue
 
@@ -183,22 +184,6 @@ class PathFind:
             if dist < min_dist:
                 min_dist = dist
         return min_dist
-
-    def one_step_cost(self,pos1, pos2):
-        """
-        Calculate the movement cost from one grid to another
-            As for now, the function serves as a limitation for the movement direction
-            The robot can only move to right at ROW 1
-        :param pos1:
-        :param pos2:
-        :return:
-        """
-        x1,y1=pos1
-        x2,y2=pos2
-        if y1==1:
-            if x2==x1-1:
-                return float('inf')
-        return 1
 
 
 """

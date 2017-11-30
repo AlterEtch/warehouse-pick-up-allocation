@@ -1,7 +1,6 @@
 from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
-from random import randint
 import util
 import search
 import Tkinter
@@ -9,7 +8,7 @@ from actions import Actions
 
 
 class WorldState():
-    def __init__(self, width, height, gridSize, layout, stations, mode, directional=False):
+    def __init__(self, width, height, gridSize, layout, stations,gridCost, mode, directional=False):
         """
         Initialize the WorldState
         :param width:
@@ -25,6 +24,7 @@ class WorldState():
         self.height = height
         self.layout = layout
         self.stations = stations
+        self.gridCost = gridCost
         self.robots = []
         self.taskCache = []
         self.tasks = []
@@ -366,10 +366,7 @@ class WorldState():
                 par = robot.load
             if True:
                 if par < util.ROBOT_CAPACITY:
-                    rand = randint(0, 100)
                     if not len(robot.path):
-                        robot.update_path_finder()
-                    elif rand > 50:
                         robot.update_path_finder()
                     if not TaskAllocation.is_task_station(robot.task):
                         robot.set_status("Fetching Order")

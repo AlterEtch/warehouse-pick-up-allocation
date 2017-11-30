@@ -1,6 +1,7 @@
 from actions import Actions
 from task import Task
 from search import PathFind
+from random import randint
 import util
 import copy
 
@@ -56,9 +57,10 @@ class RobotAgent():
             self.set_status("Out of Power")
         else:
             print 'collision'
-            path = [Actions.STOP]
-            path.append(self.path)
-            self.set_path(path)
+            rand = randint(1, 100)
+            if rand>50:
+                self.update_path_finder()
+            self.path.insert(0,[Actions.STOP])
 
     def get_possible_actions(self):
         """
@@ -167,7 +169,7 @@ class RobotAgent():
         try:
             dir_path = self.pathfinder.perform_a_star_search()[1]
         except TypeError:
-            print 'error'
+            print 'error:destination is occupied'
             dir_path = [Actions.STOP]
             dir_path.append(self.path)
         self.set_path(dir_path)
