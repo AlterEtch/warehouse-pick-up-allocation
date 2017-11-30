@@ -88,7 +88,6 @@ class PathFind:
 
         while len(open_set) > 0:
             self.current = self.get_min_cost_node(open_set)
-
             open_set.remove(self.current)
             closed_set.append(self.current)
 
@@ -166,7 +165,7 @@ class PathFind:
         :return: min_node
         """
         min_val = 1000000
-        min_node = []
+        min_node = None
         for node in target_set:
             if node.get_total_cost() < min_val:
                 min_val = node.get_total_cost()

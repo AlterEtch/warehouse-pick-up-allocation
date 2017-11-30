@@ -30,7 +30,7 @@ class RobotAgent():
         self.id_text = self.canvas.create_text((self.pos[0] + 0.5) * self.size, (self.pos[1] + 0.5) * self.size, fill="black", text=self.index, tag="robot" + str(self.index))
         self.task = []
         self.path = []
-        self.station = Task(canvas=self.canvas, world=self.world, pos=copy.deepcopy(self.pos), isStation=True)
+        self.station = Task(canvas=self.canvas, world=self.world, pos=self.world.stations[0].pos[:], isStation=True)
         self.assignable = True
         self.capacityCount = 0
         self.pathfinder = PathFind(self)
@@ -88,22 +88,23 @@ class RobotAgent():
         Complete and delete a task from task list
         :param task:
         """
-        if task in self.task:
-            self.task.remove(task)
         if not task.isStation:
-            self.capacityCount += 1
-            self.load += 1
-            self.world.completedTask += 1
-            if task.index <= util.INITIAL_TASK:
-                self.world.taskRewards += util.TASK_REWARD * pow(util.DISCOUNTING_FACTOR, self.world.timer)
-            else:
-                self.world.taskRewards += util.TASK_REWARD * pow(util.DISCOUNTING_FACTOR, (self.world.timer - (task.index - util.INITIAL_TASK) * util.TASK_TIME_INTERVAL))
-        if self.world.mode == 10:
+            if task in self.task:
+                self.task.remove(task)
             if not task.isStation:
-                self.world.canvas.delete(task.id_shape)
-                self.world.canvas.delete(task.id_text)
-            if task in self.world.tasks:
-                self.world.tasks.remove(task)
+                self.capacityCount += 1
+                self.load += 1
+                self.world.completedTask += 1
+                if task.index <= util.INITIAL_TASK:
+                    self.world.taskRewards += util.TASK_REWARD * pow(util.DISCOUNTING_FACTOR, self.world.timer)
+                else:
+                    self.world.taskRewards += util.TASK_REWARD * pow(util.DISCOUNTING_FACTOR, (self.world.timer - (task.index - util.INITIAL_TASK) * util.TASK_TIME_INTERVAL))
+            if self.world.mode == 10:
+                if not task.isStation:
+                    self.world.canvas.delete(task.id_shape)
+                    self.world.canvas.delete(task.id_text)
+                if task in self.world.tasks:
+                    self.world.tasks.remove(task)
 
     def set_path(self, path):
         """
@@ -159,8 +160,9 @@ class RobotAgent():
         """
         Update the path finder and find a new path
         """
-        if not self.task:
-            self.task = [self.station]
+        if not self.task or self.task[0].isStation:
+            self.line_up_at(self.station.pos)
+
         self.pathfinder = PathFind(self)
         try:
             dir_path = self.pathfinder.perform_a_star_search()[1]
@@ -169,6 +171,21 @@ class RobotAgent():
             dir_path = [Actions.STOP]
             dir_path.append(self.path)
         self.set_path(dir_path)
+
+    def line_up_at(self, pos):
+        x, y = pos
+        if self.world.has_robot_at([x, y]):
+            if self is not self.world.find_robot_at([x, y]):
+                self.line_up_at([x - 1, y])
+            else:
+                self.task = [Task(canvas=self.canvas, world=self.world, pos=[x, y], isStation=True)]
+        elif self.world.has_robot_at([x-1,y]):
+            if self is not self.world.find_robot_at([x-1, y]):
+                self.line_up_at([x-2,y])
+            else:
+                self.task = [Task(canvas=self.canvas, world=self.world, pos=[x, y], isStation=True)]
+        else:
+            self.task = [Task(canvas=self.canvas, world=self.world, pos=[x, y], isStation=True)]
 
     def return_to_station(self):
         """

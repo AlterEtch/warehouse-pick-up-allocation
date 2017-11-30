@@ -71,10 +71,14 @@ class WorldState():
         Add a robot to the world at pos
         :param pos: position of the robot to be added
         """
-        robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
-        self.robots.append(robot)
-        robot.id_task = self.canvas.create_text(self.width + 55, 110 + 20 * robot.id_text, fill="white",
+        if self.has_robot_at(pos) is False:
+            robot = RobotAgent(world=self, canvas=self.canvas, size=self.gridSize, pos=pos)
+            self.robots.append(robot)
+            robot.id_task = self.canvas.create_text(self.width + 55, 110 + 20 * robot.id_text, fill="white",
                                                 anchor=Tkinter.W)
+        else:
+            x, y = pos
+            self.add_robot([x-1,y])
 
     def add_task(self, pos):
         """
@@ -223,8 +227,6 @@ class WorldState():
         :return: boolean
         """
         x, y = pos
-        if pos == util.START_POINT:
-            return False
         if x > self.width / self.gridSize or y > self.height / self.gridSize or x < 0 or y < 0:
             return True
         if self.is_wall(pos) or self.has_robot_at(pos):
@@ -363,22 +365,16 @@ class WorldState():
             else:
                 par = robot.load
             if True:
-                if robot.task:
-                    if par < util.ROBOT_CAPACITY:
-                        rand = randint(0, 100)
-                        if not len(robot.path):
-                            robot.update_path_finder()
-                        elif rand > 50:
-                            robot.update_path_finder()
-                        if not TaskAllocation.is_task_station(robot.task):
-                            robot.set_status("Fetching Order")
-                    else:
-                        robot.task = []
-                        robot.assignable = False
+                if par < util.ROBOT_CAPACITY:
+                    rand = randint(0, 100)
+                    if not len(robot.path):
                         robot.update_path_finder()
-                        robot.set_status("Return to Station")
+                    elif rand > 50:
+                        robot.update_path_finder()
+                    if not TaskAllocation.is_task_station(robot.task):
+                        robot.set_status("Fetching Order")
                 else:
-                    robot.task = []
+                    robot.assignable = False
                     robot.update_path_finder()
                     robot.set_status("Return to Station")
 
@@ -391,6 +387,7 @@ class WorldState():
                 if robot.task[0].isStation and robot.at_station():
                     robot.charge_battery()
             if robot.at_station():
+                robot.task = []
                 robot.load = 0
                 robot.capacityCount = 0
                 robot.assignable = True

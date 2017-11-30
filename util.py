@@ -3,7 +3,7 @@ from random import randint
 
 """CONST"""
 # station position as start point and end point
-START_POINT = [29, 1]
+START_POINT = [20, 1]
 # capacity of each robot
 ROBOT_CAPACITY = 5
 # max number of task assigned to each robot
