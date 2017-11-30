@@ -31,7 +31,7 @@ Command line arguments are supported to modify some of the simulation parameters
 | -rr       | Int      | 0       | Number of initial robots in the world, randomly generated in stations. Only applicable for layouts with multiple stations |
 | -fr       | Int      | 3       | Number of initial robots in the world, at a fixed station |
 | -t        | Int      | 10      | Number of initial tasks in the world  |
-| -l        | Int/Char | 2       | Layout selection                      |
+| -l        | Int/Char | 2       | Layout selection, not recommended to change |
 | -g        | Int      | 1       | Graphics Option: Full Graphics=1, Partial Graphics=0 |
 | -st       | Int      | 2000    | Total Simulation Time                 |
 | -tr       | Int      | 100     | Task Rewards                          |
@@ -42,9 +42,3 @@ Command line arguments are supported to modify some of the simulation parameters
 
 
 The other command line arguments found in the code are for internal testing only and are not recommended to be used.
-
-## Authors
-*   TSANG, Kam Fai - *Main Developer*
-*   CHE, Sen Hei
-*   ZHANG, Chi
-*   SONG, Julin
