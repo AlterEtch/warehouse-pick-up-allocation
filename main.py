@@ -12,7 +12,7 @@ LAYOUT_MAP = {'1': get_layout1,
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument('-rr', type=int, default=0, help="number of randomized robots")
-parser.add_argument('-fr', type=int, default=10, help="number of fixed robots")
+parser.add_argument('-fr', type=int, default=20, help="number of fixed robots")
 parser.add_argument('-t', type=int, default=10, help="number of tasks")
 parser.add_argument('-d', type=bool, default=False, help="directional layout")
 parser.add_argument('-l', default='4', choices=sorted(LAYOUT_MAP.keys()), help="layout selection")
@@ -22,7 +22,7 @@ parser.add_argument('-st', type=int, default=2000, help="simulation time")
 parser.add_argument('-tr', type=int, default=100, help="task rewards")
 parser.add_argument('-df', type=float, default=0.999, help="discounting factor")
 parser.add_argument('-tpf', type=float, default=5, help="temporal priority factor")
-parser.add_argument('-tg', type=int, default=50, help="task generation time interval")
+parser.add_argument('-tg', type=int, default=40, help="task generation time interval")
 parser.add_argument('-rc', type=int, default=10, help="robot capacity")
 
 args = parser.parse_args()

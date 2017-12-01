@@ -1,6 +1,7 @@
 from robotAgent import RobotAgent
 from task import Task
 from task import TaskAllocation
+from random import randint
 import util
 import search
 import Tkinter
@@ -365,13 +366,22 @@ class WorldState():
             else:
                 par = robot.load
             if True:
-                if par < util.ROBOT_CAPACITY:
-                    if not len(robot.path):
+                if robot.task:
+                    if par < util.ROBOT_CAPACITY:
+                        rand = randint(0, 100)
+                        if not len(robot.path):
+                            robot.update_path_finder()
+                        elif rand > 50:
+                            robot.update_path_finder()
+                        if not TaskAllocation.is_task_station(robot.task):
+                            robot.set_status("Fetching Order")
+                    else:
+                        robot.task = []
+                        robot.assignable = False
                         robot.update_path_finder()
-                    if not TaskAllocation.is_task_station(robot.task):
-                        robot.set_status("Fetching Order")
+                        robot.set_status("Return to Station")
                 else:
-                    robot.assignable = False
+                    robot.task = []
                     robot.update_path_finder()
                     robot.set_status("Return to Station")
 

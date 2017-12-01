@@ -182,7 +182,7 @@ def get_layout4():
         if (x, 1, x - 1, 1) in grid_cost and grid_cost[x, 1, x - 1, 1] == 1:
             grid_cost[x, 1, x - 1, 1] = float('inf')
 
-    oppo_dir_cost=2
+    oppo_dir_cost=3
     for y in range(1,height/grid_size):
         for x in range(1,width /grid_size-1,4):
             if (x, y, x, y+1) in grid_cost and grid_cost[x, y, x, y+1] == 1:
