@@ -42,3 +42,6 @@ Command line arguments are supported to modify some of the simulation parameters
 
 
 The other command line arguments found in the code are for internal testing only and are not recommended to be used.
+
+## 
+![](./bb.gif)
